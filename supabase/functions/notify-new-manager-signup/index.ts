@@ -1,11 +1,9 @@
 import { serve } from "std/http/server.ts";
-import { getFromAddress } from "../_shared/email.ts";
-import { Resend } from "resend/resend@2.0.0";
+import { sendEmail } from "../_shared/email.ts";
+import { buildDedupKey, sendOnce } from "../_shared/notificationDedup.ts";
+import { emailOutcome } from "../_shared/emailConfig.ts";
 import { withMiddleware, errorResponse } from "../_shared/middleware.ts";
-import { getEnv } from "../_shared/env.ts";
 import { escapeHtml } from "../_shared/html.ts";
-
-const resend = new Resend(getEnv("RESEND_API_KEY"));
 
 const SIGNUP_ROLES = new Set(["manager", "agency", "landlord"]);
 
@@ -112,14 +110,22 @@ serve(
       </div>
     `;
 
-      await resend.emails.send({
-        from: getFromAddress("CALQULUS"),
-        to: webhostEmails,
-        subject: `New ${safeRole} signup: ${name} — pending approval`,
-        html,
+      // One notification per signup, however many times the client calls this
+      // (it is re-sent on first sign-in when email confirmation delayed the session).
+      const key = buildDedupKey({ type: "new-signup-webhost", subject: ctx.user.id, window: "once" });
+      const guarded = await sendOnce(ctx.supabase, key, async () => {
+        const res = await sendEmail({
+          to: webhostEmails,
+          subject: `New ${safeRole} signup: ${name.replace(/[\r\n]+/g, " ")} — pending approval`,
+          html,
+          displayName: "CALQULUS",
+        });
+        if (!res.ok) console.error("[NEW-MANAGER-SIGNUP] email not sent:", res.kind);
+        return emailOutcome(res);
       });
+      if (!guarded.ran) return { success: true, notified: false, reason: guarded.skipped };
+      return { success: true, notified: guarded.outcome === "sent" };
 
-      return { success: true, notified: true };
     },
   ),
 );

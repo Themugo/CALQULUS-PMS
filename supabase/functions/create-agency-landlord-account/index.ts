@@ -3,6 +3,8 @@ import { findAuthUserByEmail } from "../_shared/authUsers.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { getEnv, requireEnv } from "../_shared/env.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { sendEmail } from "../_shared/email.ts";
 
 interface RequestBody {
   name: string;
@@ -52,7 +54,8 @@ Deno.serve(async (req: Request) => {
       .eq("user_id", agencyUserId)
       .eq("role", "agency")
       .maybeSingle();
-    if (roleError || !role || role.approval_status === "rejected") {
+    // Only an APPROVED agency may create accounts (pending/rejected/suspended are refused).
+    if (roleError || !role || role.approval_status !== "approved") {
       return json(req, { error: "Agency authorization required" }, 403);
     }
 
@@ -102,24 +105,38 @@ Deno.serve(async (req: Request) => {
       landlordUserId = createdUser.user.id;
       created = true;
 
-      const { data: activation, error: activationError } = await admin
-        .from("account_activations")
-        .insert({ user_id: landlordUserId })
-        .select("token, expires_at")
-        .single();
-      if (activationError) {
+      // Only the SHA-256 of the token is stored (issue_account_activation, migration 20260909000004).
+      const { data: activationRows, error: activationError } = await admin
+        .rpc("issue_account_activation", { p_user_id: landlordUserId, p_ttl_hours: 24 });
+      const activation = Array.isArray(activationRows) ? activationRows[0] : null;
+      if (activationError || !activation?.token) {
         await admin.auth.admin.deleteUser(landlordUserId);
-        throw activationError;
+        throw activationError ?? new Error("Failed to create activation token");
       }
       activationToken = activation.token;
+
+      // The signup trigger no longer grants landlord roles from metadata, so the
+      // agency-created account receives it explicitly (service role).
+      const { error: roleGrantError } = await admin.from("user_roles").upsert(
+        { user_id: landlordUserId, role: "landlord", approval_status: "approved", tenant_id: null },
+        { onConflict: "user_id,role", ignoreDuplicates: true },
+      );
+      if (roleGrantError) {
+        await admin.auth.admin.deleteUser(landlordUserId);
+        throw roleGrantError;
+      }
     } else {
-      const { data: landlordRole } = await admin
-        .from("user_roles")
-        .select("user_id")
-        .eq("user_id", landlordUserId)
-        .eq("role", "landlord")
-        .maybeSingle();
-      if (!landlordRole) return json(req, { error: "An account already exists for this email but is not a landlord account" }, 409);
+      // An account for this email is already registered. Linking it to an agency's
+      // properties without the landlord's consent is not allowed, and the
+      // response must not reveal whether the email is registered. The landlord
+      // is notified by the same generic response as a new account.
+      return json(req, {
+        success: true,
+        created: false,
+        pendingLandlordConsent: true,
+        propertyCount: 0,
+        message: "If this landlord can be added, they will receive an email with next steps.",
+      });
     }
 
     const { error: linkError } = await admin.rpc("provision_agency_landlord_links_atomic", {
@@ -133,16 +150,30 @@ Deno.serve(async (req: Request) => {
       throw linkError;
     }
 
-    const baseUrl = (body.portalUrl || new URL(req.url).origin).replace(/\/+$/, "");
+    // The activation link goes to the landlord's own inbox and is never returned
+    // to the agency (an agency holding it could set the landlord's password).
+    // portalUrl from the request body is ignored: links use the configured site URL.
+    const baseUrl = getEnv("SITE_URL", "https://www.calqulus.site").replace(/\/+$/, "");
+    let activationEmailSent = false;
+    if (activationToken) {
+      const link = `${baseUrl}/activate?token=${encodeURIComponent(activationToken)}`;
+      const sent = await sendEmail({
+        to: [email],
+        subject: "Activate your CALQULUS landlord account",
+        displayName: "CALQULUS",
+        html: `<p>Hello ${escapeHtml(name)},</p><p>An agency has created a landlord account for you on CALQULUS. <a href="${escapeHtml(link)}">Set your password and activate it</a>. The link works once and expires in 24 hours.</p><p>If you did not expect this, ignore this email.</p>`,
+      });
+      activationEmailSent = sent.ok;
+      if (!sent.ok) console.error("create-agency-landlord-account: activation email not sent", sent.kind);
+    }
     return json(req, {
       success: true,
       created,
-      landlordUserId,
-      activationUrl: activationToken ? `${baseUrl}/activate?token=${encodeURIComponent(activationToken)}` : null,
+      activationEmailSent,
       propertyCount: propertyIds.length,
     });
   } catch (error) {
-    console.error("create-agency-landlord-account failed", error);
-    return json(req, { error: error instanceof Error ? error.message : "Unable to create landlord account" }, 500);
+    console.error("create-agency-landlord-account failed", error instanceof Error ? error.name : "error");
+    return json(req, { error: "Unable to create landlord account" }, 500);
   }
 });

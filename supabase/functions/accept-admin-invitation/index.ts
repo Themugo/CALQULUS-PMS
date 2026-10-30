@@ -8,21 +8,25 @@
  * Guarantees:
  *  - Token must be pending and unexpired (expired → 410, used → 410
  *    unless the same user already claimed, then idempotent success).
- *  - Password ≥ 10 characters, set only by the invitee (admins never
+ *  - Password 10-72 characters with character classes, set only by the invitee (admins never
  *    see or send it).
  *  - The auth user created for the invitee is bound to the invited
  *    email; email_confirm: true (identity verified at creation).
  *  - The granted role is always 'webhost' — there is no role parameter.
- *  - Mark-used is atomic (status='pending' guard) so a concurrent
- *    double-claim is a no-op.
+ *  - The invitation is claimed atomically BEFORE any account change
+ *    (pending -> used, with expiry check); failures revert the claim.
+ *  - Rate limited per client; malformed tokens are rejected up front.
  *  - Every acceptance is audit-logged.
  */
 
 import { serve } from "std/http/server.ts";
+import { sha256Hex } from "../_shared/tokens.ts";
 import { findAuthUserByEmail } from "../_shared/authUsers.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { getEnv, requireEnv } from "../_shared/env.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { isWellFormedInviteToken } from "../_shared/tokens.ts";
 
 interface AcceptAdminInviteRequest {
   token?: string;
@@ -43,11 +47,28 @@ serve(async (req: Request): Promise<Response> => {
     const { token, password }: AcceptAdminInviteRequest = await req.json();
     const invitationToken = token?.trim() || null;
 
-    if (!invitationToken) {
-      return json(req, { error: "Invitation token is required" }, 400);
+    // Unauthenticated, token-bearing, grants a platform-admin role: rate limit first (fail closed).
+    const clientKey =
+      req.headers.get("cf-connecting-ip")?.trim() ||
+      req.headers.get("x-real-ip")?.trim() ||
+      req.headers.get("x-forwarded-for")?.split(",").pop()?.trim() ||
+      "admin-invite-anonymous";
+    const allowed = await checkRateLimit(
+      createClient(requireEnv("SUPABASE_URL"), requireEnv("SUPABASE_ANON_KEY")),
+      clientKey, "accept-admin-invitation", 10, { failClosed: true },
+    );
+    if (!allowed) return rateLimitResponse(req);
+
+    if (!invitationToken || !isWellFormedInviteToken(invitationToken)) {
+      return json(req, { error: "Invitation not found", code: "invitation_invalid" }, 404);
     }
-    if (!password || password.length < 10) {
-      return json(req, { error: "Password must be at least 10 characters" }, 400);
+    if (
+      typeof password !== "string" || password.length < 10 || password.length > 72 ||
+      !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)
+    ) {
+      return json(req, {
+        error: "Password must be 10-72 characters with an uppercase letter, a lowercase letter, a number and a special character",
+      }, 400);
     }
 
     const supabaseAdmin = createClient(
@@ -57,10 +78,12 @@ serve(async (req: Request): Promise<Response> => {
     );
 
     // ── Resolve the invitation server-side ────────────────────────────
+    // Lookup by hash; legacy rows (raw token, no hash yet) remain valid during the transition.
+    const presentedHash = await sha256Hex(invitationToken);
     const { data: inviteRows } = await supabaseAdmin
       .from("admin_invitations")
       .select("id, email, display_name, admin_type, status, expires_at, invited_by")
-      .eq("token", invitationToken)
+      .or(`token_hash.eq.${presentedHash},and(token_hash.is.null,token.eq.${invitationToken.replace(/[^A-Za-z0-9-]/g, "")})`)
       .limit(1);
 
     const invite = inviteRows?.[0];
@@ -95,7 +118,38 @@ serve(async (req: Request): Promise<Response> => {
       return json(req, { error: "This invitation has already been used", code: "invitation_used" }, 410);
     }
 
+    // ── Claim the invitation FIRST, atomically. Only one concurrent request can
+    // flip pending -> used; everything after this runs for the winner only. If a
+    // later step fails the claim is reverted so the invitee can retry.
+    const { data: claimedRows, error: claimError } = await supabaseAdmin
+      .from("admin_invitations")
+      .update({ status: "used", used_at: new Date().toISOString() })
+      .eq("id", invite.id)
+      .eq("status", "pending")
+      .gt("expires_at", new Date().toISOString())
+      .select("id");
+    if (claimError) {
+      console.error("accept-admin-invitation: claim failed", claimError.code ?? "");
+      return json(req, { error: "Unable to accept invitation" }, 500);
+    }
+    if (!claimedRows || claimedRows.length !== 1) {
+      return json(req, { error: "This invitation has already been used", code: "invitation_used" }, 410);
+    }
+    const revertClaim = async () => {
+      await supabaseAdmin
+        .from("admin_invitations")
+        .update({ status: "pending", used_at: null })
+        .eq("id", invite.id)
+        .eq("status", "used");
+    };
+    const fail = async (stage: string) => {
+      console.error("accept-admin-invitation: failed at", stage);
+      await revertClaim();
+      return json(req, { error: "Unable to accept invitation" }, 500);
+    };
+
     let userId: string;
+    let createdNewUser = false;
     if (existingUser) {
       // Identity verification: the invitee proves ownership of the invited
       // email by setting the password through this token-gated path.
@@ -105,7 +159,7 @@ serve(async (req: Request): Promise<Response> => {
         user_metadata: { full_name: invite.display_name },
       });
       if (updateError) {
-        return json(req, { error: `Failed to set credentials: ${updateError.message}` }, 500);
+        return await fail("set_credentials");
       }
       userId = existingUser.id;
     } else {
@@ -116,9 +170,10 @@ serve(async (req: Request): Promise<Response> => {
         user_metadata: { full_name: invite.display_name },
       });
       if (createError || !newUser.user) {
-        return json(req, { error: `Failed to create account: ${createError?.message ?? "unknown"}` }, 500);
+        return await fail("create_user");
       }
       userId = newUser.user.id;
+      createdNewUser = true;
     }
 
     // ── Grant the role server-side. Always 'webhost' — the client never
@@ -130,7 +185,20 @@ serve(async (req: Request): Promise<Response> => {
         { onConflict: "user_id,role" },
       );
     if (roleError) {
-      return json(req, { error: `Failed to grant admin role: ${roleError.message}` }, 500);
+      return await fail("grant_role");
+    }
+
+    // The signup trigger gives every account without a role in metadata a pending
+    // 'manager' row. A freshly created operator account must not keep it (it would
+    // sit next to 'webhost' and confuse role resolution).
+    if (createdNewUser) {
+      const { error: strayError } = await supabaseAdmin
+        .from("user_roles")
+        .delete()
+        .eq("user_id", userId)
+        .eq("role", "manager")
+        .eq("approval_status", "pending");
+      if (strayError) return await fail("remove_default_role");
     }
 
     // ── Seed the operator tier server-side (Phase 9) ──────────────────
@@ -138,7 +206,7 @@ serve(async (req: Request): Promise<Response> => {
     // comes from the invitation (chosen by the inviter), never the client,
     // and can never be 'owner' — the DB CHECK enforces business|admin.
     const operatorTier = invite.admin_type === "business" ? "business" : "admin";
-    await supabaseAdmin
+    const { error: paError } = await supabaseAdmin
       .from("platform_admins")
       .upsert(
         {
@@ -162,13 +230,13 @@ serve(async (req: Request): Promise<Response> => {
           created_by: invite.invited_by,
         },
         { onConflict: "user_id" },
-      )
-      .then(() => undefined, () => undefined);
+      );
+    if (paError) return await fail("platform_admins");
 
     // Baseline admin permissions, aligned to the operator tier. 'business'
     // operators can manage billing and create further admins; 'admin'
     // operators start limited until an owner/business elevates them.
-    await supabaseAdmin
+    const { error: apError } = await supabaseAdmin
       .from("admin_permissions")
       .upsert(
         {
@@ -186,19 +254,11 @@ serve(async (req: Request): Promise<Response> => {
           can_view_activity_logs: true,
         },
         { onConflict: "user_id" },
-      )
-      .then(() => undefined, () => undefined);
+      );
+    if (apError) return await fail("admin_permissions");
 
-    // ── Mark the invitation used (atomic, single-use) ─────────────────
-    const { error: markError } = await supabaseAdmin
-      .from("admin_invitations")
-      .update({ status: "used", used_at: new Date().toISOString() })
-      .eq("id", invite.id)
-      .eq("status", "pending");
-    if (markError) {
-      console.warn("Failed to mark admin invitation used (non-critical):", markError.message);
-    }
-
+    // (invitation already marked used by the atomic claim above)
+    // ── legacy marker removed ─────────────────
     // ── Audit the acceptance ──────────────────────────────────────────
     await supabaseAdmin.from("activity_logs").insert({
       actor_id: userId,
@@ -216,7 +276,7 @@ serve(async (req: Request): Promise<Response> => {
       message: "Admin role accepted. Sign in to the CALQULUS ADMIN console.",
     });
   } catch (error: unknown) {
-    console.error("accept-admin-invitation error:", error);
-    return json(req, { error: error instanceof Error ? error.message : "Internal server error" }, 500);
+    console.error("accept-admin-invitation error:", error instanceof Error ? error.name : "error");
+    return json(req, { error: "Internal server error" }, 500);
   }
 });

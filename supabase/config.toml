@@ -257,3 +257,10 @@ verify_jwt = true
 
 [functions.health-check]
 verify_jwt = false
+
+# Phase 2F: public callbacks authenticate themselves (signed token / provider signature / shared secret).
+[functions.unsubscribe]
+verify_jwt = false
+
+[functions.sms-inbound-webhook]
+verify_jwt = false

@@ -27,16 +27,22 @@ describe("server: caller identity cannot be overridden by user metadata", () => 
 });
 
 describe("server: registration hardening", () => {
-  it("claim-tenant requires an approved manager", () => {
-    expect(fnIndex("claim-tenant")).toMatch(/\.eq\("approval_status", "approved"\)/);
+  it("claim-tenant is a consent request: manager-only, hash-only token, approved check lives in the RPC", () => {
+    const fn = fnIndex("claim-tenant");
+    expect(fn).toContain("request_tenant_claim");
+    expect(fn).toContain("sha256Hex");
+    expect(fn).not.toMatch(/from\("tenants"\)\s*\.update/);
+    const sql = read("supabase/migrations/20260909000003_tenant_claim_consent.sql");
+    expect(sql).toContain("approval_status");
+    expect(sql).toMatch(/GRANT EXECUTE ON FUNCTION public\.request_tenant_claim[^;]*TO service_role/);
   });
   it("self-register-tenant no longer SMSes an unverified number", () => {
     expect(fnIndex("self-register-tenant")).not.toContain("send-sms-notification");
   });
   it("activate-account consumes the token before setting the password", () => {
     const src = fnIndex("activate-account");
-    expect(src.indexOf("use_activation_token")).toBeGreaterThan(-1);
-    expect(src.indexOf("use_activation_token")).toBeLessThan(src.indexOf("updateUserById"));
+    expect(src.indexOf("consume_activation_token")).toBeGreaterThan(-1);
+    expect(src.indexOf("consume_activation_token")).toBeLessThan(src.indexOf("updateUserById"));
   });
   it("secrets are compared in constant time", () => {
     expect(read("supabase/functions/_shared/assertCaller.ts")).toContain("timingSafeEqual");
@@ -106,7 +112,7 @@ describe("communications hardening", () => {
   });
   it.each(["process-due-invoice-notifications", "send-payment-reminders", "send-overdue-notifications"])(
     "%s de-duplicates daily sends", (n) => {
-      expect(fnIndex(n)).toContain("claimNotification");
+      expect(fnIndex(n)).toMatch(/sendOnce|sendChannelOnce/);
     },
   );
   it("landlord preference helper reads the real column names", () => {

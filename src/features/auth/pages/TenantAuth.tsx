@@ -24,6 +24,7 @@ import {
   type InvitationState,
 } from '@/features/auth/lib/tenantInvitation';
 import { formatCurrency } from '@/shared/lib/formatCurrency';
+import { rememberPendingInvitationClaim } from '@/features/auth/lib/pendingInvitationClaim';
 import { TenantPortalShell } from '@/features/auth/components/TenantPortalChrome';
 
 interface Invitation {
@@ -212,6 +213,21 @@ const TenantAuth = () => {
       }
 
       if (!authUser) throw new Error('Tenant account could not be resolved');
+
+      if (!hasSession) {
+        // Email confirmation is on: there is no session yet, so the claim (which
+        // needs an authenticated caller) runs on first sign-in after verification.
+        rememberPendingInvitationClaim(invitationToken!, signupEmail, {
+          managerId: invitation.invited_by,
+          tenantName: signupFullName,
+          propertyName: invitation.property_name,
+          unit: invitation.unit || undefined,
+        });
+        setRegisteredEmail(signupEmail);
+        setShowVerificationMessage(true);
+        setIsSubmitting(false);
+        return;
+      }
 
       const { data: claimResult, error: claimError } = await supabase.rpc('claim_tenant_invitation_atomic' as any, {
         p_token: invitationToken,

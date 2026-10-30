@@ -4,7 +4,8 @@ import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { rejectUnlessServiceOrCron } from "../_shared/assertCaller.ts";
-import { claimNotification, releaseNotification, dedupKey } from "../_shared/notificationDedup.ts";
+import { buildDedupKey, sendOnce, type SendOutcome } from "../_shared/notificationDedup.ts";
+import { checkSendAllowed } from "../_shared/commsGate.ts";
 
 const logStep = (step: string, details?: Record<string, unknown>) => {
   console.log(`[process-due-invoice-notifications] ${step}${details ? " " + JSON.stringify(details) : ""}`);
@@ -118,9 +119,9 @@ serve(async (req: Request): Promise<Response> => {
           continue;
         }
 
-        // One notification per invoice per day, even if the cron re-runs.
-        const claimKey = dedupKey("process-due-invoice-notifications", invoice.id);
-        if (!(await claimNotification(supabaseAdmin, claimKey))) {
+        // Quiet hours apply to push; re-checked immediately before sending.
+        const policy = await checkSendAllowed(supabaseAdmin, { channel: "push", category: "reminder", address: String(tenant.id) });
+        if (!policy.allow) {
           results.skipped++;
           continue;
         }
@@ -139,29 +140,34 @@ serve(async (req: Request): Promise<Response> => {
           isOverdue
         };
 
-        const pushResponse = await fetch(`${supabaseUrl}/functions/v1/send-invoice-due-push-notification`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${supabaseServiceKey}`,
+        // Claim once per invoice per day; fail closed if the claim cannot be verified.
+        const guarded = await sendOnce(
+          supabaseAdmin,
+          buildDedupKey({ type: "due-invoice-push", subject: invoice.id }),
+          async (): Promise<SendOutcome> => {
+            const pushResponse = await fetch(`${supabaseUrl}/functions/v1/send-invoice-due-push-notification`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${supabaseServiceKey}`,
+              },
+              body: JSON.stringify(pushPayload),
+            });
+            if (pushResponse.ok) return "sent";
+            // Drain the body without logging provider text (may contain recipient data).
+            await pushResponse.text().catch(() => "");
+            return pushResponse.status === 429 || pushResponse.status >= 500 ? "unknown" : "rejected";
           },
-          body: JSON.stringify(pushPayload),
-        });
+        );
 
-        if (pushResponse.ok) {
-          logStep("Push notification sent", { 
-            invoiceNumber: invoice.invoice_number,
-            daysUntilDue,
-            isOverdue
-          });
+        if (!guarded.ran) {
+          logStep("Push skipped", { invoiceNumber: invoice.invoice_number, reason: guarded.reason ?? guarded.skipped });
+          results.skipped++;
+        } else if (guarded.outcome === "sent") {
+          logStep("Push notification sent", { invoiceNumber: invoice.invoice_number, daysUntilDue, isOverdue });
           results.success++;
         } else {
- const errorText = await pushResponse.text();
-          await releaseNotification(supabaseAdmin, claimKey);
-          logStep("Push notification failed", { 
-            invoiceNumber: invoice.invoice_number,
-            error: errorText
-          });
+          logStep("Push notification failed", { invoiceNumber: invoice.invoice_number, outcome: guarded.outcome });
           results.failed++;
         }
 

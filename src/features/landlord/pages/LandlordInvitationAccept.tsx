@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { rememberPendingInvitationClaim } from '@/features/auth/lib/pendingInvitationClaim';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/components/ui/button';
@@ -28,7 +29,7 @@ interface Invitation {
 const LandlordInvitationAccept: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user, signUp, signIn } = useAuth();
+  const { user, signUp, signIn, refreshRoles } = useAuth();
   const { toast } = useToast();
 
   // Read once, then scrub from the address bar (see urlScrub.ts).
@@ -77,6 +78,8 @@ const LandlordInvitationAccept: React.FC = () => {
         { p_token: token },
       );
       if (error) throw error;
+      // The landlord role was just granted server-side; reload it before entering the portal.
+      await refreshRoles();
 
       toast({ title: 'Welcome!', description: `You now have access to ${property?.name}` });
       navigate('/landlord/dashboard');
@@ -85,7 +88,7 @@ const LandlordInvitationAccept: React.FC = () => {
       toast({ title: 'Failed to accept', description: 'This invitation could not be accepted. It may have expired or been used already.', variant: 'destructive' });
     }
     setSubmitting(false);
-  }, [user, invitation, token, toast, navigate, property]);
+  }, [user, invitation, token, toast, navigate, property, refreshRoles]);
 
   useEffect(() => {
     if (user && invitation) acceptInvitation();
@@ -106,9 +109,13 @@ const LandlordInvitationAccept: React.FC = () => {
           setSubmitting(false);
           return;
         }
-        const { error } = await signUp(form.email, form.password, form.name, 'landlord', undefined, termsMetadata(TERMS_VERSION));
+        const { error, needsEmailConfirmation } = await signUp(form.email, form.password, form.name, 'landlord', undefined, termsMetadata(TERMS_VERSION));
         if (error) throw error;
-        toast({ title: 'Account created', description: 'Please check your email to verify, then you\'ll be linked automatically.' });
+        if (needsEmailConfirmation && token) {
+          // No session until the email is verified: link the property on first sign-in.
+          rememberPendingInvitationClaim(token, form.email, undefined, 'landlord');
+        }
+        toast({ title: 'Account created', description: needsEmailConfirmation ? 'Please check your email to verify, then sign in on this device and you\'ll be linked automatically.' : 'Your account is ready.' });
       } else {
         const { error } = await signIn(form.email, form.password);
         if (error) throw error;

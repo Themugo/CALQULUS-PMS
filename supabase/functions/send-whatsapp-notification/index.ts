@@ -31,6 +31,11 @@ import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "../_shared/rateL
 import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { checkRoleAccess } from "../_shared/authorization.ts";
+import { isServiceRoleRequest } from "../_shared/assertCaller.ts";
+import { callerOwnsTenantContact } from "../_shared/notifyAuthz.ts";
+import { tryFormatPhoneNumber } from "../_shared/phone.ts";
+import { checkSendAllowed } from "../_shared/commsGate.ts";
+import { sendSms } from "../_shared/sms.ts";
 
 const log = (step: string, details?: Record<string, unknown>) => console.log(`[whatsapp] ${step}`, details ?? "");
 
@@ -193,47 +198,6 @@ async function sendViaMeta(
 
 // ── Provider: Africa's Talking SMS (fallback) ─────────────────────────────────
 
-async function sendViaSMSFallback(
-  phone: string,
-  body: string
-): Promise<{ success: boolean; error?: string }> {
-  const apiKey = getEnv("AFRICASTALKING_API_KEY");
-  const username = getEnv("AFRICASTALKING_USERNAME");
-
-  if (!apiKey || !username) {
-    return { success: false, error: "Africa's Talking not configured" };
-  }
-
-  const isSandbox = username.toLowerCase() === "sandbox";
-  const apiUrl = isSandbox
-    ? "https://api.sandbox.africastalking.com/version1/messaging"
-    : "https://api.africastalking.com/version1/messaging";
-
-  const formData = new URLSearchParams();
-  formData.append("username", username);
-  formData.append("to", phone);
-  formData.append("message", body);
-
-  const response = await fetch(apiUrl, {
-    method: "POST",
-    headers: {
-      apiKey,
-      "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "application/json",
-    },
-    body: formData.toString(),
-  });
-
-  if (!response.ok) {
-    return { success: false, error: `AT SMS error ${response.status}` };
-  }
-
-  log("Africa's Talking SMS fallback sent");
-  return { success: true };
-}
-
-// ── Main handler ──────────────────────────────────────────────────────────────
-
 serve(async (req) => {
   if (req.method === "OPTIONS") return preflightResponse(req);
 
@@ -244,8 +208,9 @@ serve(async (req) => {
     // Accept both service-role (internal callback) and user JWT
     const authHeader = req.headers.get("Authorization");
     const serviceRoleKey = getEnv("SUPABASE_SERVICE_ROLE_KEY");
-    const isServiceRole =
-      authHeader && serviceRoleKey && authHeader.includes(serviceRoleKey);
+    // Exact, constant-time match (previously a substring `includes` check).
+    const isServiceRole = Boolean(authHeader && serviceRoleKey && isServiceRoleRequest(req));
+    let callerUserId: string | null = null;
 
     if (!isServiceRole) {
       // User JWT path – verify via Supabase auth
@@ -286,6 +251,8 @@ serve(async (req) => {
         });
       }
 
+      callerUserId = user.id;
+
       // Rate limit: 10 WhatsApp messages per user per hour
       const allowed = await checkRateLimit(supabase, user.id, "send-whatsapp-notification", RATE_LIMITS["send-whatsapp-notification"]);
       if (!allowed) return rateLimitResponse(req);
@@ -298,17 +265,43 @@ serve(async (req) => {
       throw new Error("phoneNumber is required");
     }
 
-    // Normalise phone to +254... format
-    let formattedPhone = phoneNumber
-      .replace(/\s+/g, "")
-      .replace(/^0/, "+254")
-      .replace(/^254/, "+254");
-    if (!formattedPhone.startsWith("+")) {
-      formattedPhone = "+254" + formattedPhone.replace(/^\+/, "");
+    // Strict normalisation (rejects junk instead of guessing).
+    const formattedPhone = typeof phoneNumber === "string" ? tryFormatPhoneNumber(phoneNumber) : null;
+    if (!formattedPhone) {
+      return new Response(JSON.stringify({ error: "Invalid phone number" }), {
+        status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    if (typeof requestBody.message === "string" && requestBody.message.length > 1000) {
+      return new Response(JSON.stringify({ error: "Message too long" }), {
+        status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseAdmin = createClient(getEnv("SUPABASE_URL"), serviceRoleKey);
+
+    // User-triggered sends may only target the caller's own tenants (free-form
+    // recipients and message text were a spam/phishing vector).
+    if (!isServiceRole && callerUserId) {
+      const owns = await callerOwnsTenantContact(supabaseAdmin, callerUserId, { phone: formattedPhone });
+      if (!owns) {
+        return new Response(JSON.stringify({ error: "Forbidden: recipient is not one of your tenants" }), {
+          status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    // Re-check opt-out / quiet hours immediately before sending (fails closed).
+    const category = requestBody.type === "reminder" ? "reminder" : "transactional";
+    const waPolicy = await checkSendAllowed(supabaseAdmin, { channel: "whatsapp", category, address: formattedPhone });
+    if (!waPolicy.allow) {
+      return new Response(JSON.stringify({ success: false, error: `blocked:${waPolicy.reason}` }), {
+        status: 409, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
     }
 
     const messageBody = buildMessage(requestBody);
-    log("Sending WhatsApp", { phone: formattedPhone, type: requestBody.type });
+    log("Sending WhatsApp", { type: requestBody.type });
 
     // Try providers in order: Twilio → Meta → SMS fallback
     const twilioResult = await sendViaTwilio(formattedPhone, messageBody);
@@ -327,9 +320,19 @@ serve(async (req) => {
         { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
       );
     }
-    log("Meta failed, falling back to SMS", { error: metaResult.error });
+    log("Meta failed", { error: metaResult.error });
 
-    const smsResult = await sendViaSMSFallback(formattedPhone, messageBody);
+    // SMS fallback costs money and uses a different channel's consent, so it is
+    // OFF unless the operator enables it. When enabled it still passes the SMS
+    // opt-out / quiet-hours gate inside sendSms.
+    if (getEnv("WHATSAPP_SMS_FALLBACK", "") !== "true") {
+      return new Response(
+        JSON.stringify({ success: false, error: "WhatsApp delivery failed", }),
+        { status: 502, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
+      );
+    }
+    const fb = await sendSms(formattedPhone, messageBody.slice(0, 900), { category });
+    const smsResult = { success: fb.success, error: fb.error };
     if (smsResult.success) {
       return new Response(
         JSON.stringify({

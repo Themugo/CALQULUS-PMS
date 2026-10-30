@@ -1,0 +1,52 @@
+function,channels,caller_auth,verify_jwt_disabled,html_escaped,email_sender,dedup,opt_out_policy_gate,unsubscribe_link,rate_limited
+accept-admin-invitation,none,bearer token in body,no,n/a,n/a,no,no,no,yes
+activate-account,none,bearer token in body,yes,n/a,n/a,no,no,no,yes
+auto-send-receipt,sms|whatsapp,service/cron/user via assertCaller,yes,n/a,n/a,no,no,no,no
+auto-send-rent-report,email,service/cron/user via assertCaller,no,yes,shared fail-closed,no,no,no,no
+backfill-tenant-accounts,email,JWT getUser,no,yes,direct fetch via getFromAddress (fails closed),no,no,no,no
+claim-tenant,email,withMiddleware(JWT+role),no,yes,shared fail-closed,no,no,no,yes
+create-agency-landlord-account,email,JWT getUser,no,yes,shared fail-closed,no,no,no,yes
+create-dispute,push,withMiddleware(JWT+role),no,n/a,n/a,no,no,no,yes
+create-tenant-account,email|sms|whatsapp,JWT getUser,no,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+execute-payout,push,NOT VERIFIED (not reviewed),no,n/a,n/a,no,no,no,yes
+notify-manager-payment,email|sms|whatsapp|push,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,no
+notify-manager-receipt-upload,email|sms|push,JWT getUser,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,no
+notify-manager-tenant-signup,email,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,no
+notify-new-manager-signup,email,withMiddleware(JWT+role),no,yes,shared fail-closed,yes,no,no,yes
+process-due-invoice-notifications,none,service/cron/user via assertCaller,yes,n/a,n/a,yes,yes,no,no
+process-payment,email|sms|whatsapp,JWT getUser,no,NO,NOT VERIFIED,no,no,no,yes
+reconcile-bank,sms,service/cron/user via assertCaller,no,n/a,n/a,no,no,no,no
+resolve-dispute,push,NOT VERIFIED (not reviewed),no,n/a,n/a,no,no,no,yes
+retry-notification-failure,sms|whatsapp,NOT VERIFIED (not reviewed),no,n/a,n/a,no,no,no,no
+seed-demo-data,whatsapp,NOT VERIFIED (not reviewed),no,n/a,n/a,no,no,no,no
+send-admin-invitation,email,withMiddleware(JWT+role),no,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-bank-details-notification,email,JWT getUser,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-bulk-sms,sms,withMiddleware(JWT+role),no,n/a,n/a,no,yes,no,yes
+send-contract-notification,email,JWT getUser,no,yes,direct fetch via getFromAddress (fails closed),no,no,no,no
+send-deposit-refund-notification,email,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-invoice-due-push-notification,push,service/cron/user via assertCaller,yes,n/a,n/a,no,no,no,no
+send-invoice-email,email,JWT getUser,no,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-invoice-notification,email|sms|whatsapp,JWT getUser,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-maintenance-notification,email,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-manager-approval-notification,email,service/cron/user via assertCaller,yes,yes,shared fail-closed,no,no,no,no
+send-manager-contract-notification,email,service/cron/user via assertCaller,yes,NO,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-manager-invoice-notification,email,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,no
+send-manager-receipt-email,email,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-monthly-report,email,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,no
+send-overdue-maintenance-notifications,email,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,no
+send-overdue-notifications,email|sms,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),yes,yes,yes,no
+send-payment-confirmation,email|sms|whatsapp,service/cron/user via assertCaller,no,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-payment-push-notification,push,service/cron/user via assertCaller,yes,n/a,n/a,no,no,no,no
+send-payment-reminders,email|whatsapp,service/cron/user via assertCaller,yes,yes,shared fail-closed,yes,yes,yes,no
+send-property-assignment-notification,email,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-push-notification,push,JWT getUser,yes,n/a,n/a,no,no,no,no
+send-receipt-email,email,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-receipt-status-notification,email,service/cron/user via assertCaller,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-signature-notification,email,JWT getUser,yes,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-sms-notification,sms,withMiddleware(JWT+role),no,n/a,n/a,no,yes,no,yes
+send-tenant-invitation,email|sms|whatsapp,withMiddleware(JWT+role),yes,yes,direct fetch via getFromAddress (fails closed),no,yes,no,yes
+send-tenant-notice,email,withMiddleware(JWT+role),no,yes,direct fetch via getFromAddress (fails closed),no,no,no,yes
+send-welcome-email,email,JWT getUser,yes,yes,shared fail-closed,yes,no,no,yes
+send-whatsapp-notification,sms|whatsapp,service/cron/user via assertCaller,yes,n/a,n/a,no,yes,no,yes
+sms-inbound-webhook,whatsapp,provider signature/shared secret,yes,n/a,n/a,no,no,no,no
+unsubscribe,none,signed token,yes,n/a,n/a,no,no,no,no

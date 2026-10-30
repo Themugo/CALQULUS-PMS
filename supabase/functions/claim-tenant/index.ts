@@ -1,129 +1,91 @@
-import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
+/**
+ * claim-tenant/index.ts — REQUEST a tenant-consented association.
+ *
+ * A manager can no longer take over a self-registered tenant by email. This
+ * function only creates a consent request (via request_tenant_claim, which
+ * re-checks manager approval and property/unit ownership inside the database)
+ * and emails the tenant a single-use link. The association happens only when
+ * the tenant, signed in, accepts it (accept_tenant_claim RPC).
+ *
+ * The response is identical whether or not an eligible tenant exists, so the
+ * endpoint cannot be used to discover which email addresses have accounts.
+ * The raw token travels only in the email link's URL fragment (never sent to
+ * servers or Referer headers) and only its SHA-256 is stored.
+ */
 import { serve } from "std/http/server.ts";
-import { createClient } from "supabase/supabase-js@2";
+import { withMiddleware, errorResponse } from "../_shared/middleware.ts";
+import { getEnv } from "../_shared/env.ts";
+import { escapeHtml } from "../_shared/html.ts";
+import { sendEmail } from "../_shared/email.ts";
+import { generateToken, sha256Hex } from "../_shared/tokens.ts";
+import { normaliseEmail } from "../_shared/notifyAuthz.ts";
 
-import { requireEnv, getEnv } from "../_shared/env.ts";
-const logStep = (step: string, details?: Record<string, unknown>) => {
-  console.log(`[claim-tenant] ${step}`, details ?? "");
+const CLAIM_TTL_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+
+const GENERIC = {
+  message: "If an eligible tenant account exists, a consent request has been sent to the tenant.",
 };
 
-interface ClaimRequest {
-  email: string;
-  propertyId?: string;
-  unitId?: string;
-}
+serve(
+  withMiddleware(
+    {
+      functionName: "claim-tenant",
+      requireAuth: true,
+      allowedRoles: ["manager"],
+      rateLimit: { maxPerHour: 20, failClosed: true },
+    },
+    async (req, ctx) => {
+      if (!ctx.user || ctx.user.id === "service-role") throw errorResponse("A manager session is required", 401);
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return preflightResponse(req);
-
-  try {
-    const supabaseUrl = requireEnv("SUPABASE_URL");
-    const supabaseServiceKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("Missing authorization header");
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace("Bearer ", "")
-    );
-    if (authError || !user) throw new Error("Authentication failed");
-
-    // Verify caller is a manager
-    const { data: roleRow } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "manager")
-      .eq("approval_status", "approved")
-      .limit(1)
-      .maybeSingle();
-    if (!roleRow) throw new Error("Only approved managers can claim tenants");
-
-    const { email, propertyId, unitId }: ClaimRequest = await req.json();
-    if (!email) throw new Error("Missing required field: email");
-
-    if (propertyId) {
-      const { data: prop } = await supabase.from("properties").select("manager_id").eq("id", propertyId).maybeSingle();
-      if (!prop || (prop as any).manager_id !== user.id) {
-        throw new Error("Forbidden: property is not in your managed portfolio");
+      const body = await req.json().catch(() => ({})) as { email?: unknown; propertyId?: unknown; unitId?: unknown };
+      const email = normaliseEmail(body.email);
+      const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!email || typeof body.propertyId !== "string" || !uuid.test(body.propertyId)) {
+        throw errorResponse("A valid email and propertyId are required", 400);
       }
-    }
-
-    // unitId was previously trusted independently of propertyId — a caller
-    // could omit propertyId and attach a claimed tenant to a unit belonging
-    // to a different manager's property. Always verify it against the
-    // caller's own portfolio, not just when propertyId happens to be set.
-    if (unitId) {
-      const { data: unitRow } = await supabase
-        .from("units").select("property_id, properties!inner(manager_id)").eq("id", unitId).maybeSingle();
-      const unitManagerId = (unitRow as unknown as { properties?: { manager_id?: string } } | null)?.properties?.manager_id;
-      if (!unitRow || unitManagerId !== user.id) {
-        throw new Error("Forbidden: unit is not in your managed portfolio");
+      if (body.unitId !== undefined && body.unitId !== null && (typeof body.unitId !== "string" || !uuid.test(body.unitId))) {
+        throw errorResponse("Invalid unitId", 400);
       }
-      if (propertyId && unitRow.property_id !== propertyId) {
-        throw new Error("unitId does not belong to the supplied propertyId");
+
+      const token = generateToken();
+      const tokenHash = await sha256Hex(token);
+      const expiresAt = new Date(Date.now() + CLAIM_TTL_MS).toISOString();
+
+      const { data, error } = await ctx.supabase.rpc("request_tenant_claim", {
+        p_manager_id: ctx.user.id,
+        p_email: email,
+        p_property_id: body.propertyId,
+        p_unit_id: body.unitId ?? null,
+        p_token_hash: tokenHash,
+        p_expires_at: expiresAt,
+      });
+
+      if (error) {
+        // Ownership / approval failures are the caller's own problem, not an existence oracle.
+        if (error.code === "42501") throw errorResponse("Forbidden: property or unit is not in your managed portfolio", 403);
+        console.error("[claim-tenant] request failed", error.code ?? "");
+        throw errorResponse("Could not create the consent request", 500);
       }
-    }
 
-    // Find orphan tenant by email (manager_id IS NULL)
-    const { data: tenant, error: tenantError } = await supabase
-      .from("tenants")
-      .select("*")
-      .is("manager_id", null)
-      .eq("email", email.trim().toLowerCase())
-      .maybeSingle();
-    if (tenantError) throw new Error("Database error looking up tenant");
-    if (!tenant) throw new Error("No unregistered tenant found with this email");
+      const row = Array.isArray(data) ? data[0] : null;
+      if (row) {
+        const appUrl = getEnv("SITE_URL", "https://www.calqulus.site").replace(/\/$/, "");
+        // Fragment, not query: not sent to the server, logs, analytics or Referer.
+        const link = `${appUrl}/tenant/claim#t=${token}`;
+        const html = `<p>Hello ${escapeHtml(String(row.tenant_name ?? ""))},</p>
+<p>A property manager has asked to add you to <strong>${escapeHtml(String(row.property_name ?? "a property"))}</strong> on CALQULUS. Nothing changes unless you approve it.</p>
+<p><a href="${escapeHtml(link)}">Review the request</a> (sign in with this email address). The link works once and expires in 3 days.</p>
+<p>If you did not expect this, ignore this email.</p>`;
+        const sent = await sendEmail({
+          to: [String(row.tenant_email)],
+          subject: "A manager has asked to add you to a property",
+          html,
+          displayName: "CALQULUS",
+        });
+        if (!sent.ok) console.error("[claim-tenant] email not sent", sent.kind);
+      }
 
-    logStep("Found orphan tenant", { tenantId: tenant.id, name: tenant.name });
-
-    // Update tenant: assign to manager
-    const updateData: Record<string, unknown> = {
-      manager_id: user.id,
-      source: "imported",
-    };
-    if (propertyId) updateData.property_id = propertyId;
-    if (unitId) updateData.unit_id = unitId;
-
-    const { error: updateError } = await supabase
-      .from("tenants")
-      .update(updateData)
-      .eq("id", tenant.id)
-      .is("manager_id", null);
-
-    if (updateError) {
-      throw new Error(`Failed to claim tenant: ${updateError.message}`);
-    }
-
-    // Log the transfer
-    await supabase.from("tenant_transfer_log").insert({
-      tenant_id: tenant.id,
-      from_manager_id: null,
-      to_manager_id: user.id,
-      transfer_type: "manager_claim",
-      transferred_by: user.id,
-      notes: propertyId
-        ? `Claimed and assigned to property ${propertyId}${unitId ? `, unit ${unitId}` : ""}`
-        : "Claimed without property assignment",
-    });
-
-    logStep("Tenant claimed successfully", { tenantId: tenant.id });
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        tenant: { id: tenant.id, name: tenant.name, email: tenant.email },
-        message: `Tenant ${tenant.name} has been added to your account.`,
-      }),
-      { status: 200, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-    );
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    logStep("Error", { message });
-    return new Response(
-      JSON.stringify({ success: false, error: message }),
-      { status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }
-    );
-  }
-});
+      return GENERIC;
+    },
+  ),
+);

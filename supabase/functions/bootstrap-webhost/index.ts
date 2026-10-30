@@ -111,6 +111,12 @@ serve(async (req) => {
     });
     if (roleError) throw roleError;
 
+    // The signup trigger gives accounts without a role in metadata a pending 'manager' row;
+    // the owner account must not keep it next to 'webhost'.
+    const { error: strayError } = await supabase.from("user_roles").delete()
+      .eq("user_id", userId).eq("role", "manager").eq("approval_status", "pending");
+    if (strayError) throw strayError;
+
     // ── 7. Create admin_permissions row ───────────────────────────────
     await supabase.from("admin_permissions").upsert({
       user_id:     userId,

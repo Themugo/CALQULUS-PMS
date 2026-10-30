@@ -96,7 +96,7 @@ const TenantLogin = () => {
   const handleGoogleSignIn = async () => {
     setIsGoogleSubmitting(true);
     setRememberMe(rememberMe);
-    const { error } = await signInWithGoogle();
+    const { error } = await signInWithGoogle(undefined, 'tenant');
     if (error) {
       toast({ title: 'Google sign-in failed', description: sanitizeAuthError(error.message), variant: 'destructive' });
       setIsGoogleSubmitting(false);

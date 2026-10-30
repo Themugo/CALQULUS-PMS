@@ -6,6 +6,7 @@ import { createClient } from "supabase/supabase-js@2";
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { callerRelatesToManager, callerIsWebhost } from "../_shared/notifyAuthz.ts";
+import { escapeHtml } from "../_shared/html.ts";
 // Resend email client
 const sendEmail = async (apiKey: string, to: string[], subject: string, html: string) => {
   const response = await fetch("https://api.resend.com/emails", {
@@ -164,7 +165,7 @@ serve(async (req) => {
       return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     };
 
-    const greeting = managerName ? `Dear ${managerName}` : 'Dear Manager';
+    const greeting = managerName ? `Dear ${escapeHtml(managerName)}` : 'Dear Manager';
     const portalUrl = `${getSiteUrl()}/auth`;
 
     switch (notificationType) {
@@ -198,7 +199,7 @@ serve(async (req) => {
                 <p>A new ${invoiceTypeLabel === 'registration' ? 'registration' : 'monthly subscription'} invoice has been generated for your account.</p>
                 
                 <div class="invoice-details">
-                  ${invoiceNumber ? `<p><strong>Invoice Number:</strong> ${invoiceNumber}</p>` : ''}
+                  ${invoiceNumber ? `<p><strong>Invoice Number:</strong> ${escapeHtml(String(invoiceNumber))}</p>` : ''}
                   <p><strong>Invoice Type:</strong> ${invoiceTypeLabel === 'registration' ? 'Registration Fee' : `Monthly Subscription (${(commissionRate * 100).toFixed(1)}% of collection)`}</p>
                   <p><strong>Amount Due:</strong> <span class="amount">KES ${invoiceAmount.toLocaleString()}</span></p>
                   <p><strong>Due Date:</strong> ${formatDate(invoiceDueDate)}</p>
@@ -247,7 +248,7 @@ serve(async (req) => {
                 <p>This is a friendly reminder that your invoice payment is due soon.</p>
                 
                 <div class="invoice-details">
-                  ${invoiceNumber ? `<p><strong>Invoice Number:</strong> ${invoiceNumber}</p>` : ''}
+                  ${invoiceNumber ? `<p><strong>Invoice Number:</strong> ${escapeHtml(String(invoiceNumber))}</p>` : ''}
                   <p><strong>Amount Due:</strong> <span class="amount">KES ${invoiceAmount.toLocaleString()}</span></p>
                   <p><strong>Due Date:</strong> ${formatDate(invoiceDueDate)}</p>
                 </div>
@@ -295,7 +296,7 @@ serve(async (req) => {
                 <p>We have received your payment. Thank you!</p>
                 
                 <div class="invoice-details">
-                  ${invoiceNumber ? `<p><strong>Invoice Number:</strong> ${invoiceNumber}</p>` : ''}
+                  ${invoiceNumber ? `<p><strong>Invoice Number:</strong> ${escapeHtml(String(invoiceNumber))}</p>` : ''}
                   <p><strong>Amount Paid:</strong> <span class="amount">KES ${invoiceAmount.toLocaleString()}</span></p>
                   <p><strong>Payment Date:</strong> ${formatDate(new Date().toISOString())}</p>
                 </div>

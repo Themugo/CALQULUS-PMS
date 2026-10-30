@@ -53,15 +53,17 @@ const ActivateAccount = () => {
       }
 
       try {
-        const { data, error } = await supabase.rpc("validate_activation_token", {
-          token_value: token,
+        // Validation goes through the rate-limited edge function; the database
+        // helper is no longer callable by the browser. Only a masked email is shown.
+        const { data, error } = await supabase.functions.invoke("activate-account", {
+          body: { token, validateOnly: true },
         });
 
-        if (error || !data || data.length === 0) {
+        if (error || !data?.valid) {
           setIsValid(false);
         } else {
           setIsValid(true);
-          setEmail(data[0].email);
+          setEmail(String(data.maskedEmail ?? ""));
         }
       } catch {
         setIsValid(false);

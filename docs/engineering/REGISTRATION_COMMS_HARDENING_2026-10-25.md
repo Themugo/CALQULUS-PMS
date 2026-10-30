@@ -33,3 +33,12 @@ Implements fixes for `REGISTRATION_ONBOARDING_COMMS_AUDIT_2026-10-24.md`. Source
 - Unsubscribe/STOP handling, quiet hours and server-side persistence of consent are not implemented; no landlord marketing sender exists yet, and bank-detail alerts are intentionally not preference-gated.
 - `create-agency-landlord-account` consent/enumeration, `findAuthUserByEmail` paging, `validate_activation_token` grant to `authenticated`, and token-hash storage remain open.
 - Edge functions were checked with eslint and a TypeScript name/syntax pass, not run under Deno.
+
+---
+## Addendum — 2026-10-28 (Phase 2F)
+The sections above are unchanged history. Phase 2F superseded several statements:
+- Notification dedup was rewritten from a simple insert-key claim (which failed open when the table was missing) to a lease-based, fail-closed claim with explicit outcomes; the guarantee is at-most-one concurrent sender and at-least-once across ambiguous failures, not exactly-once.
+- `claim-tenant` no longer reassigns tenants directly; it issues a tenant consent request.
+- The sandbox-sender fallback was removed everywhere; email fails closed without a verified `RESEND_FROM_EMAIL`.
+- Activation/admin tokens are hash-stored with a legacy fallback.
+See `REGISTRATION_COMMS_PHASE_2F_REMEDIATION.md` for status of every finding.

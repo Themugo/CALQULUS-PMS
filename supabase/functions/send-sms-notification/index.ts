@@ -16,7 +16,11 @@ import { callerOwnsTenantContact } from "../_shared/notifyAuthz.ts";
 interface SMSRequest {
   phoneNumber: string;
   message: string;
+  category?: string;
 }
+
+// Only trusted function-to-function (service-role) callers may choose a category.
+const SERVICE_CATEGORIES = new Set(["transactional", "reminder", "security"]);
 
 serve(
   withMiddleware(
@@ -27,7 +31,7 @@ serve(
       rateLimit: { maxPerHour: 10, failClosed: true },
     },
     async (req, ctx) => {
-      const { phoneNumber, message }: SMSRequest = await req.json();
+      const { phoneNumber, message, category: requestedCategory }: SMSRequest = await req.json();
 
       if (!phoneNumber || !message) {
         throw errorResponse("phoneNumber and message are required", 400);
@@ -49,10 +53,16 @@ serve(
         }
       }
 
-      const result = await sendSms(phoneNumber, message);
+      const isService = !ctx.user || ctx.user.id === "service-role";
+      const category = isService && requestedCategory && SERVICE_CATEGORIES.has(requestedCategory)
+        ? (requestedCategory as "transactional" | "reminder" | "security")
+        : "transactional";
+      const result = await sendSms(phoneNumber, message, { category });
 
       if (!result.success) {
-        throw errorResponse(result.error || "SMS sending failed", 502);
+        // blocked:<reason> means policy (opt-out / quiet hours / lookup failure), not a provider outage.
+        const blocked = typeof result.error === "string" && result.error.startsWith("blocked:");
+        throw errorResponse(result.error || "SMS sending failed", blocked ? 409 : 502);
       }
 
       return {

@@ -297,7 +297,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
             email: tenant.email,
             password: randomPassword,
             email_confirm: true,
-            user_metadata: { full_name: tenant.name },
+            user_metadata: { full_name: tenant.name, role: "tenant" },
           });
 
           if (createError) {
@@ -312,18 +312,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
           results.created++;
 
           // Create activation token for secure password setup
-          const { data: activation, error: activationError } = await supabaseAdmin
-            .from("account_activations")
-            .insert({
-              user_id: userId,
-              // token is auto-generated via database default
-            })
-            .select("token")
-            .single();
+          const { data: activationRows, error: activationError } = await supabaseAdmin
+            .rpc("issue_account_activation", { p_user_id: userId, p_ttl_hours: 24 });
+          const activation = Array.isArray(activationRows) ? activationRows[0] : null;
 
-          if (activationError) {
-            console.error(`Error creating activation token for ${tenant.email}:`, activationError);
-            results.errors.push(`Failed to create activation for ${tenant.email}: ${activationError.message}`);
+          if (activationError || !activation?.token) {
+            console.error("Error creating activation token", activationError?.code ?? "");
+            results.errors.push(`Failed to create activation for ${tenant.email}`);
           } else {
             activationToken = activation.token;
           }

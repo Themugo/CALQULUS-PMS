@@ -7,8 +7,11 @@ import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { checkRoleAccess } from "../_shared/authorization.ts";
 import { callerIsWebhost } from "../_shared/notifyAuthz.ts";
 import { escapeHtml } from "../_shared/html.ts";
-import { getFromAddress } from "../_shared/email.ts";
-import { claimNotification, dedupKey } from "../_shared/notificationDedup.ts";
+import { sendEmail as sendResendEmail } from "../_shared/email.ts";
+import { buildDedupKey, outcomeFromError, type SendOutcome } from "../_shared/notificationDedup.ts";
+import { sendChannelOnce } from "../_shared/channelSend.ts";
+import { emailOutcome } from "../_shared/emailConfig.ts";
+import { buildUnsubscribeLink } from "../_shared/unsubscribe.ts";
 import { tryFormatPhoneNumber } from "../_shared/sms.ts";
 
 const maskEmail = (e: string) => String(e ?? "").replace(/^(.).*(@.*)$/, "$1***$2");
@@ -39,39 +42,15 @@ interface InvoiceWithTenant {
   tenants: TenantInfo | null;
 }
 
-const sendEmail = async (to: string, subject: string, html: string) => {
-  if (!RESEND_API_KEY) {
-    throw new Error("Resend API key is not configured");
+const sendEmail = async (to: string, subject: string, html: string, headers?: Record<string, string>) => {
+  const result = await sendResendEmail({ to: [to], subject, html, displayName: "CALQULUS RMS", headers });
+  if (!result.ok) {
+    // Coarse, secret-free message; outcome drives dedup release vs. in-flight.
+    const message = result.kind === "config"
+      ? `email sender not configured (${result.code})`
+      : result.kind === "rejected" ? `provider rejected (${result.status})` : "provider unavailable";
+    throw Object.assign(new Error(message), { sendOutcome: emailOutcome(result) });
   }
-
-  const fromEmail = getFromAddress("CALQULUS RMS");
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [to],
-      subject,
-      html,
-    }),
-  });
-
-  const responseText = await response.text();
-  let result: Record<string, unknown>;
-  try {
-    result = responseText ? JSON.parse(responseText) : {};
-  } catch {
-    result = { rawResponse: responseText };
-  }
-
-  if (!response.ok) {
-    const message = typeof result.message === "string" ? result.message : response.statusText;
-    throw new Error(`Resend email failed: ${message}`);
-  }
-
   return result;
 };
 
@@ -248,20 +227,19 @@ serve(async (req) => {
         continue; // Skip invoices not matching our reminder criteria
       }
 
-      // Once per invoice per day, even if the job is re-run.
-      if (!(await claimNotification(supabaseClient, dedupKey("send-payment-reminders", invoice.id)))) {
-        logStep("Skipping already-notified invoice", { invoice: invoice.invoice_number });
-        continue;
-      }
-
       logStep(`Processing invoice ${invoice.invoice_number}`, { 
         tenant: "[redacted]", 
         reminderType,
         dueDate: invoice.due_date 
       });
 
-      // Send email
+      // Send email (opt-out re-checked, then claimed once per invoice per day)
+      const emailResult = await sendChannelOnce({
+        client: supabaseClient, channel: "email", category: "reminder", address: tenant.email,
+        key: buildDedupKey({ type: "reminder-email", subject: invoice.id }),
+        send: async (): Promise<SendOutcome> => {
       try {
+        const unsub = await buildUnsubscribeLink(tenant.email, "reminders");
         const emailHtml = `
           <!DOCTYPE html>
           <html>
@@ -312,6 +290,7 @@ serve(async (req) => {
               </div>
               <div class="footer">
                 <p>This is an automated reminder from CALQULUS RMS.</p>
+                ${unsub ? unsub.footerHtml : ""}
               </div>
             </div>
           </body>
@@ -321,19 +300,29 @@ serve(async (req) => {
         await sendEmail(
           tenant.email,
           `${urgency} - Rent Payment KES ${invoice.amount.toLocaleString()} - ${invoice.invoice_number}`,
-          emailHtml
+          emailHtml,
+          unsub?.headers
         );
 
         emailsSent++;
         logStep(`Email sent to ${maskEmail(tenant.email)}`);
+        return "sent";
       } catch (emailError: any) {
         errors.push(`Email to ${maskEmail(tenant.email)}: ${emailError.message}`);
         logStep(`Email error for ${maskEmail(tenant.email)}`, { error: emailError.message });
+        return outcomeFromError(emailError);
       }
+        },
+      });
+      if (emailResult.status === "skipped") logStep("Email skipped", { invoice: invoice.invoice_number, reason: emailResult.reason });
 
       // Send SMS
       const smsPhone = tenant.phone ? tryFormatPhoneNumber(tenant.phone) : null;
       if (smsPhone && atApiKey && atUsername) {
+        const smsGuard = await sendChannelOnce({
+          client: supabaseClient, channel: "sms", category: "reminder", address: smsPhone,
+          key: buildDedupKey({ type: "reminder-sms", subject: invoice.id }),
+          send: async (): Promise<SendOutcome> => {
         try {
           const smsMessage = isOverdue
             ? `🚨 OVERDUE: Your rent payment of KES ${invoice.amount.toLocaleString()} (${invoice.invoice_number}) is overdue. Please pay immediately.`
@@ -360,7 +349,7 @@ serve(async (req) => {
             body: new URLSearchParams({
               username: atUsername,
               to: smsPhone,
-              message: smsMessage,
+              message: `${smsMessage} Reply STOP to opt out.`,
             }),
             }
           );
@@ -384,15 +373,24 @@ serve(async (req) => {
 
           smsSent++;
           logStep(`SMS sent to ${maskPhone(smsPhone)}`);
+          return "sent";
         } catch (smsError: any) {
           errors.push(`SMS to ${maskPhone(smsPhone)}: ${smsError.message}`);
           logStep(`SMS error for ${maskPhone(smsPhone)}`, { error: smsError.message });
+          return outcomeFromError(smsError);
         }
+          },
+        });
+        if (smsGuard.status === "skipped") logStep("SMS skipped", { invoice: invoice.invoice_number, reason: smsGuard.reason });
       }
 
       // Send WhatsApp
       const waPhone = tenant.whatsapp ? tryFormatPhoneNumber(tenant.whatsapp) : null;
       if (waPhone && WHATSAPP_ACCESS_TOKEN && PHONE_NUMBER_ID) {
+        const waGuard = await sendChannelOnce({
+          client: supabaseClient, channel: "whatsapp", category: "reminder", address: waPhone,
+          key: buildDedupKey({ type: "reminder-whatsapp", subject: invoice.id }),
+          send: async (): Promise<SendOutcome> => {
         try {
           const whatsappMessage = isOverdue
             ? `🚨 *PAYMENT OVERDUE*\n\nYour rent payment of KES ${invoice.amount.toLocaleString()} (${invoice.invoice_number}) is overdue.\n\nPlease pay immediately to avoid penalties.`
@@ -430,10 +428,15 @@ serve(async (req) => {
 
           whatsappSent++;
           logStep(`WhatsApp sent to ${maskPhone(waPhone)}`);
+          return "sent";
         } catch (whatsappError: any) {
           errors.push(`WhatsApp to ${maskPhone(waPhone)}: ${whatsappError.message}`);
           logStep(`WhatsApp error for ${maskPhone(waPhone)}`, { error: whatsappError.message });
+          return outcomeFromError(whatsappError);
         }
+          },
+        });
+        if (waGuard.status === "skipped") logStep("WhatsApp skipped", { invoice: invoice.invoice_number, reason: waGuard.reason });
       }
     }
 

@@ -14,6 +14,8 @@ import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { requireEnv, getEnv } from "../_shared/env.ts";
+import { sendEmail } from "../_shared/email.ts";
+import { escapeHtml } from "../_shared/html.ts";
 import { identifyUserServiceOrCron, scopedActorId } from "../_shared/assertCaller.ts";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -93,9 +95,9 @@ function buildHtmlEmail(
   const propertyRows = properties.map(p => {
     const tenantRows = p.invoices.map(inv => `
       <tr style="border-bottom:1px solid #f1f5f9;">
-        <td style="padding:8px 10px;font-size:13px;">${inv.tenants?.name ?? "—"}</td>
-        <td style="padding:8px 10px;font-size:13px;color:#64748b;">${inv.leases?.unit ?? "—"}</td>
-        <td style="padding:8px 10px;font-size:13px;font-family:monospace;">${inv.invoice_number}</td>
+        <td style="padding:8px 10px;font-size:13px;">${escapeHtml(inv.tenants?.name ?? "—")}</td>
+        <td style="padding:8px 10px;font-size:13px;color:#64748b;">${escapeHtml(inv.leases?.unit ?? "—")}</td>
+        <td style="padding:8px 10px;font-size:13px;font-family:monospace;">${escapeHtml(String(inv.invoice_number ?? ""))}</td>
         <td style="padding:8px 10px;font-size:13px;text-align:right;font-weight:600;">${fmtKES(inv.amount)}</td>
         <td style="padding:8px 10px;font-size:12px;text-align:center;">
           <span style="padding:2px 8px;border-radius:999px;font-weight:600;
@@ -112,7 +114,7 @@ function buildHtmlEmail(
     return `
       <div style="margin-bottom:20px;">
         <div style="background:#f1f5f9;padding:10px 14px;border-radius:6px 6px 0 0;border-left:4px solid #1E6FD9;display:flex;justify-content:space-between;align-items:center;">
-          <strong style="font-size:14px;color:#1e293b;">🏢 ${p.name}</strong>
+          <strong style="font-size:14px;color:#1e293b;">🏢 ${escapeHtml(String(p.name ?? ""))}</strong>
           <span style="font-size:12px;color:#475569;">
             Billed: ${fmtKES(p.billed)} &nbsp;·&nbsp; Collected: <span style="color:#10b981;font-weight:600;">${fmtKES(p.collected)}</span>
             ${p.outstanding > 0 ? ` &nbsp;·&nbsp; Outstanding: <span style="color:#f59e0b;font-weight:600;">${fmtKES(p.outstanding)}</span>` : ""}
@@ -153,11 +155,11 @@ function buildHtmlEmail(
         <tbody>
           ${arrears.map((inv) => `
           <tr style="border-bottom:1px solid #fee2e2;">
-            <td style="padding:8px 10px;font-size:13px;">${inv.tenants?.name ?? "—"}</td>
+            <td style="padding:8px 10px;font-size:13px;">${escapeHtml(inv.tenants?.name ?? "—")}</td>
             <td style="padding:8px 10px;font-size:13px;color:#64748b;">${inv.tenants?.phone ?? "—"}</td>
             <td style="padding:8px 10px;font-size:13px;">${inv.leases?.property ?? "—"}</td>
-            <td style="padding:8px 10px;font-size:13px;color:#64748b;">${inv.leases?.unit ?? "—"}</td>
-            <td style="padding:8px 10px;font-size:13px;font-family:monospace;">${inv.invoice_number}</td>
+            <td style="padding:8px 10px;font-size:13px;color:#64748b;">${escapeHtml(inv.leases?.unit ?? "—")}</td>
+            <td style="padding:8px 10px;font-size:13px;font-family:monospace;">${escapeHtml(String(inv.invoice_number ?? ""))}</td>
             <td style="padding:8px 10px;font-size:13px;text-align:right;font-weight:700;color:#ef4444;">${fmtKES(inv.amount)}</td>
           </tr>`).join("")}
         </tbody>
@@ -172,7 +174,7 @@ function buildHtmlEmail(
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#1E6FD9 0%,#1558b0 100%);padding:30px 28px;">
-      <h1 style="color:#fff;margin:0 0 4px 0;font-size:22px;font-weight:700;">${companyName}</h1>
+      <h1 style="color:#fff;margin:0 0 4px 0;font-size:22px;font-weight:700;">${escapeHtml(String(companyName))}</h1>
       <p style="color:rgba(255,255,255,0.85);margin:0;font-size:14px;">Rent Collection Summary &mdash; ${periodLabel}</p>
       <p style="color:rgba(255,255,255,0.6);margin:6px 0 0 0;font-size:12px;">Auto-generated ${genDate}</p>
     </div>
@@ -237,11 +239,9 @@ const handler = async (req: Request): Promise<Response> => {
   const gate = await identifyUserServiceOrCron(req);
   if (!gate.ok) return gate.response;
 
-  const RESEND_API_KEY  = getEnv("RESEND_API_KEY");
   const supabaseUrl     = requireEnv("SUPABASE_URL");
   const supabaseKey     = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
   const appUrl          = getEnv("APP_URL", "https://calqulus.site");
-  const fromAddress     = getEnv("REPORT_FROM_EMAIL", "reports@calqulus.site");
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -341,32 +341,26 @@ const handler = async (req: Request): Promise<Response> => {
         // Send to each recipient
         let sentCount = 0;
         for (const email of schedule.recipients) {
-          if (!RESEND_API_KEY) {
-            console.warn("[auto-send-rent-report] RESEND_API_KEY not set — skipping email to", email);
-            continue;
-          }
-          const res = await fetch("https://api.resend.com/emails", {
-            method:  "POST",
-            headers: {
-              "Authorization": `Bearer ${RESEND_API_KEY}`,
-              "Content-Type":  "application/json",
-            },
-            body: JSON.stringify({
-              from:    `${companyName} <${fromAddress}>`,
-              to:      [email],
-              subject: `${companyName} — Rent Collection Summary: ${periodLabel}`,
-              html,
-            }),
+          // Shared fail-closed sender: no hard-coded fallback address or domain.
+          const res = await sendEmail({
+            to: [email],
+            subject: `${companyName} — Rent Collection Summary: ${periodLabel}`,
+            html,
+            displayName: companyName,
           });
           if (res.ok) sentCount++;
-          else console.error("[auto-send-rent-report] Resend error:", await res.text());
+          else console.error("[auto-send-rent-report] email not sent:", res.kind);
         }
 
         // Update last_sent_at
-        await supabase
-          .from("rent_report_schedules")
-          .update({ last_sent_at: new Date().toISOString() })
-          .eq("id", schedule.id);
+        // Only advance the schedule when at least one recipient was reached, so a
+        // misconfigured sender does not silently skip the period.
+        if (sentCount > 0) {
+          await supabase
+            .from("rent_report_schedules")
+            .update({ last_sent_at: new Date().toISOString() })
+            .eq("id", schedule.id);
+        }
 
         results.push({ managerId: schedule.manager_id, sent: sentCount, skipped: false });
 

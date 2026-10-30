@@ -15,6 +15,7 @@ const Settings = lazy(() => import("@/features/settings/pages/Settings"));
 const Auth = lazy(() => import("@/features/auth/pages/Auth"));
 const WebhostAuth = lazy(() => import("@/features/auth/pages/WebhostAuth"));
 const TenantAuth = lazy(() => import("@/features/auth/pages/TenantAuth"));
+const TenantClaimConsent = lazy(() => import("@/features/auth/pages/TenantClaimConsent"));
 const TenantLogin = lazy(() => import("@/features/auth/pages/TenantLogin"));
 const PayerPortalAuth = lazy(() => import("@/features/auth/pages/PayerPortalAuth"));
 const PayerPortal = lazy(() => import("@/features/payments/pages/PayerPortal"));
@@ -225,6 +226,7 @@ export const publicRoutes: RouteDef[] = [
   { path: "/pay/:token", element: PublicPaymentShare },
   { path: "/tenant/signup", element: TenantSelfRegister },
   { path: "/tenant/invitation", element: TenantAuth },
+  { path: "/tenant/claim", element: TenantClaimConsent },
   { path: "/webhost/login", element: WebhostAuth },
   { path: "/webhost/invite", element: AdminInviteAccept },
   { path: "/agency/login", element: AgencyAuth },
@@ -511,6 +513,7 @@ export const authOnlyRoutes: RouteDef[] = [
   { path: "/payer/login", element: PayerPortalAuth },
   { path: "/tenant/signup", element: TenantSelfRegister },
   { path: "/tenant/invitation", element: TenantAuth },
+  { path: "/tenant/claim", element: TenantClaimConsent },
   { path: "/activate", element: ActivateAccount },
   { path: "/reset-password", element: ResetPassword },
   { path: "*", element: PageLoaderStub },
@@ -531,6 +534,7 @@ export const fallbackRoutes: RouteDef[] = [
   { path: "/payer/login", element: PayerPortalAuth },
   { path: "/tenant/signup", element: TenantSelfRegister },
   { path: "/tenant/invitation", element: TenantAuth },
+  { path: "/tenant/claim", element: TenantClaimConsent },
   { path: "/activate", element: ActivateAccount },
   { path: "/reset-password", element: ResetPassword },
   { path: "*", redirect: "/landlord/login" },

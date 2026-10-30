@@ -7,9 +7,10 @@
 
 import { serve } from "std/http/server.ts";
 import { getFromAddress } from "../_shared/email.ts";
+import { generateToken, sha256Hex } from "../_shared/tokens.ts";
 import { getEnv } from "../_shared/env.ts";
 import { formatPhoneNumber, sendSms } from "../_shared/sms.ts";
-import { withMiddleware, validateUUID, validateRequired, errorResponse, successResponse } from "../_shared/middleware.ts";
+import { withMiddleware, validateUUID, errorResponse, successResponse } from "../_shared/middleware.ts";
 import { resolveEffectiveManagerIds } from "../_shared/notifyAuthz.ts";
 import { escapeHtml } from "../_shared/html.ts";
 
@@ -37,7 +38,7 @@ interface InvitationRequest {
 
 async function sendSMS(phone: string, message: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const result = await sendSms(phone, message);
+    const result = await sendSms(phone, message, { category: "transactional" });
     return { success: result.success, error: result.error };
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "SMS failed" };
@@ -165,14 +166,17 @@ serve(
       }
 
       let invitation;
+      let rawInviteToken: string;
 
       if (existingInvitation) {
         // Update existing invitation with new token and resend
-        const newToken = crypto.randomUUID();
+        // Only the hash is stored (migration 20260909000006); the raw token lives in the link only.
+        const newToken = generateToken();
         const { data: updatedInvitation, error: updateError } = await ctx.supabase
           .from("tenant_invitations")
           .update({
-            token: newToken,
+            token: null,
+            token_hash: await sha256Hex(newToken),
             tenant_name: tenantName,
             unit: unit || null,
             created_at: new Date().toISOString(),
@@ -187,11 +191,15 @@ serve(
         }
 
         invitation = updatedInvitation;
+        rawInviteToken = newToken;
       } else {
-        // Create new invitation
+        // Create new invitation (token generated here so only its hash is stored)
+        const newInviteToken = generateToken();
         const { data: newInvitation, error: insertError } = await ctx.supabase
           .from("tenant_invitations")
           .insert({
+            token: null,
+            token_hash: await sha256Hex(newInviteToken),
             email: email || `phone-${phone}@placeholder.calqulusrms`,
             tenant_name: tenantName,
             phone: phone || null,
@@ -212,6 +220,7 @@ serve(
         }
 
         invitation = newInvitation;
+        rawInviteToken = newInviteToken;
       }
 
       // Get manager info
@@ -225,7 +234,7 @@ serve(
 
       // Build invitation URL
       const appUrl = getEnv("SITE_URL", "https://www.calqulus.site");
-      const invitationUrl = `${appUrl}/tenant/invitation?token=${invitation.token}`;
+      const invitationUrl = `${appUrl}/tenant/invitation?token=${rawInviteToken}`;
 
       // Track notification results
       const notificationResults = {

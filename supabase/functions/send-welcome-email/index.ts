@@ -1,11 +1,12 @@
 import { escapeHtml } from "../_shared/html.ts";
-import { getFromAddress } from "../_shared/email.ts";
+import { sendEmail } from "../_shared/email.ts";
+import { buildDedupKey, sendOnce } from "../_shared/notificationDedup.ts";
+import { emailOutcome } from "../_shared/emailConfig.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
-const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface WelcomeEmailRequest {
   email: string;
@@ -45,7 +46,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const { email, fullName, userType }: WelcomeEmailRequest = await req.json();
 
     // Only allow sending welcome email to the authenticated user's own email
-    if (email !== user.email) {
+    // Emails are case-insensitive and Supabase stores them lowercased.
+    if (String(email ?? "").trim().toLowerCase() !== String(user.email ?? "").toLowerCase()) {
       return new Response(JSON.stringify({ error: "Can only send welcome email to your own address" }), {
         status: 403,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
@@ -55,8 +57,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const rateOk = await checkRateLimit(supabaseClient, user.id, "send-welcome-email", 10, { failClosed: true });
     if (!rateOk) return rateLimitResponse(req);
 
-    const isManager = userType === "manager";
-    const portalUrl = isManager ? "/dashboard" : "/portal";
+    const isManager = userType === "manager" || userType === "agency";
+    // Only routes that exist: sign-in pages route each role to its own portal.
+    const portalUrl = userType === "agency" ? "/agency/login" : isManager ? "/auth" : "/tenant/login";
     const roleTitle = isManager ? "Property Manager" : "Tenant";
 
     const managerOnboarding = `
@@ -134,7 +137,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
             <!-- CTA Button -->
             <div style="text-align: center; margin: 30px 0;">
-              <a href="https://www.calqulus.site${portalUrl}" 
+              <a href="${getEnv("SITE_URL", "https://www.calqulus.site").replace(/\/+$/, "")}${portalUrl}" 
                  style="display: inline-block; background: ${isManager ? '#4f46e5' : '#10b981'}; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
                 Go to Your ${isManager ? 'Dashboard' : 'Portal'}
               </a>
@@ -158,36 +161,41 @@ Deno.serve(async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    const emailResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: getFromAddress("CALQULUS RMS"),
-        to: [email],
-        // eslint-disable-next-line no-control-regex -- intentionally strips control characters
-        subject: `Welcome to CALQULUS RMS, ${String(fullName ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").slice(0, 80)}! 🏠`,
+    // One welcome email per user: the client calls this at signup and again on
+    // first sign-in (signup without a session cannot authenticate this call).
+    const adminClient = createClient(requireEnv("SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
+    const key = buildDedupKey({ type: "welcome-email", subject: user.id, window: "once" });
+    // eslint-disable-next-line no-control-regex -- intentionally strips control characters
+    const safeSubjectName = String(fullName ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").slice(0, 80);
+    const guarded = await sendOnce(adminClient, key, async () => {
+      const res = await sendEmail({
+        to: [String(user.email)],
+        subject: `Welcome to CALQULUS RMS, ${safeSubjectName}! 🏠`,
         html: emailHtml,
-      }),
+        displayName: "CALQULUS RMS",
+      });
+      if (!res.ok) console.error("Failed to send welcome email:", res.kind);
+      return emailOutcome(res);
     });
 
-    const emailData = await emailResponse.json();
-
-    if (!emailResponse.ok) {
-      console.error("Failed to send welcome email:", emailData);
-      throw new Error(emailData.message || "Failed to send email");
+    if (!guarded.ran) {
+      return new Response(JSON.stringify({ success: true, skipped: guarded.skipped }), {
+        status: 200, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
     }
-
-    return new Response(JSON.stringify({ success: true, data: emailData }), {
+    if (guarded.outcome !== "sent") {
+      return new Response(JSON.stringify({ success: false, error: "Welcome email could not be sent" }), {
+        status: 502, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });
   } catch (error: any) {
     console.error("Error in send-welcome-email function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Unable to send welcome email" }),
       {
         status: 500,
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

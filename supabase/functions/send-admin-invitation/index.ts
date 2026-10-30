@@ -11,6 +11,7 @@
  */
 
 import { serve } from "std/http/server.ts";
+import { generateToken, sha256Hex } from "../_shared/tokens.ts";
 import { getFromAddress } from "../_shared/email.ts";
 import { findAuthUserByEmail } from "../_shared/authUsers.ts";
 import { getEnv } from "../_shared/env.ts";
@@ -95,6 +96,8 @@ serve(
         .eq("email", email.toLowerCase())
         .eq("status", "pending");
 
+      const inviteToken = generateToken();
+      const inviteTokenHash = await sha256Hex(inviteToken);
       const { data: invitation, error: insertError } = await ctx.supabase
         .from("admin_invitations")
         .insert({
@@ -102,8 +105,11 @@ serve(
           display_name: displayName.trim(),
           admin_type: tier,
           invited_by: ctx.user!.id,
+          // Only the hash is stored; the raw token goes out once, in the email link.
+          token: null,
+          token_hash: inviteTokenHash,
         })
-        .select("id, token, expires_at")
+        .select("id, expires_at")
         .single();
 
       if (insertError || !invitation) {
@@ -111,7 +117,7 @@ serve(
       }
 
       const appUrl = getEnv("SITE_URL", "https://www.calqulus.site");
-      const inviteUrl = `${appUrl}/webhost/invite?token=${invitation.token}`;
+      const inviteUrl = `${appUrl}/webhost/invite?token=${inviteToken}`;
 
       // Audit: who invited whom (no token in the log).
       await ctx.supabase.from("activity_logs").insert({

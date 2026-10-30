@@ -1,4 +1,5 @@
 import { getFromAddress } from "../_shared/email.ts";
+import { escapeHtml } from "../_shared/html.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { serve } from "std/http/server.ts";
 
@@ -71,7 +72,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: getFromAddress("CALQULUS RMS"),
         to: [email],
-        subject: `Payment Receipt ${receiptNumber} - CALQULUS RMS`,
+        subject: `Payment Receipt ${String(receiptNumber ?? '').replace(/[\r\n]/g, ' ').slice(0, 80)} - CALQULUS RMS`,
         html: `
           <!DOCTYPE html>
           <html>
@@ -96,30 +97,30 @@ serve(async (req) => {
                 <p style="margin: 10px 0 0;">Thank you for your payment!</p>
               </div>
               <div class="content">
-                <p>Dear ${managerName || 'Valued Customer'},</p>
+                <p>Dear ${escapeHtml(managerName || 'Valued Customer')},</p>
                 <p>We have successfully received your payment. Here are your receipt details:</p>
                 
                 <div class="receipt-box">
                   <div style="text-align: center; margin-bottom: 20px;">
-                    <div class="amount">${amount}</div>
+                    <div class="amount">${escapeHtml(String(amount ?? ""))}</div>
                     <div style="color: #10b981;">Payment Successful</div>
                   </div>
                   
                   <div class="row">
                     <span class="label">Receipt Number</span>
-                    <span class="value">${receiptNumber}</span>
+                    <span class="value">${escapeHtml(String(receiptNumber ?? ""))}</span>
                   </div>
                   <div class="row">
                     <span class="label">Original Invoice</span>
-                    <span class="value">${invoiceNumber}</span>
+                    <span class="value">${escapeHtml(String(invoiceNumber ?? ""))}</span>
                   </div>
                   <div class="row">
                     <span class="label">Description</span>
-                    <span class="value">${description}</span>
+                    <span class="value">${escapeHtml(String(description ?? ""))}</span>
                   </div>
                   <div class="row">
                     <span class="label">Payment Date</span>
-                    <span class="value">${paidDate}</span>
+                    <span class="value">${escapeHtml(String(paidDate ?? ""))}</span>
                   </div>
                 </div>
                 

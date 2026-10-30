@@ -1,6 +1,8 @@
 import { getFromAddress } from "../_shared/email.ts";
 import { escapeHtml } from "../_shared/html.ts";
-import { claimNotification, dedupKey } from "../_shared/notificationDedup.ts";
+import { buildDedupKey, outcomeFromError, type SendOutcome } from "../_shared/notificationDedup.ts";
+import { sendChannelOnce } from "../_shared/channelSend.ts";
+import { buildUnsubscribeLink } from "../_shared/unsubscribe.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv, getEnv } from "../_shared/env.ts";
@@ -156,10 +158,6 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Send notifications for each overdue invoice
     for (const invoice of overdueInvoices) {
-      // Once per invoice per day: a cron re-run must not message the tenant again.
-      if (!(await claimNotification(supabase, dedupKey("send-overdue-notifications", invoice.id)))) {
-        continue;
-      }
       const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat("en-US", {
           style: "currency",
@@ -175,8 +173,16 @@ Deno.serve(async (req: Request): Promise<Response> => {
         });
       };
 
-      // Send email notification
+      // Send email notification (opt-out re-checked, then claimed once per invoice per day)
+      const emailResult = await sendChannelOnce({
+        client: supabase,
+        channel: "email",
+        category: "reminder",
+        address: invoice.tenant_email,
+        key: buildDedupKey({ type: "overdue-email", subject: invoice.id }),
+        send: async (): Promise<SendOutcome> => {
       try {
+        const unsub = await buildUnsubscribeLink(invoice.tenant_email, "reminders");
 
         const emailResponse = await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -187,6 +193,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
           body: JSON.stringify({
             from: getFromAddress(String(companyName)),
             to: [invoice.tenant_email],
+            ...(unsub ? { headers: unsub.headers } : {}),
             subject: `Payment Overdue - Invoice ${invoice.invoice_number}`,
             html: `
               <!DOCTYPE html>
@@ -240,12 +247,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
                     <p>If you have already made this payment, please disregard this notice. If you have any questions or need to discuss payment arrangements, please contact us immediately.</p>
 
-                    <p>Best regards,<br><strong>${companyName}</strong></p>
-                    ${companyPhone ? `<p style="color: #666; font-size: 14px;">Phone: ${companyPhone}</p>` : ""}
-                    ${companyEmail ? `<p style="color: #666; font-size: 14px;">Email: ${companyEmail}</p>` : ""}
+                    <p>Best regards,<br><strong>${escapeHtml(String(companyName))}</strong></p>
+                    ${companyPhone ? `<p style="color: #666; font-size: 14px;">Phone: ${escapeHtml(String(companyPhone))}</p>` : ""}
+                    ${companyEmail ? `<p style="color: #666; font-size: 14px;">Email: ${escapeHtml(String(companyEmail))}</p>` : ""}
                   </div>
                   <div class="footer">
-                    <p>This is an automated reminder from ${companyName}.</p>
+                    <p>This is an automated reminder from ${escapeHtml(String(companyName))}.</p>
+                    ${unsub ? unsub.footerHtml : ""}
                   </div>
                 </div>
               </body>
@@ -262,13 +270,25 @@ Deno.serve(async (req: Request): Promise<Response> => {
         } else {
           emailSentCount++;
         }
+        return emailResponse.ok ? ("sent" as SendOutcome) : (emailResponse.status === 429 || emailResponse.status >= 500 ? ("unknown" as SendOutcome) : ("rejected" as SendOutcome));
       } catch (emailError: any) {
-        console.error(`Error sending email for invoice ${invoice.invoice_number}:`, emailError);
-        errors.push(`Email ${invoice.invoice_number}: ${emailError.message}`);
+        console.error(`Error sending email for invoice ${invoice.invoice_number}:`, emailError?.name ?? "error");
+        errors.push(`Email ${invoice.invoice_number}: ${emailError?.name === "EmailConfigError" ? "email sender not configured" : "send failed"}`);
+        return outcomeFromError(emailError);
       }
+        },
+      });
+      if (emailResult.status === "skipped") console.log(`Overdue email skipped for invoice ${invoice.invoice_number}: ${emailResult.reason}`);
 
-      // Send SMS notification if phone number exists
+      // Send SMS notification if phone number exists (policy re-checked, claimed once per invoice per day)
       if (invoice.tenant_phone) {
+        const smsResult2 = await sendChannelOnce({
+          client: supabase,
+          channel: "sms",
+          category: "reminder",
+          address: invoice.tenant_phone,
+          key: buildDedupKey({ type: "overdue-sms", subject: invoice.id }),
+          send: async (): Promise<SendOutcome> => {
         try {
 
           const smsMessage = `${companyName}: OVERDUE - Invoice ${invoice.invoice_number} for ${formatCurrency(invoice.amount)} was due ${formatDate(invoice.due_date)} (${invoice.days_overdue} days ago). Please pay immediately.`;
@@ -284,6 +304,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
               body: JSON.stringify({
                 phoneNumber: invoice.tenant_phone,
                 message: smsMessage,
+                category: "reminder",
               }),
             }
           );
@@ -292,14 +313,20 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
           if (smsResult.success) {
             smsSentCount++;
-          } else {
-            console.error(`Failed to send SMS for invoice ${invoice.invoice_number}:`, smsResult.error);
-            errors.push(`SMS ${invoice.invoice_number}: ${smsResult.error}`);
+            return "sent" as SendOutcome;
           }
+          // 409 = blocked by policy inside send-sms-notification (opt-out/quiet hours): not a delivery failure.
+          console.error(`Failed to send SMS for invoice ${invoice.invoice_number}: status ${smsResponse.status}`);
+          errors.push(`SMS ${invoice.invoice_number}: ${smsResponse.status === 409 ? "blocked by policy" : "send failed"}`);
+          return (smsResponse.status === 429 || smsResponse.status >= 500 ? "unknown" : "rejected") as SendOutcome;
         } catch (smsError: any) {
-          console.error(`Error sending SMS for invoice ${invoice.invoice_number}:`, smsError);
-          errors.push(`SMS ${invoice.invoice_number}: ${smsError.message}`);
+          console.error(`Error sending SMS for invoice ${invoice.invoice_number}:`, smsError?.name ?? "error");
+          errors.push(`SMS ${invoice.invoice_number}: send failed`);
+          return outcomeFromError(smsError);
         }
+          },
+        });
+        if (smsResult2.status === "skipped") console.log(`Overdue SMS skipped for invoice ${invoice.invoice_number}: ${smsResult2.reason}`);
       }
     }
 

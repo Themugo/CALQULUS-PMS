@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Building2, ChevronDown, ChevronRight, Copy, Handshake, MapPin, Plus, Users } from "lucide-react";
+import { Building2, ChevronDown, ChevronRight, Handshake, MapPin, Plus, Users } from "lucide-react";
 import AgencyLayout from "@/features/agency/components/AgencyLayout";
 import { useAgencyPortfolio, type AgencyPropertyRow } from "@/features/agency/lib/useAgencyPortfolio";
 import { AGENCY_ROUTES, agencyClientPath, agencyPropertyPath } from "@/features/agency/lib/agencyPaths";
@@ -29,7 +29,7 @@ export default function AgencyClients() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [propertyIds, setPropertyIds] = useState<string[]>([]);
-  const [activationUrl, setActivationUrl] = useState<string | null>(null);
+  const [activationNotice, setActivationNotice] = useState<string | null>(null);
 
   const clients = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -55,18 +55,22 @@ export default function AgencyClients() {
       if (!name.trim() || !email.trim()) throw new Error("Landlord name and email are required.");
       if (propertyIds.length === 0) throw new Error("Select at least one property for this landlord.");
       const { data: result, error } = await supabase.functions.invoke("create-agency-landlord-account", {
-        body: { name, email, phone, propertyIds, revenueSharePct: 100, portalUrl: window.location.origin },
+        body: { name, email, phone, propertyIds, revenueSharePct: 100 },
       });
       if (error) throw error;
       if (!result?.success) throw new Error(result?.error || "Could not create landlord account.");
-      return result as { created: boolean; activationUrl: string | null; propertyCount: number };
+      return result as { created: boolean; activationEmailSent?: boolean; pendingLandlordConsent?: boolean; propertyCount: number };
     },
     onSuccess: (result) => {
-      setActivationUrl(result.activationUrl);
+      setActivationNotice(result.pendingLandlordConsent
+        ? "If this landlord can be added, they will receive an email with next steps."
+        : result.activationEmailSent
+          ? "We emailed a secure activation link to the landlord. You never see their password or the link."
+          : "The account was created, but the activation email could not be sent. Ask the landlord to use password reset, or contact support.");
       queryClient.invalidateQueries({ queryKey: ["agency-portfolio"] });
       toast({
-        title: result.created ? "Landlord account created" : "Landlord account linked",
-        description: `${result.propertyCount} propert${result.propertyCount === 1 ? "y" : "ies"} are now grouped under this landlord account.`,
+        title: result.created ? "Landlord account created" : "Request received",
+        description: result.created ? `${result.propertyCount} propert${result.propertyCount === 1 ? "y" : "ies"} are now grouped under this landlord account.` : "No further details are shown for privacy.",
       });
     },
     onError: (error) => errorToast("Could not create landlord account", error),
@@ -78,14 +82,8 @@ export default function AgencyClients() {
     setEmail("");
     setPhone("");
     setPropertyIds([]);
-    setActivationUrl(null);
+    setActivationNotice(null);
     createAccount.reset();
-  };
-
-  const copyActivation = async () => {
-    if (!activationUrl) return;
-    await navigator.clipboard.writeText(activationUrl);
-    toast({ title: "Activation link copied" });
   };
 
   return (
@@ -171,10 +169,9 @@ export default function AgencyClients() {
             <DialogTitle>Create landlord account</DialogTitle>
             <DialogDescription>Create the landlord's CALQULUS account yourself, then attach all relevant properties. The landlord can activate later; they do not need to complete an invitation flow first.</DialogDescription>
           </DialogHeader>
-          {activationUrl ? (
+          {activationNotice ? (
             <div className="space-y-4 rounded-xl border border-primary/20 bg-primary/5 p-4">
-              <div><p className="text-sm font-semibold">Account ready</p><p className="mt-1 text-xs text-muted-foreground">Give the landlord this secure activation link or send it through your normal communication channel. No password is exposed to the agency.</p></div>
-              <div className="flex gap-2"><Input readOnly value={activationUrl} /><Button variant="outline" onClick={() => void copyActivation()}><Copy className="mr-2 h-4 w-4" />Copy</Button></div>
+              <div><p className="text-sm font-semibold">Account ready</p><p className="mt-1 text-xs text-muted-foreground">{activationNotice}</p></div>
             </div>
           ) : (
             <div className="space-y-5">
@@ -186,7 +183,7 @@ export default function AgencyClients() {
               <div className="space-y-2"><div><Label>Assign properties</Label><p className="text-[10px] text-muted-foreground">Select multiple properties, including properties in different towns. Each property keeps its own operating and payment rules.</p></div><div className="max-h-56 space-y-2 overflow-y-auto rounded-lg border border-border p-2">{(data?.properties ?? []).map((property) => <label key={property.id} className="flex cursor-pointer items-center gap-3 rounded-lg p-2.5 hover:bg-muted"><input type="checkbox" checked={propertyIds.includes(property.id)} onChange={(event) => setPropertyIds((current) => event.target.checked ? [...current, property.id] : current.filter((id) => id !== property.id))} /><span className="min-w-0 flex-1"><span className="block truncate text-sm font-medium">{property.name}</span><span className="block truncate text-[10px] text-muted-foreground">{property.address || "Location not recorded"}</span></span><span className="text-[10px] text-muted-foreground">{property.tenantCount} tenants</span></label>)}{(data?.properties.length ?? 0) === 0 ? <p className="p-3 text-xs text-muted-foreground">Add properties before creating a landlord account.</p> : null}</div></div>
             </div>
           )}
-          <DialogFooter>{activationUrl ? <Button onClick={resetCreate}>Done</Button> : <><Button variant="outline" onClick={resetCreate}>Cancel</Button><Button onClick={() => createAccount.mutate()} disabled={createAccount.isPending}>{createAccount.isPending ? "Creating…" : "Create account"}</Button></>}</DialogFooter>
+          <DialogFooter>{activationNotice ? <Button onClick={resetCreate}>Done</Button> : <><Button variant="outline" onClick={resetCreate}>Cancel</Button><Button onClick={() => createAccount.mutate()} disabled={createAccount.isPending}>{createAccount.isPending ? "Creating…" : "Create account"}</Button></>}</DialogFooter>
         </DialogContent>
       </Dialog>
     </AgencyLayout>

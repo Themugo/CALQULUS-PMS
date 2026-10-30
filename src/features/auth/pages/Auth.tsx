@@ -111,7 +111,7 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setIsGoogleSubmitting(true);
     setRememberMe(rememberMe);
-    const { error } = await signInWithGoogle();
+    const { error } = await signInWithGoogle(undefined, 'manager');
     if (error) {
       toast({ title: 'Google sign-in failed', description: sanitizeAuthError(error.message), variant: 'destructive' });
       setIsGoogleSubmitting(false);

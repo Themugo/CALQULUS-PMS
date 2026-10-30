@@ -1,4 +1,5 @@
 import { getFromAddress } from "../_shared/email.ts";
+import { escapeHtml } from "../_shared/html.ts";
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
@@ -194,7 +195,7 @@ const handler = async (req: Request): Promise<Response> => {
                 .map(
                   (t, i) => `
                 <tr style="border-bottom: 1px solid #e5e7eb;">
-                  <td style="padding: 12px; font-size: 14px; color: #18181b;">${i + 1}. ${t.name}</td>
+                  <td style="padding: 12px; font-size: 14px; color: #18181b;">${i + 1}. ${escapeHtml(String(t.name ?? ""))}</td>
                   <td style="padding: 12px; font-size: 14px; color: #10b981; font-weight: 600; text-align: right;">KES ${t.amount.toLocaleString()}</td>
                 </tr>
               `
@@ -221,7 +222,7 @@ const handler = async (req: Request): Promise<Response> => {
                 .map(
                   (p, i) => `
                 <tr style="border-bottom: 1px solid #e5e7eb;">
-                  <td style="padding: 12px; font-size: 14px; color: #18181b;">${i + 1}. ${p.name}</td>
+                  <td style="padding: 12px; font-size: 14px; color: #18181b;">${i + 1}. ${escapeHtml(String(p.name ?? ""))}</td>
                   <td style="padding: 12px; font-size: 14px; color: #3b82f6; font-weight: 600; text-align: right;">KES ${p.amount.toLocaleString()}</td>
                 </tr>
               `

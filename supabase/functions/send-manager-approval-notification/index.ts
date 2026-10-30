@@ -1,12 +1,12 @@
 import { serve } from "std/http/server.ts";
 import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
-import { Resend } from "resend/resend@2.0.0";
 import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { callerIsWebhost } from "../_shared/notifyAuthz.ts";
-const resend = new Resend(getEnv("RESEND_API_KEY"));
+import { sendEmail } from "../_shared/email.ts";
+import { escapeHtml } from "../_shared/html.ts";
 
 interface ApprovalRequest {
   // Legacy fields
@@ -79,6 +79,12 @@ const handler = async (req: Request): Promise<Response> => {
       if (profile.full_name) name = profile.full_name;
     }
 
+    // Untrusted text (profile name is user-controlled; note/reason is admin free text).
+    const rawName = name;
+    name = escapeHtml(String(name).slice(0, 200));
+    const safeNote = noteOrReason ? escapeHtml(String(noteOrReason).slice(0, 1000)) : null;
+    void rawName;
+
     const loginUrl = `${(getEnv("SITE_URL", "https://www.calqulus.site")).replace(/\/+$/, "")}/auth`;
 
     const subjects: Record<string, string> = {
@@ -100,7 +106,7 @@ const handler = async (req: Request): Promise<Response> => {
             Great news — your CALQULUS RMS property manager account has been approved.
             You now have full access to the platform.
           </p>
-          ${noteOrReason ? `<p style="font-size:14px;color:#64748b;background:#f1f5f9;padding:12px;border-radius:6px;border-left:3px solid #10b981;">Note from admin: ${noteOrReason}</p>` : ""}
+          ${safeNote ? `<p style="font-size:14px;color:#64748b;background:#f1f5f9;padding:12px;border-radius:6px;border-left:3px solid #10b981;">Note from admin: ${safeNote}</p>` : ""}
           <div style="text-align:center;margin:28px 0;">
             <a href="${loginUrl}" style="background:#10b981;color:white;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:15px;">
               Log in to CALQULUS RMS
@@ -119,7 +125,7 @@ const handler = async (req: Request): Promise<Response> => {
           <p style="font-size:15px;color:#475569;">
             After reviewing your application, we're unable to approve your CALQULUS RMS manager account at this time.
           </p>
-          ${noteOrReason ? `<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:14px;margin:16px 0;"><p style="margin:0;font-size:14px;color:#991b1b;font-weight:bold;">Reason:</p><p style="margin:6px 0 0;font-size:14px;color:#7f1d1d;">${noteOrReason}</p></div>` : ""}
+          ${safeNote ? `<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:14px;margin:16px 0;"><p style="margin:0;font-size:14px;color:#991b1b;font-weight:bold;">Reason:</p><p style="margin:6px 0 0;font-size:14px;color:#7f1d1d;">${safeNote}</p></div>` : ""}
           <p style="font-size:14px;color:#64748b;">
             If you believe this was a mistake or would like to appeal, please contact our support team.
           </p>
@@ -135,7 +141,7 @@ const handler = async (req: Request): Promise<Response> => {
           <p style="font-size:15px;color:#475569;">
             Your CALQULUS RMS account has been temporarily suspended. You will not be able to log in until this is resolved.
           </p>
-          ${noteOrReason ? `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:14px;margin:16px 0;"><p style="margin:0;font-size:14px;color:#92400e;font-weight:bold;">Reason:</p><p style="margin:6px 0 0;font-size:14px;color:#78350f;">${noteOrReason}</p></div>` : ""}
+          ${safeNote ? `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:14px;margin:16px 0;"><p style="margin:0;font-size:14px;color:#92400e;font-weight:bold;">Reason:</p><p style="margin:6px 0 0;font-size:14px;color:#78350f;">${safeNote}</p></div>` : ""}
           <p style="font-size:14px;color:#64748b;">
             Please contact the platform administrator to resolve this matter and have your account reinstated.
           </p>
@@ -143,17 +149,15 @@ const handler = async (req: Request): Promise<Response> => {
       </div>
     `;
 
-    const { data, error } = await resend.emails.send({
-      from:    "CALQULUS PMS <notifications@calqulus.site>",
-      to:      [email],
-      subject,
-      html:    bodyHtml,
-    });
-
-    if (error) {
-      console.error("[MANAGER-NOTIFICATION] Resend error:", error);
-      throw error;
+    // Shared fail-closed sender: no hard-coded address, classified result.
+    const result = await sendEmail({ to: [email!], subject, html: bodyHtml, displayName: "CALQULUS" });
+    if (!result.ok) {
+      console.error("[MANAGER-NOTIFICATION] email not sent:", result.kind);
+      return new Response(JSON.stringify({ sent: false, reason: result.kind === "config" ? "email_not_configured" : "email_failed" }), {
+        status: result.kind === "config" ? 503 : 502, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
     }
+    const data = { id: result.id };
 
     return new Response(JSON.stringify({ sent: true, emailId: data?.id }), {
       status: 200, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
@@ -161,7 +165,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (err) {
     console.error("[MANAGER-NOTIFICATION] Unhandled error:", err);
-    return new Response(JSON.stringify({ error: String(err) }), {
+    return new Response(JSON.stringify({ error: "Unable to send notification" }), {
       status: 500, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });
   }

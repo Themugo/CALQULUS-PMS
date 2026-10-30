@@ -1,4 +1,7 @@
 import { getEnv } from "./env.ts";
+import { createClient } from "supabase/supabase-js@2";
+import { checkSendAllowed } from "./commsGate.ts";
+import type { Category } from "./commsPolicy.ts";
 
 export interface SmsSendResult {
   success: boolean;
@@ -14,40 +17,8 @@ export interface SmsRecipient {
   name?: string;
 }
 
-/**
- * Strict phone normalisation. Returns an E.164 number or null.
- * Kenyan forms accepted: +254XXXXXXXXX, 254XXXXXXXXX, 07XXXXXXXX, 01XXXXXXXX,
- * 7XXXXXXXX / 1XXXXXXXX (9 digits). Other countries must be supplied as
- * +<country><number> (or 00<country><number>), 8-15 digits total.
- * Anything with letters or other junk is rejected.
- */
-export function tryFormatPhoneNumber(phoneNumber: string): string | null {
-  if (typeof phoneNumber !== "string") return null;
-  const compact = phoneNumber.trim().replace(/[\s\-().]/g, "");
-  if (!/^\+?\d+$/.test(compact)) return null;
-
-  let digits = compact.startsWith("+") ? compact.slice(1) : compact;
-  const hadPlus = compact.startsWith("+");
-
-  if (!hadPlus && digits.startsWith("00")) {
-    digits = digits.slice(2);
-    return /^[1-9]\d{7,14}$/.test(digits) ? "+" + digits : null;
-  }
-  if (hadPlus) {
-    if (digits.startsWith("254")) return /^254[17]\d{8}$/.test(digits) ? "+" + digits : null;
-    return /^[1-9]\d{7,14}$/.test(digits) ? "+" + digits : null;
-  }
-  if (digits.startsWith("254")) return /^254[17]\d{8}$/.test(digits) ? "+" + digits : null;
-  if (digits.startsWith("0")) return /^0[17]\d{8}$/.test(digits) ? "+254" + digits.slice(1) : null;
-  return /^[17]\d{8}$/.test(digits) ? "+254" + digits : null;
-}
-
-/** Throws on invalid numbers (callers that cannot tolerate a throw should use tryFormatPhoneNumber). */
-export function formatPhoneNumber(phoneNumber: string): string {
-  const formatted = tryFormatPhoneNumber(phoneNumber);
-  if (!formatted) throw new Error("Invalid phone number");
-  return formatted;
-}
+import { tryFormatPhoneNumber, formatPhoneNumber } from "./phone.ts";
+export { tryFormatPhoneNumber, formatPhoneNumber };
 
 function selectedProvider(): "twilio" | "africastalking" {
   const configured = getEnv("SMS_PROVIDER").toLowerCase();
@@ -193,9 +164,32 @@ async function sendViaAfricasTalking(to: string, message: string): Promise<SmsSe
   };
 }
 
-export async function sendSms(phoneNumber: string, message: string): Promise<SmsSendResult> {
+export interface SendSmsOptions {
+  /** Defaults to "transactional" (honours an explicit STOP; no quiet hours). */
+  category?: Category;
+}
+
+export async function sendSms(phoneNumber: string, message: string, options: SendSmsOptions = {}): Promise<SmsSendResult> {
   if (!phoneNumber || !message) throw new Error("phoneNumber and message are required");
   if (message.length > 918) throw new Error("Message exceeds 6 SMS segments (918 chars max)");
+
+  // Central enforcement: every SMS goes through the opt-out / quiet-hours gate
+  // immediately before sending. Fails closed for non-security messages.
+  const category = options.category ?? "transactional";
+  if (category !== "security") {
+    const normalised = tryFormatPhoneNumber(phoneNumber);
+    const admin = createClient(getEnv("SUPABASE_URL"), getEnv("SUPABASE_SERVICE_ROLE_KEY"));
+    const decision = await checkSendAllowed(admin, { channel: "sms", category, address: normalised ?? phoneNumber });
+    if (!decision.allow) {
+      return { success: false, provider: selectedProvider(), to: normalised ?? "", error: `blocked:${decision.reason}` };
+    }
+  }
+
+  // Reminder-class SMS must tell the recipient how to opt out.
+  if (category === "reminder" && !/\bSTOP\b/i.test(message)) {
+    message = `${message} Reply STOP to opt out.`;
+    if (message.length > 918) throw new Error("Message exceeds 6 SMS segments (918 chars max)");
+  }
 
   const to = formatPhoneNumber(phoneNumber);
   const provider = selectedProvider();

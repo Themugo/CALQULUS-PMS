@@ -5,6 +5,7 @@ import { createClient } from "supabase/supabase-js@2";
 
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
+import { sha256Hex } from "../_shared/tokens.ts";
 const RESEND_API_KEY = getEnv("RESEND_API_KEY");
 
 interface CreateTenantRequest {
@@ -365,7 +366,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
       const { data: inviteRows } = await supabaseAdmin
         .from("tenant_invitations")
         .select("id, email, tenant_name, property_id, property_name, unit, invited_by, status, expires_at, monthly_rent, house_deposit, water_deposit")
-        .eq("token", invitationToken)
+        // hash lookup; legacy rows (no hash yet) still match on the raw token
+        .or(`token_hash.eq.${await sha256Hex(invitationToken)},and(token_hash.is.null,token.eq.${invitationToken.replace(/[^A-Za-z0-9-]/g, "")})`)
         .limit(1);
 
       const invite = inviteRows?.[0];
@@ -533,7 +535,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         email: effEmail,
         password: randomPassword,
         email_confirm: true,
-        user_metadata: { full_name: name },
+        user_metadata: { full_name: name, role: "tenant" },
       });
 
       if (createError) {
@@ -545,14 +547,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
       isNewUser = true;
 
       // Create activation token for secure password setup
-      const { data: activation, error: activationError } = await supabaseAdmin
-        .from("account_activations")
-        .insert({
-          user_id: userId,
-          // token is auto-generated via database default
-        })
-        .select("token")
-        .single();
+      // Only the SHA-256 of the token is stored (issue_account_activation, migration 20260909000004).
+      const { data: activationRows, error: activationError } = await supabaseAdmin
+        .rpc("issue_account_activation", { p_user_id: userId, p_ttl_hours: 24 });
+      const activation = Array.isArray(activationRows) ? activationRows[0] : null;
 
       if (activationError) {
         console.error("Error creating activation token:", activationError);
@@ -561,6 +559,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
         throw new Error(`Failed to create activation token: ${activationError.message}`);
       }
 
+      if (!activation?.token) {
+        await supabaseAdmin.auth.admin.deleteUser(userId);
+        throw new Error("Failed to create activation token");
+      }
       activationToken = activation.token;
     }
 

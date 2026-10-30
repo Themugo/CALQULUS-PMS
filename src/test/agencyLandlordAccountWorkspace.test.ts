@@ -19,7 +19,9 @@ describe("Agency landlord account workspace", () => {
     const fn = read("supabase/functions/create-agency-landlord-account/index.ts");
     expect(fn).toContain("auth.admin.createUser");
     expect(fn).toContain("role: \"landlord\"");
-    expect(fn).toContain("account_activations");
+    expect(fn).toContain("issue_account_activation");
+    expect(fn).not.toContain("activationUrl");
+    expect(fn).toContain('role.approval_status !== "approved"');
     expect(fn).toContain("randomPassword");
     expect(fn).not.toContain("password: body.password");
     expect(fn).toContain("provision_agency_landlord_links_atomic");

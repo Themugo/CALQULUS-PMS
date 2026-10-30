@@ -1,6 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { User, Session } from '@supabase/supabase-js';
+import { completeOauthSignupIfNeeded, rememberOauthPortal, type OauthPortal } from '@/features/auth/lib/oauthSignup';
+import { claimPendingInvitationIfAny } from '@/features/auth/lib/pendingInvitationClaim';
+import { maybeNotifyPendingSignup } from '@/features/auth/lib/pendingSignupNotice';
+import { persistSignupConsent } from '@/features/auth/lib/consentPersistence';
 import { supabase } from '@/integrations/supabase/client';
 import { logError, logWarning } from '@/shared/lib/errorLogger';
 import { useLocation } from 'react-router-dom';
@@ -106,8 +110,10 @@ export interface AuthContextType {
   canAccessProperty: (propertyId: string) => boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName: string, role: AppRole, tenantId?: string, extraMetadata?: Record<string, unknown>) => Promise<{ error: Error | null; needsEmailConfirmation?: boolean }>;
-  signInWithGoogle: (redirectTo?: string) => Promise<{ error: Error | null }>;
+  signInWithGoogle: (redirectTo?: string, portal?: OauthPortal) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
+  /** Re-read the caller's roles (e.g. after a server RPC granted one, like accepting a landlord invitation). */
+  refreshRoles: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -336,7 +342,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Fetch role if signed in, user changed, or initial mount without role
         if (event === 'SIGNED_IN' || isInitialMount) {
           isInitialMount = false;
-          fetchUserRoleRef.current(nextUser.id).then(setUserRole).finally(() => setLoading(false));
+          // Fire-and-forget; deferred so it never runs inside the auth callback.
+          setTimeout(() => { void persistSignupConsent(nextUser); }, 0);
+          claimPendingInvitationIfAny(nextUser)
+            .catch(() => false)
+            .then(() => completeOauthSignupIfNeeded(nextUser).catch(() => undefined))
+            .then(() => fetchUserRoleRef.current(nextUser.id))
+            .then((r) => { setUserRole(r); if (r) maybeNotifyPendingSignup(nextUser, r); })
+            .finally(() => setLoading(false));
         } else {
           setLoading(false);
         }
@@ -419,7 +432,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error: error ? new Error(error.message) : null };
   }, []);
 
-  const signInWithGoogle = useCallback(async (redirectTo?: string) => {
+  const signInWithGoogle = useCallback(async (redirectTo?: string, portal?: OauthPortal) => {
+    if (portal) rememberOauthPortal(portal);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: redirectTo || window.location.href },
@@ -507,20 +521,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, [isManager, isLandlord, landlordPropertyIds, isSubmanager, submanagerPermissions]);
 
+  const refreshRoles = useCallback(async () => {
+    if (!user) return;
+    const picked = await fetchUserRoleRef.current(user.id);
+    setUserRole(picked);
+  }, [user]);
+
   const value = useMemo(() => ({
     user, session, userRole, loading,
     isManager, isTenant, isWebhost, isSubmanager, isLandlord, isAgency, isSuperAdmin,
     platformAdminInfo, isPlatformOwner, isPlatformBusiness, isPlatformAdmin,
     webhostPermissions, submanagerPermissions, landlordPropertyIds, devAccessEnabled,
     hasWebhostPermission, canSubmanager, canWrite, canAccessProperty,
-    signIn, signUp, signInWithGoogle, signOut,
+    signIn, signUp, signInWithGoogle, signOut, refreshRoles,
   }), [
     user, session, userRole, loading,
     isManager, isTenant, isWebhost, isSubmanager, isLandlord, isAgency, isSuperAdmin,
     platformAdminInfo, isPlatformOwner, isPlatformBusiness, isPlatformAdmin,
     webhostPermissions, submanagerPermissions, landlordPropertyIds, devAccessEnabled,
     hasWebhostPermission, canSubmanager, canWrite, canAccessProperty,
-    signIn, signUp, signInWithGoogle, signOut,
+    signIn, signUp, signInWithGoogle, signOut, refreshRoles,
   ]);
 
   return (

@@ -52,7 +52,7 @@ interface Invitation {
   property_name: string;
   property_id: string | null;
   unit: string | null;
-  token: string;
+  token?: string | null;
   status: string;
   created_at: string;
   expires_at: string;
@@ -106,17 +106,20 @@ export function InvitationTracker() {
     );
   };
 
-  const getInvitationUrl = (token: string) => {
-    const baseUrl = window.location.origin;
-    return `${baseUrl}/tenant/invitation?token=${token}`;
+  // Stored tokens are hashed, so a link can no longer be read back. Sharing issues a
+  // replacement link (the previous one stops working) via a server RPC that checks ownership.
+  const issueInvitationUrl = async (invitationId: string): Promise<string> => {
+    const { data, error } = await supabase.rpc("rotate_tenant_invitation_token" as never, { p_invitation_id: invitationId } as never);
+    if (error || typeof data !== "string") throw new Error("Could not create a new invitation link");
+    return `${window.location.origin}/tenant/invitation?token=${data}`;
   };
 
-  const handleCopyLink = async (token: string) => {
+  const handleCopyLink = async (invitationId: string) => {
     try {
-      await navigator.clipboard.writeText(getInvitationUrl(token));
+      await navigator.clipboard.writeText(await issueInvitationUrl(invitationId));
       toast({
-        title: "Link copied!",
-        description: "Invitation link copied to clipboard.",
+        title: "New link copied!",
+        description: "Invitation link copied. Any link sent earlier for this invitation no longer works.",
       });
     } catch (err) {
       toast({
@@ -166,7 +169,7 @@ export function InvitationTracker() {
   const handleSendSMS = async (invitation: Invitation, phoneNumber: string) => {
     setSendingSmsId(invitation.id);
     try {
-      const invitationUrl = getInvitationUrl(invitation.token);
+      const invitationUrl = await issueInvitationUrl(invitation.id);
       const smsMessage = `Hi ${invitation.tenant_name}! You've been invited to join ${invitation.property_name}${invitation.unit ? ` (Unit ${invitation.unit})` : ""} on CALQULUS PMS. Create your account here: ${invitationUrl}`;
 
       const { data, error } = await supabase.functions.invoke("send-sms-notification", {
@@ -197,8 +200,14 @@ export function InvitationTracker() {
     }
   };
 
-  const handleWhatsAppShare = (invitation: Invitation) => {
-    const invitationUrl = getInvitationUrl(invitation.token);
+  const handleWhatsAppShare = async (invitation: Invitation) => {
+    let invitationUrl: string;
+    try {
+      invitationUrl = await issueInvitationUrl(invitation.id);
+    } catch {
+      toast({ title: "Could not create link", description: "Please try again.", variant: "destructive" });
+      return;
+    }
     const message = encodeURIComponent(
       `Hi ${invitation.tenant_name}! 👋\n\nYou've been invited to join ${invitation.property_name}${invitation.unit ? ` (Unit ${invitation.unit})` : ""} on CALQULUS PMS.\n\nClick the link below to create your tenant account:\n${invitationUrl}`
     );
@@ -321,7 +330,7 @@ export function InvitationTracker() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => handleCopyLink(invitation.token)}
+                          onClick={() => handleCopyLink(invitation.id)}
                           title="Copy link"
                         >
                           <Copy className="h-4 w-4" />

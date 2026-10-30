@@ -80,7 +80,7 @@ serve(
       for (const recipient of scopedRecipients) {
         const body = customMessages?.[recipient.phoneNumber] ?? message;
         try {
-          const result = await sendSms(recipient.phoneNumber, body);
+          const result = await sendSms(recipient.phoneNumber, body, { category: "reminder" });
           const hasBooleanStatus = typeof result.success === "boolean";
           results.push({
             phoneNumber: result.to,

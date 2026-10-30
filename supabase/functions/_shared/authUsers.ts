@@ -6,7 +6,7 @@
  * once the project has more users than that. These helpers walk every page.
  */
 // deno-lint-ignore no-explicit-any
-type AdminClient = { auth: { admin: { listUsers: (p?: { page?: number; perPage?: number }) => Promise<{ data: any; error: any }> } } };
+type AdminClient = { rpc?: (fn: string, args: Record<string, unknown>) => PromiseLike<{ data: any; error: any }>; auth: { admin: { listUsers: (p?: { page?: number; perPage?: number }) => Promise<{ data: any; error: any }> } } };
 
 const PER_PAGE = 1000;
 const MAX_PAGES = 100; // hard stop: 100k users
@@ -26,6 +26,13 @@ export async function listAllAuthUsers(admin: AdminClient) {
 
 export async function findAuthUserByEmail(admin: AdminClient, email: string) {
   const target = email.trim().toLowerCase();
+  // Preferred: indexed lookup (migration 20260909000005, service_role only).
+  if (admin.rpc) {
+    const { data, error } = await admin.rpc("find_auth_user_id_by_email", { p_email: target });
+    if (!error) return data ? { id: data as string, email: target } : null;
+    // Only fall back when the RPC is not deployed yet; any other error must not be treated as "no user".
+    if (!["42883", "PGRST202"].includes(error.code)) throw error;
+  }
   for (let page = 1; page <= MAX_PAGES; page++) {
     const { data, error } = await admin.auth.admin.listUsers({ page, perPage: PER_PAGE });
     if (error) throw error;
