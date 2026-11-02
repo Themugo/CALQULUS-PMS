@@ -55,7 +55,7 @@ serve(async (req) => {
     const {
       tenantEmail, tenantName, invoiceNumber, amount, paidDate, dueDate,
       property, unit, mpesaReceipt, bankRef, paymentMethod = "M-Pesa",
-      outstandingBalance = 0, companyName = "Property Management",
+      destination, lines, billsBalance, outstandingBalance = 0, companyName = "Property Management",
       primaryColor = "#2F6FED", secondaryColor = "#1B3A6B",
       footerMessage = "Thank you for your payment!", logoUrl,
     } = body;
@@ -88,8 +88,20 @@ serve(async (req) => {
     const formattedDue = dueDate ? new Date(dueDate).toLocaleDateString("en-KE", { year:"numeric", month:"long", day:"numeric" }) : null;
     const logoHtml = logoUrl ? `<img src="${esc(logoUrl)}" alt="${esc(companyName)}" style="max-height:50px;max-width:160px;margin-bottom:8px;" />` : "";
 
+    // Multi-invoice payments list every bill with what was paid and what remains on it.
+    const billLines: Array<{ invoiceNumber: string; unit: string | null; paid: number; balance: number }> =
+      Array.isArray(lines) ? lines : [];
+    const billLinesHtml = billLines.length > 1
+      ? `<tr><td colspan="2" style="padding:11px 16px;border-bottom:1px solid #e2e8f0;">
+           <div style="color:#666;font-size:13px;margin-bottom:6px;">Bills paid</div>
+           ${billLines.map((l) => `<div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0;">
+             <span>${esc(l.invoiceNumber)}${l.unit ? ` · ${esc(l.unit)}` : ""}</span>
+             <span><strong>${esc(fmt(Number(l.paid)))}</strong> paid · ${Number(l.balance) > 0 ? `${esc(fmt(Number(l.balance)))} left` : "cleared"}</span></div>`).join("")}
+         </td></tr>`
+      : "";
+
     const balanceHtml = outstandingBalance > 0
-      ? `<tr><td style="padding:12px 16px;color:#666;border-top:2px solid #e2e8f0;font-weight:600;">Outstanding Balance</td>
+      ? `<tr><td style="padding:12px 16px;color:#666;border-top:2px solid #e2e8f0;font-weight:600;">Total account balance</td>
          <td style="padding:12px 16px;text-align:right;font-weight:700;color:#dc2626;font-size:16px;border-top:2px solid #e2e8f0;">${esc(fmt(outstandingBalance))}</td></tr>`
       : `<tr style="background:#f0fdf4;"><td style="padding:12px 16px;color:#166534;font-weight:600;">Account Status</td>
          <td style="padding:12px 16px;text-align:right;font-weight:700;color:#166534;">✓ Fully paid up</td></tr>`;
@@ -116,11 +128,12 @@ serve(async (req) => {
     <div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:20px;">
       <div style="background:${esc(secondaryColor)};color:#fff;padding:11px 16px;font-weight:700;font-size:13px;">PAYMENT RECEIPT</div>
       <table style="width:100%;border-collapse:collapse;">
-        <tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:11px 16px;color:#666;font-size:13px;">Invoice #</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${esc(invoiceNumber)}</td></tr>
+        ${billLinesHtml || `<tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:11px 16px;color:#666;font-size:13px;">Invoice #</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${esc(invoiceNumber)}</td></tr>`}
         <tr style="border-bottom:1px solid #e2e8f0;background:#fafafa;"><td style="padding:11px 16px;color:#666;font-size:13px;">Property / Unit</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${esc(property)} — ${esc(unit)}</td></tr>
         ${formattedDue ? `<tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:11px 16px;color:#666;font-size:13px;">Due Date</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${esc(formattedDue)}</td></tr>` : ""}
         <tr style="border-bottom:1px solid #e2e8f0;background:#fafafa;"><td style="padding:11px 16px;color:#666;font-size:13px;">Payment Date</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${esc(formattedPaid)}</td></tr>
         <tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:11px 16px;color:#666;font-size:13px;">Method</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${methodIcon} ${esc(paymentMethod)}</td></tr>
+        ${destination ? `<tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:11px 16px;color:#666;font-size:13px;">Paid to</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${esc(destination)}</td></tr>` : ""}
         <tr style="border-bottom:1px solid #e2e8f0;background:#fafafa;"><td style="padding:11px 16px;color:#666;font-size:13px;">Reference</td><td style="padding:11px 16px;text-align:right;font-weight:600;font-family:monospace;">${esc(ref)}</td></tr>
         <tr style="background:${esc(primaryColor)};"><td style="padding:14px 16px;color:#fff;font-weight:700;font-size:15px;">Amount Paid</td><td style="padding:14px 16px;text-align:right;color:#fff;font-weight:800;font-size:20px;">${esc(fmt(Number(amount)))}</td></tr>
         ${balanceHtml}

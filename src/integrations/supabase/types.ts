@@ -5731,6 +5731,12 @@ export type Database = {
         Update: Record<string, Json | null>
         Relationships: []
       },
+      manager_credit_settings: {
+        Row: { manager_id: string; apply_mode: string; updated_at: string }
+        Insert: { manager_id: string; apply_mode?: string; updated_at?: string }
+        Update: { manager_id?: string; apply_mode?: string; updated_at?: string }
+        Relationships: []
+      }
       manager_notification_settings: {
         Row: {
           id: string | null

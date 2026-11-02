@@ -55,12 +55,10 @@ serve(async (req) => {
     const { checkoutRequestId, resultCode, resultDesc, amount, receiptNumber } = 
       extractMpesaMetadata(callbackData);
 
-    // Acknowledge non-payment-result callbacks (sanity check)
-    if (resultCode !== 0 && resultCode !== 1) {
-      log("Unexpected ResultCode", { resultCode });
-      return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Accepted" }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
-    }
+    // Any non-zero ResultCode is a definitive failure for this prompt: 1 (insufficient
+    // balance), 1032 (cancelled by the customer), 1037 (no response / timed out), 2001
+    // (wrong PIN) and so on. These used to be ignored, leaving the payment "pending"
+    // until the tenant's status check queried Safaricom 30+ seconds later.
 
     // ── 3. Lookup transaction ─────────────────────────────────────────
     // NOTE: this is a plain PostgREST select, not a row-locked read — two
@@ -109,6 +107,17 @@ serve(async (req) => {
     // This app-level check narrows the window but is not itself atomic
     // (see note above); process_payment_atomic is the real guarantee
     // against double-crediting a replayed/concurrent callback.
+    // A confirmed payment (ResultCode 0) on a transaction we had already marked failed
+    // (cancelled / expired / mis-polled) means money really moved: reopen it so it is
+    // allocated instead of being dropped as "already processed".
+    if (transaction.status === "failed" && resultCode === 0) {
+      const { error: reviveError } = await supabase.rpc("revive_failed_payment_transaction_atomic", {
+        p_transaction_id: transaction.id,
+      });
+      if (reviveError) throw new Error(`Failed to reopen payment after late confirmation: ${reviveError.message}`);
+      log("Reopened failed transaction for confirmed payment", { checkoutRequestId });
+      transaction.status = "pending";
+    }
     if (transaction.status !== "pending") {
       log("Already processed", { checkoutRequestId, currentStatus: transaction.status });
       return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Already processed" }),

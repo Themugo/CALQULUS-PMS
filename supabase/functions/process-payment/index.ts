@@ -30,6 +30,7 @@ import { checkRateLimit, rateLimitResponse } from "../_shared/rateLimit.ts";
 import { isPositiveMoney, roundMoney } from "../_shared/money.ts";
 import { checkApiVersion, withApiVersion, CURRENT_API_VERSION } from "../_shared/apiVersion.ts";
 import { processPaymentAtomic } from "../_shared/atomicPaymentProcessing.ts";
+import { buildReceiptLines, billsBalance, smsBillsText } from "../_shared/receiptSummary.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -379,11 +380,20 @@ serve(async (req) => {
     let paymentReceiverType: string | null = null;
     let landlordIdForNotify: string | null = null;
 
+    // Record WHICH account this payment belongs to when the provider flow did not already
+    // (manual, bank and C2B payments). Best-effort: a receipt never blocks on it.
+    try {
+      await supabase.rpc("snapshot_payment_destination_atomic", { p_transaction_id: txId });
+    } catch (e) {
+      log("Destination snapshot skipped", { error: String(e) });
+    }
+
     const { data: txRecord } = await supabase.from("payment_transactions")
-      .select("payment_receiver_type, landlord_id")
+      .select("payment_receiver_type, landlord_id, destination_label")
       .eq("id", txId)
       .maybeSingle();
 
+    const destinationLabel: string | null = (txRecord as { destination_label?: string | null } | null)?.destination_label ?? null;
     if (txRecord?.payment_receiver_type) {
       paymentReceiverType = txRecord.payment_receiver_type;
       landlordIdForNotify = txRecord.landlord_id;
@@ -419,6 +429,17 @@ serve(async (req) => {
       const { data: prop } = await supabase.from("properties").select("name").eq("id", propertyId).maybeSingle();
       displayProperty = (prop as any)?.name ?? displayProperty;
     }
+
+    // Every invoice this payment settled, with each one's own remaining balance.
+    const allocIds = allocations.map((a) => a.invoiceId);
+    const { data: allocInvoiceRows } = allocIds.length
+      ? await supabase.from("invoices").select("id, invoice_number, balance_due, units(unit_number)").in("id", allocIds)
+      : { data: [] as any[] };
+    const receiptLines = buildReceiptLines(
+      allocations.map((a) => ({ invoiceId: a.invoiceId, alloc: a.alloc })),
+      (allocInvoiceRows ?? []) as any[],
+    );
+    const billsRemaining = billsBalance(receiptLines);
 
     // Primary invoice for receipt (first closed, or first allocated)
     const primaryInvId = allocations.find(a => a.closes)?.invoiceId ?? allocations[0]?.invoiceId;
@@ -471,6 +492,9 @@ serve(async (req) => {
         mpesaReceipt: paymentMethod.startsWith("mpesa") ? reference : undefined,
         bankRef:  paymentMethod.startsWith("bank") ? reference : undefined,
         paymentMethod: methodLabel,
+        destination: destinationLabel ?? undefined,
+        lines: receiptLines.length > 1 ? receiptLines : undefined,
+        billsBalance: receiptLines.length > 0 ? billsRemaining : undefined,
         outstandingBalance: finalBalance,
         advanceCredit: remaining > 0 ? remaining : undefined,
         primaryColor:   (rs as any)?.primary_color ?? "#2F6FED",
@@ -486,7 +510,9 @@ serve(async (req) => {
         : finalBalance > 0 ? ` Bal: ${fmt(finalBalance)}.` : " A/C paid up.";
       jobs.push(notify(supabase, "sms", "send-sms-notification", {
         phoneNumber: tenantPhone,
-        message: `${companyName}: ${fmt(amount)} rcvd - Unit ${displayUnit} (${invoiceNumber}). Ref: ${reference}. ${paymentDate}.${balStr}`,
+        message: receiptLines.length > 1
+          ? `${companyName}: ${fmt(amount)} rcvd for ${smsBillsText(receiptLines, fmt)}. Ref: ${reference}. ${paymentDate}. Bal on these: ${fmt(billsRemaining)}.${balStr}`
+          : `${companyName}: ${fmt(amount)} rcvd - Unit ${displayUnit} (${invoiceNumber}). Ref: ${reference}. ${paymentDate}.${balStr}`,
       }, { transactionId: txId, tenantId, managerId }));
     }
 

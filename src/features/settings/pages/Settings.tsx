@@ -17,6 +17,7 @@ import { PasswordChange } from "@/features/settings/components/PasswordChange";
 import { CompanySettings } from "@/features/settings/components/CompanySettings";
 import OrgBrandStudio from "@/features/settings/components/OrgBrandStudio";
 import { ReceiptSettings } from "@/features/settings/components/ReceiptSettings";
+import { CreditApplicationSettings } from "@/features/settings/components/CreditApplicationSettings";
 import { PaymentReminderSettings } from "@/features/settings/components/PaymentReminderSettings";
 import { CurrencySettings } from "@/features/settings/components/CurrencySettings";
 import { PaymentSettings } from "@/features/settings/components/PaymentSettings";
@@ -275,6 +276,7 @@ const Settings = () => {
           <div className="space-y-6">
             <PaymentSetupStatus />
             <PaymentSettings />
+            <CreditApplicationSettings />
           </div>
         );
       case "bank-integration":

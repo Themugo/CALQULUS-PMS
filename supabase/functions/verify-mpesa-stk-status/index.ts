@@ -77,8 +77,20 @@ serve(async (req) => {
       status: transaction.status 
     });
 
+    // A linked third-party payer who started the prompt must be able to follow it too.
+    let isLinkedPayer = false;
+    if (transaction.payer_party_id) {
+      const { data: payerRow } = await supabase
+        .from('payment_parties')
+        .select('user_id')
+        .eq('id', transaction.payer_party_id)
+        .maybeSingle();
+      isLinkedPayer = payerRow?.user_id === user.id;
+    }
+
     const callerRole = roleRow?.role ?? null;
     const canView =
+      isLinkedPayer ||
       callerRole === 'webhost' ||
       (callerRole === 'tenant' && roleRow?.tenant_id === transaction.tenant_id) ||
       transaction.manager_id === user.id ||
@@ -202,6 +214,16 @@ serve(async (req) => {
                 },
                 new Error(`process-payment returned ${processResp.status}: ${processText.slice(0, 300)}`),
               );
+            }
+
+            if (!processResp.ok || processJson?.success === false) {
+              // Safaricom confirmed the money but our ledger has not been credited yet. Do not
+              // tell the tenant "completed" (no receipt/credit exists); keep them informed instead.
+              return new Response(JSON.stringify({
+                status:  'pending',
+                message: 'Your payment was received and is being applied to your bill. Do not pay again.',
+                mpesaReceiptNumber,
+              }), { headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' } });
             }
 
             return new Response(JSON.stringify({

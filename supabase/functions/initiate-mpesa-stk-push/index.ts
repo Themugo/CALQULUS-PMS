@@ -19,6 +19,8 @@
 import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv } from "../_shared/env.ts";
+import { normalizeKenyanMsisdn } from "../_shared/mpesaPhone.ts";
+import { stkChargeAmount } from "../_shared/mpesaAmount.ts";
 import {
   withMiddleware,
   errorResponse,
@@ -144,6 +146,12 @@ serve(
         return sum + Math.max(0, owed);
       }, 0);
 
+      // Charge the server-computed balance rounded UP to a whole shilling. The client figure
+      // is only sanity-checked; it never decides how much is requested from the customer.
+      const chargeAmount = stkChargeAmount(expectedTotal);
+      if (chargeAmount <= 0) {
+        throw errorResponse("These bills have no outstanding balance.", 400);
+      }
       if (Math.abs(Math.round(amount) - Math.round(expectedTotal)) > 1) {
         throw errorResponse(
           `Amount mismatch: expected KES ${Math.round(expectedTotal)}, received KES ${Math.round(amount)}`,
@@ -232,9 +240,31 @@ serve(
       const passkey = resolvedPaymentType === "paybill" ? (mpesaSettings.paybill_passkey ?? mpesaSettings.passkey) : (mpesaSettings.till_passkey ?? mpesaSettings.passkey);
       if (!shortcode || !passkey) throw errorResponse("The configured M-Pesa route is incomplete. Please contact the property manager.", 500);
 
-      let formattedPhone = phoneNumber.replace(/\s+/g, "").replace(/^(\+?254|0)/, "254");
-      if (!formattedPhone.startsWith("254")) {
-        formattedPhone = "254" + formattedPhone;
+      // Never send a malformed number to Safaricom (the old code prefixed 254 to anything).
+      const formattedPhone = normalizeKenyanMsisdn(phoneNumber);
+      if (!formattedPhone) {
+        throw errorResponse("Enter a valid Kenyan M-Pesa number, for example 0712 345 678.", 400);
+      }
+
+      // Guard against double prompts: a second tap, a second device, or "Try again" after a
+      // slow PIN entry would otherwise charge the same bill twice. A prompt stays valid for
+      // up to ~3 minutes, so refuse a new one while an earlier one is still open.
+      const openSince = new Date(Date.now() - 3 * 60 * 1000).toISOString();
+      const { data: openPrompts, error: openPromptsError } = await ctx.supabase
+        .from("payment_transactions")
+        .select("id")
+        .in("invoice_id", targetIds)
+        .eq("status", "pending")
+        .gte("initiated_at", openSince)
+        .limit(1);
+      if (openPromptsError) {
+        throw errorResponse("Could not check for an open payment request. Please try again.", 500);
+      }
+      if (openPrompts?.length) {
+        throw errorResponse(
+          "A payment request for these bills is already waiting. Check your phone, or wait up to 3 minutes before trying again.",
+          409
+        );
       }
 
       // Get M-Pesa OAuth token
@@ -267,15 +297,22 @@ serve(
 
       const accountReference = String(route.account_reference || unitNumber || route.account_label || 'RENT').slice(0, 12);
 
+      // Snapshot WHERE this money is going (public numbers only) so a receipt can state the
+      // destination account even after the collection configuration changes.
+      const destinationLabel = (resolvedPaymentType === "paybill"
+        ? `M-Pesa Paybill ${shortcode}${accountReference ? ` · Acc ${accountReference}` : ""}`
+        : `M-Pesa Till ${shortcode}`).slice(0, 120);
+
       const { data: pendingTransaction, error: pendingTransactionError } = await ctx.supabase
         .from("payment_transactions")
         .insert({
           invoice_id: primaryInvoiceId, tenant_id: invoice.tenant_id ?? null, manager_id: managerId,
           landlord_id: landlordId, payment_receiver_type: paymentReceiverType, unit_id: unitId,
-          property_id: propertyId, unit_number: unitNumber, amount: Math.round(amount),
+          property_id: propertyId, unit_number: unitNumber, amount: chargeAmount,
           phone_number: formattedPhone, payment_type: resolvedPaymentType, status: "pending",
           initiated_at: new Date().toISOString(), callback_secret: callbackSecret,
           notes: allocationNote, payer_party_id: payerParty?.id ?? null,
+          collection_account_id: route.id ?? null, destination_label: destinationLabel,
         })
         .select("id")
         .single();
@@ -290,7 +327,7 @@ serve(
         Timestamp: timestamp,
         TransactionType:
           resolvedPaymentType === "paybill" ? "CustomerPayBillOnline" : "CustomerBuyGoodsOnline",
-        Amount: Math.round(amount),
+        Amount: chargeAmount,
         PartyA: formattedPhone,
         PartyB: shortcode,
         PhoneNumber: formattedPhone,
@@ -302,19 +339,29 @@ serve(
             : `Rent - ${unitNumber} - ${invoice.invoice_number ?? primaryInvoiceId.slice(0, 8)}`,
       };
 
-      const stkResponse = await fetch(
-        `${apiBaseUrl}/mpesa/stkpush/v1/processrequest`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(stkPushPayload),
-        }
-      );
-
-      const stkResult = await stkResponse.json();
+      let stkResult: Record<string, any>;
+      try {
+        const stkResponse = await fetch(
+          `${apiBaseUrl}/mpesa/stkpush/v1/processrequest`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(stkPushPayload),
+          }
+        );
+        stkResult = await stkResponse.json();
+      } catch (stkError) {
+        // Network/parse failure: close the pending record so it cannot block a retry.
+        await ctx.supabase.rpc("mark_payment_transaction_failed_atomic", {
+          p_transaction_id: pendingTransaction.id,
+          p_failure_reason: "Could not reach M-Pesa",
+        });
+        console.error("[initiate-mpesa-stk-push] STK request failed", stkError instanceof Error ? stkError.message : "unknown");
+        throw errorResponse("Could not reach M-Pesa. No money was taken. Please try again.", 502);
+      }
 
       if (stkResult.ResponseCode === "0") {
         const { CheckoutRequestID, MerchantRequestID } = stkResult;

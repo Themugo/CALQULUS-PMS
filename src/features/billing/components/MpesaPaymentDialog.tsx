@@ -11,7 +11,7 @@
  * 5. Poll interval increased (was not shown – now using verify-mpesa-stk-status).
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -34,6 +34,8 @@ import {
 import { useToast } from "@/shared/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrency } from "@/shared/hooks/useCurrency";
+import { functionErrorMessage } from "@/features/payments/lib/functionError";
+import { stkChargeAmount } from "@/features/payments/lib/stkAmount";
 import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 import { Badge } from "@/shared/components/ui/badge";
 
@@ -87,8 +89,18 @@ export function MpesaPaymentDialog({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<
-    "idle" | "pending" | "verifying" | "success" | "failed"
+    "idle" | "pending" | "verifying" | "success" | "failed" | "unconfirmed"
   >("idle");
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const checkoutRef = useRef<string | null>(null);
+
+  const stopPolling = useCallback(() => {
+    if (pollTimerRef.current) { clearInterval(pollTimerRef.current); pollTimerRef.current = null; }
+  }, []);
+
+  // Never leave a poll running after the dialog closes or unmounts.
+  useEffect(() => { if (!open) stopPolling(); }, [open, stopPolling]);
+  useEffect(() => stopPolling, [stopPolling]);
   const [paymentType, setPaymentType] = useState<"paybill" | "till" | null>(null);
   const [paymentRoute, setPaymentRoute] = useState<MpesaRoute | null>(null);
   const [settingsError, setSettingsError] = useState<string | null>(null);
@@ -146,6 +158,9 @@ export function MpesaPaymentDialog({
   // ── Poll for payment result ──────────────────────────────────────────────
   const pollPaymentStatus = useCallback(
     (reqId: string) => {
+      stopPolling();
+      checkoutRef.current = reqId;
+      setPaymentStatus("verifying");
       let attempts = 0;
       const MAX_ATTEMPTS = 12; // 12 × 5s = 60s
 
@@ -153,14 +168,14 @@ export function MpesaPaymentDialog({
         if (!invoice) return;
         attempts++;
         if (attempts > MAX_ATTEMPTS) {
-          clearInterval(timer);
-          setPaymentStatus("failed");
+          stopPolling();
+          // Not a failure: the customer may still have paid. Do not offer a fresh prompt.
+          setPaymentStatus("unconfirmed");
           toast({
-            title: "Payment timeout",
+            title: "Not confirmed yet",
             description:
-              "We didn't receive a confirmation. If you completed the payment " +
-              "on your phone, please wait a minute and refresh.",
-            variant: "destructive",
+              "M-Pesa has not confirmed this payment yet. Do not send another prompt; " +
+              "check again in a minute.",
           });
           return;
         }
@@ -172,7 +187,7 @@ export function MpesaPaymentDialog({
           );
 
           if (data?.status === "completed") {
-            clearInterval(timer);
+            stopPolling();
             setPaymentStatus("success");
             toast({
               title: "Payment successful! 🎉",
@@ -183,7 +198,7 @@ export function MpesaPaymentDialog({
               onOpenChange(false);
             }, 2500);
           } else if (data?.status === "failed") {
-            clearInterval(timer);
+            stopPolling();
             setPaymentStatus("failed");
             toast({
               title: "Payment failed",
@@ -196,8 +211,9 @@ export function MpesaPaymentDialog({
           // Polling error – continue polling
         }
       }, 5000);
+      pollTimerRef.current = timer;
     },
-    [invoice, unitNumber, onPaymentComplete, onOpenChange, toast]
+    [invoice, unitNumber, onPaymentComplete, onOpenChange, toast, stopPolling]
   );
 
   // ── Initiate STK push ────────────────────────────────────────────────────
@@ -226,10 +242,8 @@ export function MpesaPaymentDialog({
         }
       );
 
-      if (error) throw error;
+      if (error) throw new Error(await functionErrorMessage(error, data, "STK push failed"));
       if (!data?.success) throw new Error(data?.error ?? "STK push failed");
-
-      setPaymentStatus("verifying");
 
       toast({
         title: "Check your phone",
@@ -351,6 +365,14 @@ export function MpesaPaymentDialog({
                 </AlertDescription>
               </Alert>
             )}
+            {paymentStatus === "unconfirmed" && (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  M-Pesa has not confirmed this payment yet. If you entered your PIN, it may still arrive. Do not pay again; check again shortly.
+                </AlertDescription>
+              </Alert>
+            )}
             {paymentStatus === "failed" && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
@@ -366,7 +388,9 @@ export function MpesaPaymentDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          {paymentStatus === "failed" ? (
+          {paymentStatus === "unconfirmed" ? (
+            <Button onClick={() => checkoutRef.current && pollPaymentStatus(checkoutRef.current)}>Check again</Button>
+          ) : paymentStatus === "failed" ? (
             <Button onClick={() => setPaymentStatus("idle")}>Try again</Button>
           ) : (
             <Button
@@ -380,7 +404,7 @@ export function MpesaPaymentDialog({
                   Sending prompt…
                 </>
               ) : (
-                `Pay ${invoice ? formatCurrency(invoice.amount) : ""}`
+                `Pay ${invoice ? formatCurrency(stkChargeAmount(Number(invoice.balance_due ?? invoice.amount))) : ""}`
               )}
             </Button>
           )}

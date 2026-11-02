@@ -159,6 +159,9 @@ verify_jwt = true
 [functions.apply-credit]
 verify_jwt = true
 
+[functions.recall-credit]
+verify_jwt = true
+
 [functions.apply-penalties]
 verify_jwt = false
 

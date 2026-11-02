@@ -9,8 +9,38 @@ import type { OrgBrandRecord } from "@/core/brand/parseOrgRecord";
 export interface IssuedPaymentReceiptPayload {
   receipt: { id: string; receipt_number: string; issued_at: string; total_amount: number };
   payer?: { display_name?: string | null; phone?: string | null; party_type?: string | null } | null;
-  transaction?: { id: string; payment_type?: string | null; mpesa_receipt_number?: string | null; bank_reference?: string | null; phone_number?: string | null } | null;
-  allocations: Array<{ invoice_number?: string | null; unit_number?: string | null; property_name?: string | null; amount?: number | null }>;
+  transaction?: { id: string; payment_type?: string | null; payment_method?: string | null; mpesa_receipt_number?: string | null; bank_reference?: string | null; phone_number?: string | null } | null;
+  allocations: Array<{
+    invoice_number?: string | null; unit_number?: string | null; property_name?: string | null; amount?: number | null;
+    tenant_name?: string | null; invoice_amount?: number | null; invoice_balance_due?: number | null;
+  }>;
+  advance_credit?: number | null;
+  destination?: { label?: string | null; receiver_type?: string | null; receiver_name?: string | null } | null;
+}
+
+const METHOD_LABELS: Record<string, string> = {
+  mpesa_stk: "M-Pesa (STK Push)",
+  mpesa_ussd: "M-Pesa (Paybill)",
+  mpesa_till: "M-Pesa (Till)",
+  paystack_mpesa: "M-Pesa (Paystack)",
+  bank_transfer: "Bank transfer",
+  bank_direct_debit: "Bank direct debit",
+  receipt_upload: "Manual (receipt uploaded)",
+  cash: "Cash",
+};
+
+/** Human label for the payment method; never shows a raw enum like "mpesa_stk". */
+export function receiptMethodLabel(method?: string | null): string {
+  const key = String(method ?? "").trim();
+  if (!key) return "Payment";
+  return METHOD_LABELS[key] ?? key.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
+}
+
+/** Receipt lines must add up to the receipt total: allocations plus any advance credit. */
+export function receiptReconciles(payload: Pick<IssuedPaymentReceiptPayload, "receipt" | "allocations" | "advance_credit">): boolean {
+  const allocated = payload.allocations.reduce((sum, a) => sum + Number(a.amount || 0), 0);
+  const credit = Number(payload.advance_credit || 0);
+  return Math.abs(allocated + credit - Number(payload.receipt.total_amount || 0)) < 0.005;
 }
 
 const hexToRgb = (hex: string): [number, number, number] => {
@@ -48,15 +78,30 @@ export async function generateIssuedPaymentReceiptPDF(payload: IssuedPaymentRece
   doc.text(payload.payer?.display_name || "Payment party", 14, y + 5);
   if (payload.payer?.phone) doc.text(payload.payer.phone, 14, y + 10);
   doc.setFont("helvetica","bold"); doc.text("Payment", width / 2 + 8, y); doc.setFont("helvetica","normal");
-  doc.text(String(payload.transaction?.payment_type || "payment").replace(/_/g, " ").toUpperCase(), width / 2 + 8, y + 5);
+  doc.text(receiptMethodLabel(payload.transaction?.payment_method || payload.transaction?.payment_type), width / 2 + 8, y + 5);
   const reference = payload.transaction?.mpesa_receipt_number || payload.transaction?.bank_reference || payload.transaction?.id;
-  doc.text(`Reference: ${reference || "—"}`, width / 2 + 8, y + 10); y += 22;
+  doc.text(`Reference: ${reference || "—"}`, width / 2 + 8, y + 10);
+  const paidTo = payload.destination?.label || payload.destination?.receiver_name;
+  if (paidTo) doc.text(`Paid to: ${paidTo}`, width / 2 + 8, y + 15);
+  const tenantNames = Array.from(new Set(payload.allocations.map(a => a.tenant_name).filter(Boolean)));
+  if (tenantNames.length) doc.text(`For: ${tenantNames.join(", ")}`, 14, y + 15);
+  y += 27;
 
   autoTable(doc, {
     startY: y,
-    head: [["Property", "Unit", "Invoice", "Allocated"]],
-    body: payload.allocations.map(a => [a.property_name || "—", a.unit_number || "—", a.invoice_number || "—", formatCurrency(Number(a.amount || 0))]),
-    foot: [["", "", "TOTAL", formatCurrency(Number(payload.receipt.total_amount || 0))]],
+    head: [["Property", "Unit", "Invoice", "Invoice total", "Paid now", "Balance"]],
+    body: [
+      ...payload.allocations.map(a => [
+        a.property_name || "—", a.unit_number || "—", a.invoice_number || "—",
+        a.invoice_amount == null ? "—" : formatCurrency(Number(a.invoice_amount)),
+        formatCurrency(Number(a.amount || 0)),
+        a.invoice_balance_due == null ? "—" : formatCurrency(Number(a.invoice_balance_due)),
+      ]),
+      ...(Number(payload.advance_credit || 0) > 0
+        ? [["", "", "Held as advance credit", "", formatCurrency(Number(payload.advance_credit)), ""]]
+        : []),
+    ],
+    foot: [["", "", "", "TOTAL RECEIVED", formatCurrency(Number(payload.receipt.total_amount || 0)), ""]],
     theme: "grid",
     headStyles: { fillColor: accent },
     footStyles: { fontStyle: "bold" },

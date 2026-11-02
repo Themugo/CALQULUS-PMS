@@ -171,6 +171,17 @@ serve(async (req) => {
           throw new Error(`Pending payment_transactions row not found for reference=${reference}`);
         }
 
+        // Confirmed money on a transaction previously marked failed: reopen it so the
+        // payment is allocated rather than skipped as "already processed".
+        if (transaction.status === "failed") {
+          const { error: reviveError } = await supabase.rpc("revive_failed_payment_transaction_atomic", {
+            p_transaction_id: transaction.id,
+          });
+          if (reviveError) throw new Error(`Failed to reopen payment after late confirmation: ${reviveError.message}`);
+          log("Reopened failed transaction for confirmed payment", { reference });
+          transaction.status = "pending";
+        }
+
         if (transaction.status !== "pending") {
           log("Tenant Paystack transaction already processed", { reference, status: transaction.status });
           const completed = await supabase.rpc("complete_paystack_event_atomic", {

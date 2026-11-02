@@ -54,7 +54,7 @@ describe("Phase 2F migrations (unapplied, additive, least-privilege)", () => {
   });
   it("no earlier migration was edited: new ones are the only 20260909* files", () => {
     const f = readdirSync(resolve(root, "supabase/migrations")).filter((x) => x.startsWith("20260909"));
-    expect(f.sort()).toEqual([...MIGRATIONS].sort());
+    expect(f.sort()).toEqual([...MIGRATIONS, "20260909000008_payment_self_credit_lockdown.sql", "20260909000009_tenant_credit_recall.sql", "20260909000010_credit_application_mode.sql", "20260909000011_credit_ledger_write_lockdown.sql", "20260909000012_revive_failed_payment_on_confirmed_money.sql", "20260909000013_payment_trace_end_to_end.sql", "20260909000014_payment_destination_snapshot.sql"].sort());
   });
 });
 

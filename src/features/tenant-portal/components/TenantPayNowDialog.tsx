@@ -11,6 +11,8 @@ import { Label } from '@/shared/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Smartphone, CheckCircle, XCircle, Loader2, Clock, RefreshCw, Shield, Layers, WifiOff } from 'lucide-react';
 import { canInitiateOnlinePayment } from '@/features/tenant-portal/lib/onlinePaymentGuard';
+import { functionErrorMessage } from '@/features/payments/lib/functionError';
+import { stkChargeAmount, stkRoundingExtra } from "@/features/payments/lib/stkAmount";
 
 export interface PayableInvoice {
   id: string;
@@ -34,7 +36,7 @@ interface TenantPayNowDialogProps {
   onPaymentSuccess: () => void;
 }
 
-type PayStatus = 'idle' | 'initiating' | 'waiting' | 'success' | 'failed' | 'timeout';
+type PayStatus = 'idle' | 'initiating' | 'waiting' | 'success' | 'failed' | 'unconfirmed';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(n);
@@ -58,10 +60,15 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
     typeof navigator !== 'undefined' ? !navigator.onLine : false,
   );
 
+  const requestIdRef = useRef<string | null>(null);
+  const pollInFlightRef = useRef(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const amountDue = useMemo(() => invoices.reduce((sum, inv) => sum + balanceOf(inv), 0), [invoices]);
+  // M-Pesa charges whole shillings: what the customer is actually asked to pay.
+  const chargeDue = stkChargeAmount(amountDue);
+  const roundingExtra = stkRoundingExtra(amountDue);
   const isCombined = invoices.length > 1;
   const primary = invoices[0];
 
@@ -145,13 +152,14 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
       const { data, error } = await supabase.functions.invoke('initiate-mpesa-stk-push', { body });
 
       if (error || (!data?.checkoutRequestId && !data?.CheckoutRequestID)) {
-        throw new Error(data?.error || error?.message || 'Failed to initiate payment');
+        throw new Error(await functionErrorMessage(error, data, 'Could not send the M-Pesa request. Please try again.'));
       }
 
       const requestId = data.checkoutRequestId ?? data.CheckoutRequestID;
+      requestIdRef.current = requestId;
       setStatus('waiting');
       startCountdown(90);
-      startPolling(requestId);
+      startPolling();
     } catch (err: unknown) {
       setStatus('failed');
       setErrorMsg(err instanceof Error ? err.message : 'Payment initiation failed');
@@ -164,7 +172,9 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
       setCountdown((prev) => {
         if (prev <= 1) {
           clearPolling();
-          setStatus('timeout');
+          // The prompt may still be answered late. Ask the server once more before
+          // deciding, and never invite a second payment while the first is unresolved.
+          void checkOnce(true);
           return 0;
         }
         return prev - 1;
@@ -172,27 +182,38 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
     }, 1000);
   };
 
-  const startPolling = (requestId: string) => {
-    pollRef.current = setInterval(async () => {
-      try {
-        const { data } = await supabase.functions.invoke('verify-mpesa-stk-status', {
-          body: { checkoutRequestId: requestId },
-        });
+  /** One status check. `final` = the countdown ended: fall back to "unconfirmed", not "failed". */
+  const checkOnce = async (final = false) => {
+    const requestId = requestIdRef.current;
+    if (!requestId || pollInFlightRef.current) return;
+    pollInFlightRef.current = true;
+    try {
+      const { data } = await supabase.functions.invoke('verify-mpesa-stk-status', {
+        body: { checkoutRequestId: requestId },
+      });
 
-        if (data?.status === 'completed') {
-          clearPolling();
-          setMpesaReceipt(data.mpesaReceiptNumber || null);
-          setStatus('success');
-          setTimeout(onPaymentSuccess, 2000);
-        } else if (data?.status === 'failed') {
-          clearPolling();
-          setErrorMsg(data.failureReason || 'Payment was cancelled or failed');
-          setStatus('failed');
-        }
-      } catch {
-        /* keep polling */
+      if (data?.status === 'completed') {
+        clearPolling();
+        setMpesaReceipt(data.mpesaReceiptNumber || null);
+        setStatus('success');
+        setTimeout(onPaymentSuccess, 2000);
+      } else if (data?.status === 'failed') {
+        clearPolling();
+        setErrorMsg(data.failureReason || 'Payment was cancelled or failed');
+        setStatus('failed');
+      } else if (final) {
+        setErrorMsg(typeof data?.message === 'string' ? data.message : '');
+        setStatus('unconfirmed');
       }
-    }, 3000);
+    } catch {
+      if (final) setStatus('unconfirmed');
+    } finally {
+      pollInFlightRef.current = false;
+    }
+  };
+
+  const startPolling = () => {
+    pollRef.current = setInterval(() => { void checkOnce(); }, 3000);
   };
 
   const handleClose = () => {
@@ -248,8 +269,13 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
                 ))}
                 <div className="border-t border-success/30 pt-2 flex justify-between items-center">
                   <span className="font-semibold text-success">Total due</span>
-                  <span className="amount-display text-xl font-bold text-success">{fmt(amountDue)}</span>
+                  <span className="amount-display text-xl font-bold text-success">{fmt(chargeDue)}</span>
                 </div>
+                {roundingExtra > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    M-Pesa takes whole shillings, so {fmt(amountDue)} is rounded up to {fmt(chargeDue)}. The extra {fmt(roundingExtra)} stays on your account as credit.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -274,7 +300,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
                 className="w-full min-h-12 h-auto py-3 text-base bg-success hover:bg-success text-white gap-2 whitespace-normal"
               >
                 {isOffline ? <WifiOff className="h-5 w-5" /> : <Smartphone className="h-5 w-5" />}
-                {isOffline ? 'Connect to pay' : `Send M-Pesa Request — ${fmt(amountDue)}`}
+                {isOffline ? 'Connect to pay' : `Send M-Pesa Request — ${fmt(chargeDue)}`}
               </Button>
               {isOffline && (
                 <p className="text-xs text-center text-warning" role="status">
@@ -305,7 +331,7 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
                 </div>
               </div>
               <p className="font-bold text-xl">Check your phone</p>
-              <p className="text-sm text-muted-foreground">Enter your M-Pesa PIN to pay {fmt(amountDue)}</p>
+              <p className="text-sm text-muted-foreground">Enter your M-Pesa PIN to pay {fmt(chargeDue)}</p>
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-success rounded-full transition-all duration-1000"
@@ -326,12 +352,10 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
             </div>
           )}
 
-          {(status === 'failed' || status === 'timeout') && (
+          {status === 'failed' && (
             <div className="py-6 text-center space-y-4">
               <XCircle className="h-12 w-12 text-destructive mx-auto" />
-              <p className="font-semibold text-destructive">
-                {status === 'timeout' ? 'Request expired' : 'Payment not completed'}
-              </p>
+              <p className="font-semibold text-destructive">Payment not completed</p>
               <p className="text-sm text-muted-foreground">{errorMsg}</p>
               <Button onClick={() => setStatus('idle')} variant="outline" className="gap-2 w-full">
                 <RefreshCw className="h-4 w-4" />
@@ -339,9 +363,24 @@ const TenantPayNowDialog: React.FC<TenantPayNowDialogProps> = ({
               </Button>
             </div>
           )}
+
+          {status === 'unconfirmed' && (
+            <div className="py-6 text-center space-y-4" role="status">
+              <Clock className="h-12 w-12 text-warning mx-auto" />
+              <p className="font-semibold">We have not heard back from M-Pesa yet</p>
+              <p className="text-sm text-muted-foreground">
+                {errorMsg || 'If you entered your PIN, your payment will appear on your bill shortly.'}{' '}
+                Please do not pay again until you have checked.
+              </p>
+              <Button onClick={() => { setStatus('waiting'); void checkOnce(true); }} variant="outline" className="gap-2 w-full">
+                <RefreshCw className="h-4 w-4" />
+                Check again
+              </Button>
+            </div>
+          )}
         </div>
 
-        {(status === 'idle' || status === 'failed' || status === 'timeout') && (
+        {(status === 'idle' || status === 'failed' || status === 'unconfirmed') && (
           <Button variant="ghost" size="sm" onClick={handleClose} className="w-full">
             Cancel
           </Button>

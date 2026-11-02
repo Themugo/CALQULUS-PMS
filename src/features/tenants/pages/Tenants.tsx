@@ -48,6 +48,7 @@ import TenantProfilePanel from "@/features/tenants/components/TenantProfilePanel
 import DepositAccountabilityStatement from "@/features/tenants/components/DepositAccountabilityStatement";
 import TenantNoticeComposer from "@/features/tenants/components/TenantNoticeComposer";
 import { TenantLeaseTab } from "@/features/tenants/components/TenantLeaseTab";
+import { TenantCreditCard } from "@/features/tenants/components/TenantCreditCard";
 import { TenantPaymentsTab } from "@/features/tenants/components/TenantPaymentsTab";
 import { TenantMaintenanceTab } from "@/features/tenants/components/TenantMaintenanceTab";
 import { TenantDocumentsTab } from "@/features/tenants/components/TenantDocumentsTab";
@@ -847,6 +848,7 @@ const Tenants = () => {
                 </TabsContent>
 
                 <TabsContent value="payments">
+                  <TenantCreditCard tenantId={selectedTenant.id} />
                   <TenantPaymentsTab tenantId={selectedTenant.id} />
                 </TabsContent>
 
