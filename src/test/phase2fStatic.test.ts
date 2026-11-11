@@ -54,7 +54,7 @@ describe("Phase 2F migrations (unapplied, additive, least-privilege)", () => {
   });
   it("no earlier migration was edited: new ones are the only 20260909* files", () => {
     const f = readdirSync(resolve(root, "supabase/migrations")).filter((x) => x.startsWith("20260909"));
-    expect(f.sort()).toEqual([...MIGRATIONS, "20260909000008_payment_self_credit_lockdown.sql", "20260909000009_tenant_credit_recall.sql", "20260909000010_credit_application_mode.sql", "20260909000011_credit_ledger_write_lockdown.sql", "20260909000012_revive_failed_payment_on_confirmed_money.sql", "20260909000013_payment_trace_end_to_end.sql", "20260909000014_payment_destination_snapshot.sql"].sort());
+    expect(f.sort()).toEqual([...MIGRATIONS, "20260909000008_payment_self_credit_lockdown.sql", "20260909000009_tenant_credit_recall.sql", "20260909000010_credit_application_mode.sql", "20260909000011_credit_ledger_write_lockdown.sql", "20260909000012_revive_failed_payment_on_confirmed_money.sql", "20260909000013_payment_trace_end_to_end.sql", "20260909000014_payment_destination_snapshot.sql", "20260909000015_company_settings_partial_save.sql", "20260909000016_collection_destination_routing.sql", "20260909000017_property_management_handover.sql", "20260909000018_departed_operator_archive_access.sql", "20260909000019_complete_pending_stk_multi_tenant.sql", "20260909000020_payer_destination_visibility.sql", "20260909000021_confirmed_payment_protection.sql", "20260909000022_bank_matching_and_announcements.sql", "20260909000023_manual_payment_payer_and_balance.sql", "20260909000024_payer_share_enforcement.sql"].sort());
   });
 });
 

@@ -46,7 +46,7 @@ function writeSkipped(managerId: string, skipped: ReadonlySet<ActivationStepId>)
   }
 }
 
-async function fetchActivationFacts(managerId: string): Promise<ActivationFacts> {
+export async function fetchActivationFacts(managerId: string): Promise<ActivationFacts> {
   const [
     companyRes,
     propertiesRes,

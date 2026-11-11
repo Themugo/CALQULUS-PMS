@@ -19,6 +19,7 @@ import { createClient } from "supabase/supabase-js@2";
 import { timingSafeEqual, getWebhookSecret, recordWebhookFailure } from "../_shared/webhookHelpers.ts";
 import { validateBankWebhook, normalizeBankPayload } from "../_shared/webhookSchemas.ts";
 import { requireEnv } from "../_shared/env.ts";
+import { announcePayment } from "../_shared/paymentAnnouncement.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -119,6 +120,14 @@ serve(async (req) => {
     });
 
     if (rpcError) throw new Error(`Bank webhook atomic processing: ${rpcError.message}`);
+
+    // An auto-matched payment is recorded but nobody has been told yet. Announce it (receipt to the
+    // tenant, notice to the manager) exactly once; a bank retry of the same transaction is a no-op.
+    const matchedTx = (result as any)?.payment?.transaction_id as string | undefined;
+    if ((result as any)?.matched && matchedTx) {
+      try { await announcePayment(supabase, matchedTx); }
+      catch (e) { log("Announcement failed (payment is recorded)", { error: String(e) }); }
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

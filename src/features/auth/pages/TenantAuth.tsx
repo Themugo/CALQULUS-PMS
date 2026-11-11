@@ -25,6 +25,7 @@ import {
 } from '@/features/auth/lib/tenantInvitation';
 import { formatCurrency } from '@/shared/lib/formatCurrency';
 import { rememberPendingInvitationClaim } from '@/features/auth/lib/pendingInvitationClaim';
+import { ResendVerificationButton } from '@/features/auth/components/ResendVerificationButton';
 import { TenantPortalShell } from '@/features/auth/components/TenantPortalChrome';
 
 interface Invitation {
@@ -303,15 +304,10 @@ const TenantAuth = () => {
             </p>
             <div className="space-y-3 text-muted-foreground text-sm">
               <p>Click the link in the email to verify your account and complete registration.</p>
-              <p>
-                Didn't receive the email? Check your spam folder or{' '}
-                <button 
-                  onClick={() => setShowVerificationMessage(false)}
-                  className="text-primary hover:underline"
-                >
-                  try again
-                </button>
-              </p>
+              <p>Didn't receive the email? Check your spam folder, or resend it.</p>
+              <div className="flex justify-center">
+                <ResendVerificationButton email={registeredEmail} redirectTo={`${window.location.origin}/tenant/login`} />
+              </div>
             </div>
             <div className="pt-4 border-t border-border">
               <p className="text-muted-foreground text-sm">

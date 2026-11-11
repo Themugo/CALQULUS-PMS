@@ -422,6 +422,13 @@ export default function LandlordDashboard() {
           <p className="mx-auto mt-4 max-w-md text-xs text-muted-foreground">
             Share the email you signed in with so your manager can link your buildings.
           </p>
+          <Link
+            to="/landlord/onboarding"
+            className="mt-5 inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-[var(--portal-accent)] px-4 text-sm font-semibold text-white"
+          >
+            Finish setting up your profile
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
         </section>
       ) : null}
 

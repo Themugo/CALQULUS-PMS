@@ -60,7 +60,9 @@ export function useManagerOnboardingState() {
     if (facts.propertyTypeGroups.length > 0) completed.add("portfolio");
     if (facts.propertiesCount > 0) completed.add("property");
     if (facts.invitedTeamCount > 0) completed.add("team");
-    if (completed.size >= 6) completed.add("complete");
+    // The team step is optional, so setup is complete once every required step is done.
+    const required = ["account", "verification", "organization", "portfolio", "property"];
+    if (required.every((id) => completed.has(id))) completed.add("complete");
     return {
       completedIds: completed,
       totalCount: 7,

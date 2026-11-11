@@ -108,12 +108,38 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
 
   const activePayer = payers.find((p: { id: string }) => p.id === selectedPayerId);
 
+  // A payer with an agreed share (fixed amount or percentage) may only cover that share of each
+  // invoice. The database enforces it; this shows the remaining share and stops a doomed submit.
+  const payerLimited = !!activePayer && (
+    (activePayer as { pays_amount?: number | null }).pays_amount != null ||
+    (activePayer as { pays_percentage?: number | null }).pays_percentage != null
+  );
+  const { data: shareRows = [] } = useQuery({
+    queryKey: ['payer-share-status', tenant.id, selectedPayerId],
+    enabled: payerLimited,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_payer_share_status' as never, { p_tenant_id: tenant.id, p_payer_id: selectedPayerId } as never);
+      if (error) throw error;
+      return (data ?? []) as Array<{ invoice_id: string; balance_due: number; share: number | null; remaining: number | null }>;
+    },
+  });
+
   const totalUnpaid = availableInvoices.reduce((s, i) => s + Number(i.balance_due ?? i.amount), 0);
   const selectedInv = selectedInvoiceId === AUTO_ALLOCATE
     ? invoice
     : availableInvoices.find(i => i.id === selectedInvoiceId) ?? invoice;
   const enteredAmount = parseFloat(amount) || 0;
   const targetBalance = selectedInv ? Number(selectedInv.balance_due ?? selectedInv.amount) : totalUnpaid;
+
+  const shareCapacity = !payerLimited ? null : (
+    selectedInvoiceId === AUTO_ALLOCATE
+      ? shareRows.reduce((t, r) => t + Math.min(Number(r.balance_due), r.remaining == null ? Infinity : Number(r.remaining)), 0)
+      : (() => {
+          const r = shareRows.find((x) => x.invoice_id === selectedInvoiceId);
+          return r ? Math.min(Number(r.balance_due), r.remaining == null ? Infinity : Number(r.remaining)) : 0;
+        })()
+  );
+  const exceedsShare = shareCapacity !== null && enteredAmount > shareCapacity + 0.005;
 
   const isOverpayment = enteredAmount > targetBalance;
   const isPartial     = enteredAmount > 0 && enteredAmount < targetBalance;
@@ -223,6 +249,12 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
                   ))}
                 </SelectContent>
               </Select>
+              {payerLimited && shareCapacity !== null && (
+                <p className={`text-xs mt-1 ${exceedsShare ? 'text-destructive' : 'text-muted-foreground'}`}>
+                  Agreed share: this payer can cover up to {fmt(shareCapacity)} {selectedInvoiceId === AUTO_ALLOCATE ? 'across open invoices' : 'of this invoice'}.
+                  {exceedsShare && ' The amount entered is above that — lower it or update the payer’s share.'}
+                </p>
+              )}
               {activePayer && (
                 <p className="text-xs text-muted-foreground mt-1">
                   Receipt will show: <span className="font-medium">{activePayer.payer_name || activePayer.payer_organisation}</span> paying on behalf of {tenant.name}
@@ -402,7 +434,7 @@ const RecordPaymentDialog: React.FC<RecordPaymentDialogProps> = ({
           </Button>
           <Button
             onClick={() => recordPayment.mutate()}
-            disabled={recordPayment.isPending || !reference.trim() || enteredAmount <= 0}
+            disabled={recordPayment.isPending || !reference.trim() || enteredAmount <= 0 || exceedsShare}
             className="bg-green-600 hover:bg-green-700 text-white gap-2"
           >
             {recordPayment.isPending

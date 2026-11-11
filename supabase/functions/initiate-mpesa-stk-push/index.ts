@@ -32,6 +32,9 @@ import {
 // Module-level env reads — fail fast at cold start, not mid-request.
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 
+// A part-paid bill is still payable: the tenant must be able to clear the remainder by STK.
+const PAYABLE_INVOICE_STATUSES = ["pending", "overdue", "partially_paid"];
+
 interface STKPushRequest {
   invoiceId?: string;
   invoiceIds?: string[];
@@ -102,6 +105,7 @@ serve(
         lease_id,
         unit_id,
         property_id,
+        manager_id,
         amount,
         balance_due,
         paid_amount,
@@ -119,7 +123,7 @@ serve(
         .from("invoices")
         .select(invoiceSelect)
         .in("id", targetIds)
-        .in("status", ["pending", "overdue"]);
+        .in("status", PAYABLE_INVOICE_STATUSES);
 
       if (invoicesError || !invoiceRows?.length) {
         throw errorResponse("One or more invoices not found or already paid", 404);
@@ -175,9 +179,22 @@ serve(
       const unitId = invoice.unit_id ?? lease?.unit_id ?? lease?.units?.id ?? null;
       const propertyId =
         invoice.property_id ?? lease?.property_id ?? lease?.units?.property_id ?? null;
-      const managerId = lease?.properties?.manager_id ?? null;
-      const unitNumber = lease?.units?.unit_number ?? "N/A";
-      const propertyName = lease?.properties?.name ?? "Property";
+      // An invoice raised without a lease (one-off charge, utility, penalty) still has its own
+      // unit/property/manager columns; fall back to them instead of refusing a payable bill.
+      let managerId = lease?.properties?.manager_id ?? (invoice as { manager_id?: string | null }).manager_id ?? null;
+      let unitNumber = lease?.units?.unit_number ?? null;
+      let propertyName = lease?.properties?.name ?? null;
+      if ((!managerId || !propertyName) && propertyId) {
+        const { data: propRow } = await ctx.supabase.from("properties").select("manager_id, name").eq("id", propertyId).maybeSingle();
+        managerId = managerId ?? (propRow as { manager_id?: string | null } | null)?.manager_id ?? null;
+        propertyName = propertyName ?? (propRow as { name?: string | null } | null)?.name ?? null;
+      }
+      if (!unitNumber && unitId) {
+        const { data: unitRow } = await ctx.supabase.from("units").select("unit_number").eq("id", unitId).maybeSingle();
+        unitNumber = (unitRow as { unit_number?: string | null } | null)?.unit_number ?? null;
+      }
+      unitNumber = unitNumber ?? "N/A";
+      propertyName = propertyName ?? "Property";
 
       if (!managerId) {
         throw errorResponse(

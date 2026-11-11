@@ -78,11 +78,31 @@ serve(async (req) => {
     if (invoiceError || !invoice) {
       throw new Error("Invoice not found");
     }
-    if (invoice.status === "paid") {
-      throw new Error("Invoice already paid");
+    if (invoice.status !== undefined && ["paid", "cancelled", "void", "waived"].includes(String(invoice.status))) {
+      throw new Error(`This invoice is ${invoice.status} and cannot be paid`);
     }
     if (Math.abs(Math.round(amount) - Math.round(Number(invoice.amount))) > 1) {
       throw new Error(`Amount mismatch: expected KES ${Math.round(Number(invoice.amount))}, received KES ${Math.round(amount)}`);
+    }
+
+    // M-Pesa moves whole shillings only, and the platform ledger requires the paid amount to equal
+    // the invoice amount exactly, so a fractional invoice cannot be settled this way.
+    if (Math.round(Number(invoice.amount) * 100) % 100 !== 0) {
+      throw new Error("This invoice has a fractional amount and cannot be paid by M-Pesa. Pay it by card instead.");
+    }
+
+    // One live prompt per invoice: a double tap must not send the manager two STK requests.
+    const recentCutoff = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { data: livePending } = await supabaseAdmin
+      .from("platform_payment_transactions")
+      .select("id")
+      .eq("manager_invoice_id", invoice.id)
+      .eq("provider", "paystack")
+      .eq("status", "pending")
+      .gt("created_at", recentCutoff)
+      .limit(1);
+    if (livePending && livePending.length > 0) {
+      throw new Error("A payment prompt for this invoice was sent in the last few minutes. Finish it on your phone, or wait a few minutes and try again.");
     }
 
     const reference = crypto.randomUUID();

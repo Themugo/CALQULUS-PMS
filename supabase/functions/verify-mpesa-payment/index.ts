@@ -160,7 +160,9 @@ serve(async (req) => {
     query = query.eq("bank_reference", reference);
   }
 
-  const { data: transaction, error: txErr } = await query.maybeSingle();
+  // A provider reference is unique per tenant, not globally: take the newest match rather than
+  // erroring out when two tenants' rows share one.
+  const { data: transaction, error: txErr } = await query.order("initiated_at", { ascending: false }).limit(1).maybeSingle();
 
   if (txErr) {
     return new Response(JSON.stringify({ error: "Database error", details: txErr.message }),
@@ -181,6 +183,22 @@ serve(async (req) => {
   if (callerRole === "tenant" && (!callerTenantId || transaction.tenant_id !== callerTenantId)) {
     return new Response(JSON.stringify({ error: "Forbidden: you can only view your own transactions" }),
       { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+  }
+
+  // Managers and submanagers may only see transactions of their own portfolio. Without this,
+  // any manager could read another manager's payment (including the payer's phone number) by
+  // guessing or reusing a provider reference.
+  if (callerRole === "manager" && transaction.manager_id !== callerUserId) {
+    return new Response(JSON.stringify({ error: "Forbidden: this transaction is outside your portfolio" }),
+      { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+  }
+  if (callerRole === "submanager") {
+    const { data: rel } = await supabase.from("manager_submanagers")
+      .select("manager_id").eq("submanager_user_id", callerUserId).eq("manager_id", transaction.manager_id).maybeSingle();
+    if (!rel) {
+      return new Response(JSON.stringify({ error: "Forbidden: this transaction is outside your portfolio" }),
+        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
   }
 
   // ── Fetch related invoice for context ──────────────────────────────

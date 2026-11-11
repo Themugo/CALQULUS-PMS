@@ -26,7 +26,7 @@ import { getCorsHeaders, preflightResponse } from "../_shared/cors.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv } from "../_shared/env.ts";
 import { rejectUnlessServiceOrCron } from "../_shared/assertCaller.ts";
-import { verifyPaystackTransaction } from "../_shared/paystackMobileMoney.ts";
+import { verifyPaystackTransaction, isKesCharge } from "../_shared/paystackMobileMoney.ts";
 import { roundMoney } from "../_shared/money.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
@@ -66,10 +66,14 @@ serve(async (req) => {
     for (const tx of platformPending ?? []) {
       results.platform.checked++;
       try {
-        const { ok, payload } = await verifyPaystackTransaction(tx.reference);
+        const { ok, payload, httpStatus } = await verifyPaystackTransaction(tx.reference);
         const status = (payload?.data as { status?: string; amount?: number } | undefined)?.status;
+        const canExpire = ok || httpStatus === 404;
 
         if (ok && status === "success") {
+          if (!isKesCharge((payload.data as { currency?: string }).currency)) {
+            throw new Error("Confirmed charge is not in KES");
+          }
           const paidAmount = roundMoney(Number((payload.data as { amount?: number }).amount ?? 0) / 100);
           const { error } = await supabase.rpc("update_platform_payment_atomic", {
             p_reference: tx.reference,
@@ -89,7 +93,7 @@ serve(async (req) => {
           });
           if (error) throw new Error(error.message);
           results.platform.failed++;
-        } else if (tx.created_at < expireCutoff) {
+        } else if (canExpire && tx.created_at < expireCutoff) {
           const { error } = await supabase.rpc("update_platform_payment_atomic", {
             p_reference: tx.reference,
             p_status: "failed",
@@ -120,10 +124,14 @@ serve(async (req) => {
       const reference = tx.checkout_request_id;
       if (!reference) { results.tenant.errors++; continue; }
       try {
-        const { ok, payload } = await verifyPaystackTransaction(reference);
+        const { ok, payload, httpStatus } = await verifyPaystackTransaction(reference);
         const status = (payload?.data as { status?: string; amount?: number } | undefined)?.status;
+        const canExpire = ok || httpStatus === 404;
 
         if (ok && status === "success") {
+          if (!isKesCharge((payload.data as { currency?: string }).currency)) {
+            throw new Error("Confirmed charge is not in KES");
+          }
           const paidAmount = roundMoney(Number((payload.data as { amount?: number }).amount ?? 0) / 100);
           if (!Number.isFinite(paidAmount) || paidAmount <= 0) {
             throw new Error("Invalid confirmed amount from Paystack");
@@ -146,9 +154,11 @@ serve(async (req) => {
               transactionId: tx.id,
             }),
           });
-          if (!processResp.ok) {
-            const errText = await processResp.text();
-            throw new Error(`process-payment returned ${processResp.status}: ${errText.slice(0, 300)}`);
+          const processText = await processResp.text();
+          let processJson: Record<string, unknown> | null = null;
+          try { processJson = processText ? JSON.parse(processText) : null; } catch { processJson = null; }
+          if (!processResp.ok || processJson?.success === false) {
+            throw new Error(`process-payment returned ${processResp.status}: ${processText.slice(0, 300)}`);
           }
           results.tenant.confirmed++;
           log("Tenant payment confirmed via reconciliation", { reference });
@@ -159,7 +169,7 @@ serve(async (req) => {
           });
           if (error) throw new Error(error.message);
           results.tenant.failed++;
-        } else if (tx.initiated_at < expireCutoff) {
+        } else if (canExpire && tx.initiated_at < expireCutoff) {
           const { error } = await supabase.rpc("mark_payment_transaction_failed_atomic", {
             p_transaction_id: tx.id,
             p_failure_reason: "Expired — no Paystack confirmation received",

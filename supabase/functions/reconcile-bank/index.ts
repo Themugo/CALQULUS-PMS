@@ -9,11 +9,12 @@ import { requireEnv } from "../_shared/env.ts";
 import { identifyUserServiceOrCron } from "../_shared/assertCaller.ts";
 import { checkManagerAccess } from "../_shared/authorization.ts";
 import { errorResponse } from "../_shared/errors.ts";
+import { announcePayment } from "../_shared/paymentAnnouncement.ts";
+import { matchBankTransaction, type OpenInvoice } from "../_shared/bankMatching.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 
-const fmt = (n: number) => new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", minimumFractionDigits: 0 }).format(n);
 const log = (s: string, d?: unknown) => console.log(`[BANK-RECONCILE] ${s}`, d ? JSON.stringify(d) : "");
 
 serve(async (req) => {
@@ -83,46 +84,19 @@ serve(async (req) => {
       const paymentResult = (Array.isArray(payment) ? payment[0] : payment) as any;
       if (!paymentResult?.success) throw new Error("Atomic bank payment failed");
 
-      // Outstanding balance
-      const { data: unpaid } = await supabase.from("invoices").select("amount")
-        .eq("tenant_id", invoice.tenant_id).in("status", ["pending", "overdue"]);
-      const outstandingBalance = (unpaid || []).reduce((s: number, i: any) => s + Number(i.amount), 0);
-
-      const { data: company } = await supabase.from("company_settings").select("company_name,logo_url").maybeSingle();
-      const companyName = (company as any)?.company_name ?? "Property Management";
-      const tenant = (invoice as any).tenants;
-      const lease = (invoice as any).leases;
-
-      // Email receipt
-      if (tenant?.email) {
-        fetch(`${SUPABASE_URL}/functions/v1/send-receipt-email`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_KEY}` },
-          body: JSON.stringify({
-            tenantEmail: tenant.email, tenantName: tenant.name,
-            invoiceNumber: invoice.invoice_number, amount: Number(invoice.amount),
-            paidDate, dueDate: invoice.due_date,
-            property: lease?.property ?? "Property", unit: lease?.unit ?? "Unit",
-            companyName, bankRef, paymentMethod: "Bank Transfer", outstandingBalance,
-          }),
-        }).catch((e) => log("Email error", { error: String(e) }));
+      // Receipts and notifications (payer/tenant receipt with the amount actually paid, the
+      // tenant's real balance, managers) go through the shared announcer exactly once.
+      const transactionId = paymentResult.transaction_id as string | undefined;
+      let announced: Record<string, unknown> = { announced: false };
+      if (transactionId) {
+        try { announced = await announcePayment(supabase, transactionId); }
+        catch (e) { log("Announcement failed", { error: String(e) }); }
       }
-
-      // SMS receipt
-      if (tenant?.phone) {
-        const balMsg = outstandingBalance > 0 ? ` Balance: ${fmt(outstandingBalance)}.` : " Account fully paid.";
-        fetch(`${SUPABASE_URL}/functions/v1/send-sms-notification`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_KEY}` },
-          body: JSON.stringify({
-            phoneNumber: tenant.phone,
-            message: `${companyName}: Bank payment of ${fmt(Number(invoice.amount))} received for Unit ${lease?.unit ?? "N/A"} (${invoice.invoice_number}). Ref: ${bankRef}. Date: ${paidDate}.${balMsg}`,
-          }),
-        }).catch((e) => log("SMS error", { error: String(e) }));
-      }
+      const { data: balanceData } = await supabase.rpc("get_tenant_balance", { p_tenant_id: invoice.tenant_id });
+      const outstandingBalance = Number((Array.isArray(balanceData) ? balanceData[0] : balanceData)?.balance_due ?? 0);
 
       log("Bank payment recorded", { invoiceId, bankRef, outstandingBalance });
-      return new Response(JSON.stringify({ success: true, invoiceId, bankRef, paidDate, outstandingBalance }),
+      return new Response(JSON.stringify({ success: true, invoiceId, bankRef, paidDate, outstandingBalance, transactionId, ...announced }),
         { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
     }
 
@@ -139,39 +113,39 @@ serve(async (req) => {
     const { data: bankTxs } = await supabase.from("bank_transactions")
       .select("*").eq("matched", false).eq("manager_id", managerId);
 
+    // Open invoices are loaded once (not 50 per bank row) and include part-paid bills, matched on
+    // what is still owed. A matched invoice is removed so two bank rows cannot claim it twice.
+    const { data: openRows } = await supabase.from("invoices")
+      .select("id, invoice_number, amount, balance_due, due_date, tenant_id, leases(unit)")
+      .in("status", ["pending", "overdue", "partially_paid"]).eq("manager_id", managerId).limit(5000);
+    const open: OpenInvoice[] = (openRows ?? []).map((r: any) => ({
+      id: r.id, tenantId: r.tenant_id, invoiceNumber: r.invoice_number ?? null, unit: r.leases?.unit ?? null,
+      balance: Number(r.balance_due ?? r.amount ?? 0), dueDate: r.due_date ?? null,
+    }));
+
     let matched = 0, unmatched = 0;
     for (const tx of bankTxs || []) {
-      const refPattern = tx.reference ?? tx.description ?? "";
-      const { data: invoices } = await supabase.from("invoices")
-        .select(`id, invoice_number, amount, tenant_id, leases(unit, property, unit_id, property_id, tenants(name, email, phone))`)
-        .in("status", ["pending", "overdue"]).eq("manager_id", managerId).limit(50);
+      const hit = matchBankTransaction(`${tx.reference ?? ""} ${tx.description ?? ""}`, Number(tx.amount), open);
+      if (!hit) { unmatched++; continue; }
 
-      const matchedInvoice = (invoices || []).find((inv: any) => {
-        const unit = inv.leases?.unit ?? "";
-        return Number(inv.amount) === Number(tx.amount) &&
-          (refPattern.toUpperCase().includes(unit.toUpperCase()) ||
-           refPattern.toUpperCase().includes(inv.invoice_number?.toUpperCase() ?? ""));
-      }) as any;
-
-      if (matchedInvoice) {
-        const { data: payment, error: paymentError } = await supabase.rpc("reconcile_bank_transaction_atomic", {
-          p_bank_transaction_id: tx.id,
-          p_invoice_id: matchedInvoice.id,
-          p_manager_id: managerId,
-          p_recorded_by: null,
-        });
-        if (paymentError || !(payment as any)?.success) {
-          unmatched++;
-          log("Atomic bank reconciliation failed", { bankTransactionId: tx.id, error: paymentError?.message ?? "unknown" });
-          continue;
-        }
-        fetch(`${SUPABASE_URL}/functions/v1/auto-send-receipt`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_KEY}` },
-          body: JSON.stringify({ invoiceId: matchedInvoice.id, managerId }),
-        }).catch(() => {});
-        matched++;
-      } else { unmatched++; }
+      const { data: payment, error: paymentError } = await supabase.rpc("reconcile_bank_transaction_atomic", {
+        p_bank_transaction_id: tx.id,
+        p_invoice_id: hit.invoice.id,
+        p_manager_id: managerId,
+        p_recorded_by: null,
+      });
+      if (paymentError || !(payment as any)?.success) {
+        unmatched++;
+        log("Atomic bank reconciliation failed", { bankTransactionId: tx.id, error: paymentError?.message ?? "unknown" });
+        continue;
+      }
+      const idx = open.findIndex((i) => i.id === hit.invoice.id);
+      if (idx >= 0) open.splice(idx, 1);
+      const transactionId = (payment as any)?.transaction_id as string | undefined;
+      if (transactionId) {
+        try { await announcePayment(supabase, transactionId); } catch (e) { log("Announcement failed", { error: String(e) }); }
+      }
+      matched++;
     }
 
     return new Response(JSON.stringify({ success: true, matched, unmatched }),

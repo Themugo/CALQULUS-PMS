@@ -13,6 +13,7 @@
 
 import { serve } from "std/http/server.ts";
 import { isPositiveMoney, roundMoney } from "../_shared/money.ts";
+import { announcePayment } from "../_shared/paymentAnnouncement.ts";
 import {
   withMiddleware,
   errorResponse,
@@ -38,6 +39,7 @@ serve(
         notes,
         isInstallment = false,
         instalmentCount,
+        payerId,
       } = body;
       const amount = roundMoney(Number(body.amount));
       if (!tenantId || !isPositiveMoney(amount) || !reference) {
@@ -98,14 +100,28 @@ serve(
         p_notes: notes ?? null,
         p_instalment_count: instalmentCount ?? null,
         p_is_installment: Boolean(isInstallment),
+        // Only the registered payer's id is accepted; name/type/contacts are read server-side so a
+        // client cannot attribute a payment to an arbitrary identity.
+        p_payer_id: typeof payerId === "string" && payerId ? payerId : null,
       });
 
       if (error) {
         console.error("[record-payment] atomic RPC failed:", error.message);
+        if (/Payer is (not registered|no longer active)|exceeds .* agreed share/.test(error.message)) {
+          throw errorResponse(error.message, 400);
+        }
         throw errorResponse("Payment could not be recorded atomically. Please retry.", 400);
       }
 
-      return data;
+      // The payment is recorded; now issue the receipt and tell the tenant (and managers).
+      // A notification problem must never undo or fail a recorded payment.
+      const recorded = (Array.isArray(data) ? data[0] : data) as { transaction_id?: string } | null;
+      let announced: Record<string, unknown> = { announced: false };
+      if (recorded?.transaction_id) {
+        try { announced = await announcePayment(ctx.supabase, recorded.transaction_id); }
+        catch (e) { console.error("[record-payment] announcement failed:", String(e)); }
+      }
+      return { ...(recorded ?? {}), ...announced };
     }
   )
 );

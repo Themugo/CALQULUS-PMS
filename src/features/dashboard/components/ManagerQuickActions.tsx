@@ -61,6 +61,14 @@ export function ManagerQuickActions({
                 {progress.nextAction.cta}
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="min-h-11"
+                onClick={() => navigate("/onboarding/manager")}
+              >
+                Guided setup
+              </Button>
               {current?.optional && (
                 <Button
                   size="sm"

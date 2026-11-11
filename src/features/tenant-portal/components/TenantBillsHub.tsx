@@ -13,6 +13,7 @@ import { chargeMeta } from '@/shared/constants/chargeTypes';
 import { Receipt, Smartphone, Layers, CheckCircle2, CalendarClock, CreditCard, Home } from 'lucide-react';
 import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 import { invoiceDisplayBadge } from '@/shared/lib/invoiceStatusDisplay';
+import { groupByDestination, lockedReason } from '@/features/payments/lib/destinationGroups';
 import type { PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
 
 interface TenantBillsHubProps {
@@ -98,7 +99,26 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
     return [...groups.values()];
   }, [payable]);
 
+  // Bills collected into different accounts cannot share one prompt; group them up front.
+  const destinationGroups = useMemo(
+    () => groupByDestination(payable, (b) => b.paymentAccount),
+    [payable],
+  );
+  const keyOfBill = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const g of destinationGroups) for (const b of g.items) m.set(b.id, g.key);
+    return m;
+  }, [destinationGroups]);
+  const selectedKeys = useMemo(
+    () => [...new Set(selectedBills.map((b) => keyOfBill.get(b.id) ?? ''))],
+    [selectedBills, keyOfBill],
+  );
+  const multiDestination = destinationGroups.length > 1;
+  const lockReasonFor = (id: string): string | null =>
+    multiDestination ? lockedReason(selectedKeys, keyOfBill.get(id) ?? '') : null;
+
   const toggle = (id: string) => {
+    if (lockReasonFor(id)) return;
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -108,6 +128,8 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
   };
 
   const selectAll = () => setSelected(new Set(payable.map((b) => b.id)));
+  const selectGroup = (key: string) =>
+    setSelected(new Set((destinationGroups.find((g) => g.key === key)?.items ?? []).map((b) => b.id)));
   const clearSelection = () => setSelected(new Set());
 
   if (isLoading) {
@@ -151,9 +173,17 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={selectAll}>
-            Select all ({payable.length})
-          </Button>
+          {multiDestination ? (
+            destinationGroups.map((g) => (
+              <Button key={g.key} variant="outline" size="sm" onClick={() => selectGroup(g.key)}>
+                Select all for {g.label} ({g.items.length})
+              </Button>
+            ))
+          ) : (
+            <Button variant="outline" size="sm" onClick={selectAll}>
+              Select all ({payable.length})
+            </Button>
+          )}
           {selected.size > 0 && (
             <Button variant="ghost" size="sm" onClick={clearSelection}>
               Clear
@@ -193,6 +223,8 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
                   <Checkbox
                     checked={isChecked}
                     onCheckedChange={() => toggle(bill.id)}
+                    disabled={!!lockReasonFor(bill.id)}
+                    title={lockReasonFor(bill.id) ?? undefined}
                     className="mt-1"
                     aria-label={`Select ${bill.invoice_number}`}
                   />
@@ -252,22 +284,44 @@ const TenantBillsHub: React.FC<TenantBillsHubProps> = ({ tenantId, onPay, invoic
                 : `${selected.size} bill${selected.size > 1 ? 's' : ''} selected`}
             </p>
             {selected.size > 0 && <p className="text-xl font-bold mt-0.5">{fmt(selectedTotal)}</p>}
+            {multiDestination && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Your bills are collected into {destinationGroups.length} different accounts, so each account is paid in its own M-Pesa payment.
+              </p>
+            )}
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button size="lg" className="gap-2 h-11" onClick={() => onPay(payable)}>
-              <Smartphone className="h-4 w-4" />
-              Pay now — {fmt(totalDue)}
-            </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="gap-2 min-h-11 h-11"
-              disabled={selected.size === 0}
-              onClick={() => onPay(selectedBills)}
-            >
-              <Layers className="h-4 w-4" />
-              Pay selected ({selected.size || 0})
-            </Button>
+            {multiDestination ? (
+              destinationGroups.map((g) => (
+                <Button
+                  key={g.key}
+                  size="lg"
+                  className="gap-2 h-11"
+                  onClick={() => onPay(selectedKeys.length === 1 && selectedKeys[0] === g.key && selectedBills.length > 0 ? selectedBills : g.items)}
+                  disabled={selectedKeys.length > 0 && !selectedKeys.includes(g.key)}
+                >
+                  <Smartphone className="h-4 w-4" />
+                  Pay {g.label} — {fmt((selectedKeys.length === 1 && selectedKeys[0] === g.key ? selectedBills : g.items).reduce((t, b) => t + balanceOf(b), 0))}
+                </Button>
+              ))
+            ) : (
+              <>
+                <Button size="lg" className="gap-2 h-11" onClick={() => onPay(payable)}>
+                  <Smartphone className="h-4 w-4" />
+                  Pay now — {fmt(totalDue)}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="gap-2 min-h-11 h-11"
+                  disabled={selected.size === 0}
+                  onClick={() => onPay(selectedBills)}
+                >
+                  <Layers className="h-4 w-4" />
+                  Pay selected ({selected.size || 0})
+                </Button>
+              </>
+            )}
           </div>
         </div>
 

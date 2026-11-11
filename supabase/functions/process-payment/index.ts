@@ -31,79 +31,48 @@ import { isPositiveMoney, roundMoney } from "../_shared/money.ts";
 import { checkApiVersion, withApiVersion, CURRENT_API_VERSION } from "../_shared/apiVersion.ts";
 import { processPaymentAtomic } from "../_shared/atomicPaymentProcessing.ts";
 import { buildReceiptLines, billsBalance, smsBillsText } from "../_shared/receiptSummary.ts";
+import { needsPartyPath, invoiceIdsFromTransaction } from "../_shared/partyReceipts.ts";
+import { announcePayment, buildFormatter, notify, METHOD_LABELS } from "../_shared/paymentAnnouncement.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 const SERVICE_KEY  = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 
 const log = (step: string, d?: unknown) => console.log(`[payment] ${step}`, d ?? "");
 
-// Build a currency-aware formatter using the manager's company_settings
-// currency. Falls back to KES for legacy installations where the column
-// is null. Centralised so we never accidentally hard-code KES again.
-const buildFormatter = (currency: string) => {
-  const cur = (currency || "KES").toUpperCase();
-  // en-KE locale works for KES/UGX/TZS; for other currencies fall back to en-US.
-  const locale = ["KES", "UGX", "TZS", "RWF"].includes(cur) ? "en-KE" : "en-US";
-  return (n: number) =>
-    new Intl.NumberFormat(locale, { style: "currency", currency: cur, minimumFractionDigits: 0 }).format(n);
-};
-
 /**
- * Send a notification by invoking another edge function. On failure, persist
- * a row to `notification_failures` so it is visible in the manager dashboard
- * for replay. Never throws — the caller is in a Promise.allSettled batch and
- * an exception here would only show up as 'rejected' with no context.
+ * Finish a pending STK prompt that was started by a third-party payer or that settles bills of
+ * several tenants. Allocation runs in complete_pending_stk_payment_atomic (invoice list read
+ * from the pending row itself); announcePayment then sends the payer one receipt for every bill
+ * and each tenant a receipt for only their own bills. Returns null when the standard
+ * single-tenant path applies.
  */
-const notify = async (
+async function processPartyStkPayment(
   supabase: any,
-  channel: "email" | "sms" | "whatsapp" | "manager_notify" | "landlord_notify",
-  fn: string,
-  body: Record<string, unknown>,
-  context: { transactionId: string | null; tenantId: string | null; managerId: string | null },
-): Promise<void> => {
-  try {
-    const resp = await fetch(`${SUPABASE_URL}/functions/v1/${fn}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_KEY}` },
-      body: JSON.stringify(body),
-    });
-    const responseText = await resp.text().catch(() => "");
-    let responseJson: Record<string, unknown> | null = null;
-    try {
-      responseJson = responseText ? JSON.parse(responseText) : null;
-    } catch {
-      responseJson = null;
-    }
-    if (!resp.ok) {
-      throw new Error(`${fn} returned ${resp.status}: ${responseText.slice(0, 300)}`);
-    }
-    if (responseJson?.success === false || responseJson?.skipped === true) {
-      const error =
-        responseJson.error ??
-        responseJson.message ??
-        responseJson.reason ??
-        "Notification provider reported failure";
-      throw new Error(`${fn} provider failure: ${String(error).slice(0, 300)}`);
-    }
-  } catch (e) {
-    const errMsg = e instanceof Error ? e.message : String(e);
-    log(`notify ${fn} failed`, { channel, error: errMsg });
-    try {
-      await supabase.from("notification_failures").insert({
-        transaction_id: context.transactionId,
-        tenant_id:      context.tenantId,
-        manager_id:     context.managerId,
-        channel,
-        error:          errMsg.slice(0, 1000),
-        payload:        body,
-        status:         "pending",
-      });
-    } catch (insertErr) {
-      // Last-resort console log — never re-throw, never block the response.
-      console.error("[payment] notification_failures insert failed:", insertErr);
-    }
-  }
-};
+  input: { transactionId: string; amount: number; reference: string; paymentDate: string },
+): Promise<Record<string, unknown> | null> {
+  const { data: tx } = await supabase.from("payment_transactions")
+    .select("id, invoice_id, notes, payer_party_id").eq("id", input.transactionId).maybeSingle();
+  if (!tx) return null;
+  const listedIds = invoiceIdsFromTransaction(tx.notes, tx.invoice_id);
+  if (listedIds.length === 0) return null;
+  const { data: listed } = await supabase.from("invoices").select("id, tenant_id").in("id", listedIds);
+  if (!needsPartyPath(tx.payer_party_id, (listed ?? []).map((r: { tenant_id: string | null }) => r.tenant_id))) return null;
+
+  const { data: done, error: doneErr } = await supabase.rpc("complete_pending_stk_payment_atomic", {
+    p_transaction_id: tx.id, p_amount: input.amount, p_reference: input.reference, p_payment_date: input.paymentDate,
+  });
+  if (doneErr) throw new Error(`Atomic party payment failed: ${doneErr.message}`);
+  const row = (Array.isArray(done) ? done[0] : done) as Record<string, any>;
+  const announced = await announcePayment(supabase, tx.id);
+  const allocs = (Array.isArray(row?.allocations) ? row.allocations : []) as Array<{ invoice_id: string; amount: number; closed: boolean }>;
+  const surplus = roundMoney(Number(row?.advance_credit ?? 0));
+  return {
+    success: true, idempotent: Boolean(row?.idempotent), transactionId: tx.id,
+    allocated: input.amount - surplus, advanceCredit: surplus,
+    allocations: allocs.map((a) => ({ invoiceId: a.invoice_id, amount: a.amount, closed: a.closed })),
+    ...announced,
+  };
+}
 
 interface ProcessPaymentRequest {
   // Core payment info
@@ -235,6 +204,17 @@ serve(async (req) => {
       managerId = effectiveManagerId;
     }
 
+    // Third-party payer / multi-tenant STK prompts finish through their own atomic path.
+    if (isServiceCall && transactionId) {
+      const partyResult = await processPartyStkPayment(supabase, {
+        transactionId, amount, reference, paymentDate,
+      });
+      if (partyResult) {
+        return withApiVersion(new Response(JSON.stringify(partyResult),
+          { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } }));
+      }
+    }
+
     log("Processing payment", { tenantId, amount, paymentMethod, reference });
 
     // ── 1. Fetch tenant profile + company settings ─────────────────────
@@ -364,6 +344,12 @@ serve(async (req) => {
       log("Issued payment receipt ready", { transactionId: txId, receipt: issuedReceipt });
     }
 
+    // This function's own notification block below is the announcement for this payment; mark it
+    // so later announcers (manual retry, reconcile) do not send the same receipts again.
+    if (!atomic.idempotent) {
+      await supabase.rpc("claim_payment_announcement_atomic", { p_transaction_id: txId });
+    }
+
     if (atomic.idempotent) {
       log("Idempotent replay via process_payment_atomic", { reference, txId });
       return withApiVersion(new Response(JSON.stringify({
@@ -447,16 +433,7 @@ serve(async (req) => {
     const invoiceNumber = primaryInv?.invoice_number ?? reference.slice(0, 12);
 
     // ── 8. Payment method label for receipt ───────────────────────────
-    const methodLabels: Record<string, string> = {
-      mpesa_stk:        "M-Pesa (STK Push)",
-      mpesa_ussd:       "M-Pesa (USSD/Paybill)",
-      mpesa_till:       "M-Pesa (Buy Goods)",
-      bank_transfer:    "Bank Transfer",
-      bank_direct_debit:"Bank Direct Debit",
-      receipt_upload:   "Manual (Receipt Uploaded)",
-      stripe_checkout:  "Stripe Checkout",
-    };
-    const methodLabel = methodLabels[paymentMethod] ?? paymentMethod;
+    const methodLabel = METHOD_LABELS[paymentMethod] ?? paymentMethod;
 
     // ── 9. Fetch receipt settings for manager ─────────────────────────
     const { data: rs } = await supabase.from("receipt_settings")

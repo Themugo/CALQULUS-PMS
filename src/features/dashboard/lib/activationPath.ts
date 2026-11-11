@@ -24,6 +24,8 @@ export interface ActivationFacts {
   paidInvoiceCount: number;
   hasPaymentMethod: boolean;
   firstPropertyId?: string | null;
+  /** Landlords linked to the account (agency onboarding). */
+  landlordCount?: number;
 }
 
 export interface ActivationStepDef {

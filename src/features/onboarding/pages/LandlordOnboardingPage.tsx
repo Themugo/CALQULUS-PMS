@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useToast } from "@/shared/hooks/use-toast";
+import { saveOnboardingSettings } from "@/features/onboarding/lib/saveOnboarding";
 import { errorToast } from "@/shared/lib/errorToast";
 import { Layout } from "@/shared/components/layout/Layout";
 import { Button } from "@/shared/components/ui/button";
@@ -16,6 +17,7 @@ import { cn } from "@/shared/lib/utils";
 import { LANDLORD_ONBOARDING_STEPS, LANDLORD_PROPERTY_TYPES } from "@/features/onboarding/components/landlord/LandlordOnboardingSteps";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useSkippedOnboardingSteps } from "../hooks/useSkippedOnboardingSteps";
 import { useOnboardingDraft } from "@/features/onboarding/hooks/useOnboardingDraft";
 import { ResendVerificationButton } from "@/features/auth/components/ResendVerificationButton";
 
@@ -27,20 +29,27 @@ interface LandlordFacts {
   propertyTypes: string[];
   propertiesCount: number;
   payoutConfigured: boolean;
+  teamCount: number;
 }
 
 async function fetchLandlordFacts(userId: string): Promise<LandlordFacts> {
-  const [company, properties] = await Promise.all([
-    supabase.from("company_settings").select("company_name").eq("manager_user_id", userId).maybeSingle(),
-    supabase.from("properties").select("id", { count: "exact", head: true }).eq("manager_id", userId),
+  // A landlord's buildings are linked through property_landlords; properties.manager_id is
+  // the managing party, so counting it always read 0 and "first property" never completed.
+  const [company, links, team] = await Promise.all([
+    supabase.from("company_settings").select("company_name, brand_config").eq("manager_user_id", userId).maybeSingle(),
+    supabase.from("property_landlords").select("property_id", { count: "exact", head: true }).eq("landlord_user_id", userId),
+    supabase.from("landlord_team_members").select("id", { count: "exact", head: true }).eq("landlord_user_id", userId),
   ]);
-  const propertyTypes = [] as string[];
+  const brand = (company.data?.brand_config ?? null) as { onboarding?: { landlordPropertyTypes?: unknown } } | null;
+  const saved = brand?.onboarding?.landlordPropertyTypes;
+  const propertyTypes = Array.isArray(saved) ? saved.filter((t): t is string => typeof t === "string") : [];
   return {
     companyName: company.data?.company_name ?? null,
     displayName: null,
     propertyTypes,
-    propertiesCount: properties.count ?? 0,
+    propertiesCount: links.count ?? 0,
     payoutConfigured: false,
+    teamCount: team.count ?? 0,
   };
 }
 
@@ -54,6 +63,7 @@ export default function LandlordOnboardingPage() {
   const userId = user?.id ?? null;
   const [orgName, setOrgName, clearOrgNameDraft] = useOnboardingDraft("profile-name", userId);
   const [isSaving, setIsSaving] = useState(false);
+  const { skipped: skippedSteps, loaded: skipsLoaded, markSkipped } = useSkippedOnboardingSteps(userId);
 
   const { data: facts, isLoading, error } = useQuery<LandlordFacts>({
     queryKey: ["landlord-onboarding-facts", userId],
@@ -64,22 +74,35 @@ export default function LandlordOnboardingPage() {
   const completedIds = useMemo(() => {
     if (!facts) return new Set<string>();
     const ids = new Set<string>();
-    if (facts.companyName || orgName) ids.add("profile");
+    if (facts.companyName) ids.add("profile");
     if (facts.propertyTypes.length > 0) ids.add("portfolio");
     if (facts.propertiesCount > 0) ids.add("first-property");
+    if (facts.teamCount > 0) ids.add("team");
     return ids;
-  }, [facts, orgName]);
+  }, [facts]);
 
   const currentId = ORDER[Math.min(stepIdx, ORDER.length - 1)];
 
   const skipStep = () => setStepIdx((i) => Math.min(i + 1, ORDER.length - 1));
+  const goBack = () => setStepIdx((i) => Math.max(i - 1, 0));
+  const skipOptional = () => {
+    markSkipped(ORDER[Math.min(stepIdx, ORDER.length - 1)]);
+    skipStep();
+  };
+
+  // Resume at the first unfinished step once facts load (reload, verification link, return trip).
+  const resumed = useRef(false);
+  useEffect(() => {
+    if (resumed.current || !facts || !skipsLoaded) return;
+    resumed.current = true;
+    const firstOpen = ORDER.findIndex((id) => id !== "complete" && id !== "team" && !completedIds.has(id) && !skippedSteps.has(id));
+    setStepIdx(firstOpen === -1 ? ORDER.length - 1 : firstOpen);
+  }, [facts, completedIds, skippedSteps, skipsLoaded]);
 
   const saveProfile = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.rpc('save_manager_company_settings_atomic', {
-        p_payload: { company_name: orgName || "My property business" },
-      });
-      if (error) throw error;
+      if (!userId) throw new Error("Not signed in");
+      await saveOnboardingSettings(userId, { companyName: orgName.trim() || displayName.trim() });
     },
     onSuccess: () => {
       clearOrgNameDraft();
@@ -93,13 +116,8 @@ export default function LandlordOnboardingPage() {
 
   const savePortfolio = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.rpc('save_manager_company_settings_atomic', {
-        p_payload: {
-          company_name: orgName || "My property business",
-          brand_config: { onboarding: { landlordPropertyTypes: propertyTypes } },
-        },
-      });
-      if (error) throw error;
+      if (!userId) throw new Error("Not signed in");
+      await saveOnboardingSettings(userId, { onboardingPatch: { landlordPropertyTypes: propertyTypes } });
     },
     onSuccess: () => {
       toast({ title: "Saved", description: "Portfolio preferences saved." });
@@ -147,7 +165,7 @@ export default function LandlordOnboardingPage() {
       <div className="space-y-6 p-6">
         <ol className="grid grid-cols-1 gap-2 sm:grid-cols-7">
           {LANDLORD_ONBOARDING_STEPS.map((step, i) => {
-            const done = i < stepIdx || completedIds.has(step.id);
+            const done = completedIds.has(step.id);
             const active = i === stepIdx;
             return (
               <li key={step.id} className="flex-1">
@@ -201,7 +219,7 @@ export default function LandlordOnboardingPage() {
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
               <ResendVerificationButton email={user?.email} redirectTo={`${window.location.origin}/landlord/onboarding`} />
-              <Button variant="ghost" onClick={skipStep} className="gap-1.5">
+              <Button variant="ghost" onClick={skipOptional} className="gap-1.5">
                 <SkipForward className="h-4 w-4" /> Skip for now
               </Button>
             </div>
@@ -247,7 +265,7 @@ export default function LandlordOnboardingPage() {
                   {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Save and continue
                 </Button>
-                <Button type="button" variant="outline" onClick={skipStep}>
+                <Button type="button" variant="outline" onClick={goBack}>
                   <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
                 </Button>
               </div>
@@ -299,7 +317,7 @@ export default function LandlordOnboardingPage() {
                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Continue
               </Button>
-              <Button type="button" variant="outline" onClick={skipStep}>
+              <Button type="button" variant="outline" onClick={goBack}>
                 <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
               </Button>
             </div>
@@ -309,12 +327,33 @@ export default function LandlordOnboardingPage() {
         {currentId === "first-property" ? (
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="font-heading text-lg font-semibold">First property</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Add the first building or unit you own. More can follow later.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Add a building or unit you own. If a manager or agency already manages your property, they can link it to your account instead and this step completes by itself.</p>
             <div className="mt-5 flex gap-2">
               <Button onClick={() => navigate("/landlord/properties")} className="gap-1.5">
                 Add a property <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button variant="outline" onClick={skipStep}>
+              <Button variant="outline" onClick={goBack}>
+                <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
+              </Button>
+            </div>
+          </section>
+        ) : null}
+
+        {currentId === "team" ? (
+          <section className="rounded-xl border border-border bg-card p-6">
+            <h2 className="font-heading text-lg font-semibold">Who helps you manage?</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              The property is yours, so you decide. Add a hired manager, a family member, a caretaker or an accountant and choose what each can do,
+              limited to the buildings you pick. If you hand the property to an agency instead, the agency links your account and you skip this step.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Button onClick={() => navigate("/landlord/settings")} className="gap-1.5">
+                Add to my team <ArrowRight className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" onClick={skipOptional}>
+                <SkipForward className="mr-1.5 h-4 w-4" /> Skip for now
+              </Button>
+              <Button variant="ghost" onClick={goBack}>
                 <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
               </Button>
             </div>
@@ -329,7 +368,7 @@ export default function LandlordOnboardingPage() {
               <Button onClick={() => navigate("/landlord/settings")} className="gap-1.5">
                 Configure payouts <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button variant="outline" onClick={skipStep}>
+              <Button variant="outline" onClick={skipOptional}>
                 <SkipForward className="mr-1.5 h-4 w-4" /> Skip for now
               </Button>
             </div>

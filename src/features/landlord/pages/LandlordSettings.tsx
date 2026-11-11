@@ -2,6 +2,7 @@ import LandlordLayout from "@/features/landlord/components/LandlordLayout";
 import LandlordBankDetails from "@/features/landlord/components/LandlordBankDetails";
 import LandlordNotificationPreferences from "@/features/landlord/components/LandlordNotificationPreferences";
 import LandlordTeamSettings from "@/features/landlord/components/LandlordTeamSettings";
+import PropertyManagementHandover from "@/features/landlord/components/PropertyManagementHandover";
 import LandlordMessages from "@/features/landlord/components/LandlordMessages";
 import { useLandlordPortfolio } from "@/features/landlord/hooks/useLandlordPortfolio";
 import { DashboardSectionHeader } from "@/features/dashboard/components/DashboardSectionHeader";
@@ -20,6 +21,7 @@ export default function LandlordSettings() {
           title="Your landlord workspace"
           description="Keep ownership details, notifications and manager communication in one focused place."
         />
+        <PropertyManagementHandover />
         <LandlordTeamSettings />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <LandlordBankDetails />

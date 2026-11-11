@@ -171,55 +171,17 @@ export const ReceiptVerification = () => {
       const { data: userData } = await supabase.auth.getUser();
       const verifierId = userData.user?.id ?? user?.id;
       if (!verifierId) throw new Error("Authenticated user required to verify a receipt.");
-      const { error } = await supabase.rpc('verify_payment_receipt_atomic', {
+      const { data: verified, error } = await supabase.rpc('verify_payment_receipt_atomic', {
         p_receipt_id: receipt.id,
         p_verified_by: verifierId,
       });
       if (error) throw error;
 
-      // Get manager_id from tenant's property for payment notification
-      let managerId: string | null = null;
-      if (receipt.tenants) {
-        const { data: tenantData } = await supabase
-          .from('tenants')
-          .select('manager_id, property_id')
-          .eq('email', receipt.tenants.email)
-          .single();
-        
-        managerId = tenantData?.manager_id || null;
-        
-        // If no direct manager_id, try from property
-        if (!managerId && tenantData?.property_id) {
-          const { data: propData } = await supabase
-            .from('properties')
-            .select('manager_id')
-            .eq('id', tenantData.property_id)
-            .single();
-          managerId = propData?.manager_id || null;
-        }
-      }
-
-      // Notify manager about the verified payment (confirmed payment received)
-      if (managerId) {
-        try {
-          await supabase.functions.invoke('notify-manager-payment', {
-            body: {
-              managerId,
-              tenantName: receipt.tenants?.name || 'Tenant',
-              tenantEmail: receipt.tenants?.email || '',
-              propertyName: receipt.tenants?.property || 'Property',
-              unit: receipt.tenants?.unit || undefined,
-              invoiceNumber: receipt.invoice_id ? `INV-${receipt.invoice_id.slice(0, 8)}` : 'Manual Payment',
-              amount: receipt.amount,
-              paymentDate: receipt.payment_date,
-              paymentMethod: paymentMethodLabels[receipt.payment_method] || receipt.payment_method,
-              notifyEmail: true,
-              notifySms: true,
-              notifyWhatsapp: true,
-            },
-          });
-        } catch {
-        }
+      // Receipt to the tenant (their own bill, amount and balance) and the manager notice are sent
+      // server-side once, from the recorded payment — not from a lookup by e-mail address.
+      const transactionId = (verified as { transaction_id?: string } | null)?.transaction_id;
+      if (transactionId && !(verified as { idempotent?: boolean } | null)?.idempotent) {
+        try { await supabase.functions.invoke('announce-payment', { body: { transactionId } }); } catch { /* payment is recorded */ }
       }
 
       // Send notification to tenant

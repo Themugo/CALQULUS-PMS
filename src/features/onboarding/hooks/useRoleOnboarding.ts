@@ -30,7 +30,7 @@ const FACT_COMPLETERS: Record<RoleOnboardingRole, (facts: ActivationFacts) => st
     const ids: string[] = [];
     if (facts.hasCompany) ids.push("company");
     if (facts.propertyCount > 0) ids.push("properties");
-    if (facts.unitCount > 0) ids.push("landlords");
+    if ((facts.landlordCount ?? 0) > 0) ids.push("landlords");
     if (facts.tenantCount > 0) ids.push("tenants");
     if (facts.invoiceCount > 0) ids.push("invoices");
     return ids;

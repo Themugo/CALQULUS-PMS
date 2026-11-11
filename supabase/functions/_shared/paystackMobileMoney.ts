@@ -69,6 +69,16 @@ export async function chargePaystackMpesa(params: {
  *     may have been lost (network blip, function cold-start timeout, etc.)
  *     and asks Paystack directly "what actually happened to this reference".
  */
+/**
+ * Paystack amounts are minor units of the charge currency. Every amount in this
+ * system is KES, so a charge in any other currency must never be allocated.
+ * A missing currency is accepted (Kenyan merchant default); a different one is not.
+ */
+export function isKesCharge(currency: unknown): boolean {
+  if (currency === undefined || currency === null || currency === "") return true;
+  return String(currency).trim().toUpperCase() === "KES";
+}
+
 export async function verifyPaystackTransaction(
   reference: string
 ): Promise<{ ok: boolean; payload: Record<string, unknown>; httpStatus: number }> {

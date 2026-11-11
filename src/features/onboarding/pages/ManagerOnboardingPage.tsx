@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,9 +15,11 @@ import { Check, Loader2, ArrowLeft, ArrowRight, SkipForward, Building2, Users, H
 import { cn } from "@/shared/lib/utils";
 import { MANAGER_ONBOARDING_STEPS, PROPERTY_GROUPS, type ManagerOnboardingStepId } from "@/features/onboarding/components/manager/ManagerOnboardingSteps";
 import { useManagerOnboardingState } from "@/features/onboarding/hooks/useManagerOnboardingState";
+import { useSkippedOnboardingSteps } from "../hooks/useSkippedOnboardingSteps";
 import { useOnboardingDraft } from "@/features/onboarding/hooks/useOnboardingDraft";
 import { OnboardingCompletion } from "@/features/onboarding/components/OnboardingCompletion";
 import { buildCompletionModel, managerCompletionItems, managerRecommendations } from "@/features/onboarding/lib/completion";
+import { saveOnboardingSettings } from "@/features/onboarding/lib/saveOnboarding";
 import { ResendVerificationButton } from "@/features/auth/components/ResendVerificationButton";
 
 const ORDER = MANAGER_ONBOARDING_STEPS.map((s) => s.id) as readonly ManagerOnboardingStepId[];
@@ -34,10 +36,9 @@ export default function ManagerOnboardingPage() {
   const [orgSaving, setOrgSaving] = useState(false);
   const [portfolioGroups, setPortfolioGroups] = useState<string[]>([]);
   const [portfolioSaving, setPortfolioSaving] = useState(false);
-  const [teamEmail, setTeamEmail, clearTeamDraft] = useOnboardingDraft("team-email", userId);
-  const [teamSaving, setTeamSaving] = useState(false);
 
   const { progress, isLoading, error, refetch } = useManagerOnboardingState();
+  const { skipped: skippedSteps, loaded: skipsLoaded, markSkipped } = useSkippedOnboardingSteps(user?.id ?? null);
   const currentId = ORDER[Math.min(stepIdx, ORDER.length - 1)];
 
   const stepMeta = useMemo(() => {
@@ -47,16 +48,27 @@ export default function ManagerOnboardingPage() {
   const skipStep = () => {
     setStepIdx((i) => Math.min(i + 1, ORDER.length - 1));
   };
+  const goBack = () => setStepIdx((i) => Math.max(i - 1, 0));
+  const skipOptional = () => {
+    markSkipped(ORDER[Math.min(stepIdx, ORDER.length - 1)]);
+    skipStep();
+  };
+
+  // Resume where the person left off (after adding a property, a reload or a verification
+  // link) instead of always restarting at "Your account". Runs once, when facts first load.
+  const resumed = useRef(false);
+  useEffect(() => {
+    if (resumed.current || !progress || !skipsLoaded) return;
+    resumed.current = true;
+    // The team step is optional, so it never pulls someone back into the wizard.
+    const firstOpen = ORDER.findIndex((id) => id !== "complete" && id !== "team" && !progress.completedIds.has(id) && !skippedSteps.has(id));
+    setStepIdx(firstOpen === -1 ? ORDER.length - 1 : firstOpen);
+  }, [progress, skippedSteps, skipsLoaded]);
 
   const saveOrganization = useMutation({
     mutationFn: async (name: string) => {
-      const { error } = await supabase.rpc('save_manager_company_settings_atomic', {
-        p_payload: {
-          company_name: name,
-          brand_config: { onboarding: { organizationComplete: true } },
-        },
-      });
-      if (error) throw error;
+      if (!userId) throw new Error("Not signed in");
+      await saveOnboardingSettings(userId, { companyName: name, onboardingPatch: { organizationComplete: true } });
     },
     onSuccess: async () => {
       setOrganizationName("");
@@ -72,13 +84,9 @@ export default function ManagerOnboardingPage() {
 
   const savePortfolio = useMutation({
     mutationFn: async (groups: string[]) => {
-      const { error } = await supabase.rpc('save_manager_company_settings_atomic', {
-        p_payload: {
-          company_name: "CALQULUS Workspace",
-          brand_config: { onboarding: { propertyGroups: groups } },
-        },
-      });
-      if (error) throw error;
+      if (!userId) throw new Error("Not signed in");
+      // Keeps the organization name and every other setting; only records the property types.
+      await saveOnboardingSettings(userId, { onboardingPatch: { propertyGroups: groups } });
     },
     onSuccess: async () => {
       toast({ title: "Saved", description: "Property types saved." });
@@ -87,31 +95,6 @@ export default function ManagerOnboardingPage() {
     },
     onError: (error) => {
       errorToast("Could not save portfolio", error, "Check your connection and try again.");
-    },
-  });
-
-  const inviteTeam = useMutation({
-    mutationFn: async (email: string) => {
-      // Real invite via existing auth mechanism (same pattern as SubmanagerManagement).
-      const { error } = await supabase.auth.signUp({
-        email,
-        password: crypto.randomUUID().replace(/-/g, "").slice(0, 16) + "Aa1!",
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: { full_name: email.split("@")[0], role: "submanager", manager_id: managerId },
-        },
-      });
-      if (error) throw error;
-    },
-    onSuccess: async () => {
-      setTeamEmail("");
-      clearTeamDraft();
-      toast({ title: "Invite sent", description: "The team member will get an email with the invitation link." });
-      await refetch();
-      skipStep();
-    },
-    onError: (error) => {
-      errorToast("Could not invite team member", error, "Check the email address and try again.");
     },
   });
 
@@ -156,7 +139,7 @@ export default function ManagerOnboardingPage() {
         {/* Progress indicator — desktop pills */}
         <ol className="grid grid-cols-1 gap-2 sm:grid-cols-7">
           {MANAGER_ONBOARDING_STEPS.map((step, i) => {
-            const done = i < stepIdx || stepMeta.completedIds.has(step.id);
+            const done = stepMeta.completedIds.has(step.id);
             const active = i === stepIdx;
             return (
               <li key={step.id} className="flex-1">
@@ -225,7 +208,7 @@ export default function ManagerOnboardingPage() {
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
               <ResendVerificationButton email={user?.email} redirectTo={`${window.location.origin}/onboarding/manager`} />
-              <Button variant="ghost" onClick={skipStep} className="gap-1.5">
+              <Button variant="ghost" onClick={skipOptional} className="gap-1.5">
                 <SkipForward className="h-4 w-4" /> Skip for now
               </Button>
             </div>
@@ -262,7 +245,7 @@ export default function ManagerOnboardingPage() {
                   {orgSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Save and continue
                 </Button>
-                <Button type="button" variant="outline" onClick={skipStep}>
+                <Button type="button" variant="outline" onClick={goBack}>
                   <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
                 </Button>
               </div>
@@ -314,7 +297,7 @@ export default function ManagerOnboardingPage() {
                 {portfolioSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Continue
               </Button>
-              <Button type="button" variant="outline" onClick={skipStep}>
+              <Button type="button" variant="outline" onClick={goBack}>
                 <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
               </Button>
             </div>
@@ -329,7 +312,7 @@ export default function ManagerOnboardingPage() {
               <Button onClick={() => navigate("/properties")} className="gap-1.5">
                 Add a property <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button variant="outline" onClick={skipStep}>
+              <Button variant="outline" onClick={goBack}>
                 <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
               </Button>
             </div>
@@ -339,38 +322,20 @@ export default function ManagerOnboardingPage() {
         {currentId === "team" ? (
           <section className="rounded-xl border border-border bg-card p-6">
             <h2 className="font-heading text-lg font-semibold">Invite your team</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Submanagers help you run properties. You can add them later.</p>
-            <form
-              className="mt-4 space-y-3"
-              onSubmit={(event) => {
-                event.preventDefault();
-                const value = teamEmail.trim();
-                if (!value) return;
-                setTeamSaving(true);
-                void inviteTeam.mutateAsync(value).finally(() => setTeamSaving(false));
-              }}
-            >
-              <div>
-                <Label htmlFor="team-email">Teammate email</Label>
-                <Input
-                  id="team-email"
-                  type="email"
-                  className="mt-1.5"
-                  placeholder="colleague@company.com"
-                  value={teamEmail}
-                  onChange={(event) => setTeamEmail(event.target.value)}
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button type="submit" disabled={teamSaving || !teamEmail.trim()}>
-                  {teamSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  <Users className="mr-1.5 h-4 w-4" /> Send invite
-                </Button>
-                <Button type="button" variant="outline" onClick={skipStep}>
-                  <SkipForward className="mr-1.5 h-4 w-4" /> Skip for now
-                </Button>
-              </div>
-            </form>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Submanagers help you run properties. You choose their name, password and what they can see in Settings. This step is optional.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Button onClick={() => navigate("/settings?tab=submanagers")} className="gap-1.5">
+                <Users className="h-4 w-4" /> Open team settings
+              </Button>
+              <Button type="button" variant="outline" onClick={skipOptional}>
+                <SkipForward className="mr-1.5 h-4 w-4" /> Skip for now
+              </Button>
+              <Button type="button" variant="ghost" onClick={goBack}>
+                <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
+              </Button>
+            </div>
           </section>
         ) : null}
 

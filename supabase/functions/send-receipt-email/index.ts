@@ -55,7 +55,7 @@ serve(async (req) => {
     const {
       tenantEmail, tenantName, invoiceNumber, amount, paidDate, dueDate,
       property, unit, mpesaReceipt, bankRef, paymentMethod = "M-Pesa",
-      destination, lines, billsBalance, outstandingBalance = 0, companyName = "Property Management",
+      destination, paidBy, lines, billsBalance, outstandingBalance = 0, companyName = "Property Management",
       primaryColor = "#2F6FED", secondaryColor = "#1B3A6B",
       footerMessage = "Thank you for your payment!", logoUrl,
     } = body;
@@ -133,6 +133,7 @@ serve(async (req) => {
         ${formattedDue ? `<tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:11px 16px;color:#666;font-size:13px;">Due Date</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${esc(formattedDue)}</td></tr>` : ""}
         <tr style="border-bottom:1px solid #e2e8f0;background:#fafafa;"><td style="padding:11px 16px;color:#666;font-size:13px;">Payment Date</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${esc(formattedPaid)}</td></tr>
         <tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:11px 16px;color:#666;font-size:13px;">Method</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${methodIcon} ${esc(paymentMethod)}</td></tr>
+        ${paidBy ? `<tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:11px 16px;color:#666;font-size:13px;">Paid by</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${esc(paidBy)}</td></tr>` : ""}
         ${destination ? `<tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:11px 16px;color:#666;font-size:13px;">Paid to</td><td style="padding:11px 16px;text-align:right;font-weight:600;">${esc(destination)}</td></tr>` : ""}
         <tr style="border-bottom:1px solid #e2e8f0;background:#fafafa;"><td style="padding:11px 16px;color:#666;font-size:13px;">Reference</td><td style="padding:11px 16px;text-align:right;font-weight:600;font-family:monospace;">${esc(ref)}</td></tr>
         <tr style="background:${esc(primaryColor)};"><td style="padding:14px 16px;color:#fff;font-weight:700;font-size:15px;">Amount Paid</td><td style="padding:14px 16px;text-align:right;color:#fff;font-weight:800;font-size:20px;">${esc(fmt(Number(amount)))}</td></tr>

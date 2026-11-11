@@ -15,6 +15,8 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { UserPlus, Trash2, User, Building2, Mail, Phone } from "lucide-react";
 import { errorToast } from "@/shared/lib/errorToast";
+import IncomingManagementRequests from "@/features/landlord/components/IncomingManagementRequests";
+import ArchivedManagementPeriods from "@/features/landlord/components/ArchivedManagementPeriods";
 
 interface PropertyLandlordLink {
   id: string;
@@ -198,6 +200,8 @@ const LandlordLinksManager = () => {
   return (
     <>
       <div className="space-y-6">
+        <IncomingManagementRequests />
+        <ArchivedManagementPeriods />
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24 w-full" />)
         ) : landlords.length === 0 && unlinkedProperties.length === 0 ? (

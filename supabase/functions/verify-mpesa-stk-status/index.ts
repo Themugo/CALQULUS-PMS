@@ -163,6 +163,10 @@ serve(async (req) => {
             // pending -> completed transition and all financial effects.
             const mpesaReceiptNumber = queryResult.MpesaReceiptNumber ?? transaction.bank_reference ?? reference;
 
+            await supabase.rpc('confirm_stk_receipt_atomic', {
+              p_transaction_id: transaction.id, p_receipt: mpesaReceiptNumber, p_amount: Number(transaction.amount),
+            });
+
             const processResp = await fetch(`${SUPABASE_URL}/functions/v1/process-payment`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SERVICE_KEY}` },

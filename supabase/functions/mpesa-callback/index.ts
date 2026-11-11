@@ -15,7 +15,8 @@ import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { timingSafeEqual, recordWebhookFailure } from "../_shared/webhookHelpers.ts";
 import { validateMpesaCallback, extractMpesaMetadata } from "../_shared/webhookSchemas.ts";
-import { requireEnv } from "../_shared/env.ts";
+import { requireEnv, getEnv } from "../_shared/env.ts";
+import { isCallbackIpAllowed, clientIpFromHeaders } from "../_shared/callbackIp.ts";
 import { roundMoney } from "../_shared/money.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
@@ -30,6 +31,13 @@ serve(async (req) => {
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
   try {
+    // ── 0. Optional source-IP allow-list (MPESA_CALLBACK_ALLOWED_IPS; off when unset) ──
+    if (!isCallbackIpAllowed(req.headers, getEnv("MPESA_CALLBACK_ALLOWED_IPS"))) {
+      log("Callback from IP outside allow-list", { ip: clientIpFromHeaders(req.headers) });
+      return new Response(JSON.stringify({ ResultCode: 1, ResultDesc: "Unauthorized" }),
+        { status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
     // ── 1. Validate webhook secret ───────────────────────────────────
     const url = new URL(req.url);
     const urlSecret = url.searchParams.get("secret");
@@ -172,6 +180,14 @@ serve(async (req) => {
           }
         } catch { /* single-invoice fallback */ }
       }
+
+      // Record the provider receipt and the amount actually paid on the still-pending row
+      // BEFORE allocation is attempted. If allocation then fails, the stale-prompt sweeper can
+      // see this payment is confirmed money and will not mark it failed; the retry job picks it up.
+      const { error: confirmError } = await supabase.rpc("confirm_stk_receipt_atomic", {
+        p_transaction_id: transaction.id, p_receipt: mpesaReceiptNumber, p_amount: paidAmount,
+      });
+      if (confirmError) log("Could not stamp provider receipt (continuing)", { error: confirmError.message });
 
       // Delegate all allocation, balance tracking, and notifications to
       // process-payment. Critical: this MUST be awaited and its response

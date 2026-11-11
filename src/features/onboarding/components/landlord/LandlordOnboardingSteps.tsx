@@ -10,6 +10,7 @@ export const LANDLORD_ONBOARDING_STEPS = [
   { id: "profile", label: "Your profile", description: "How you'd like to be known." },
   { id: "portfolio", label: "Your portfolio", description: "What kind of properties do you own?" },
   { id: "first-property", label: "First property", description: "Add the first building or unit." },
+  { id: "team", label: "Your team", description: "Hire a manager or caretaker (optional)." },
   { id: "financials", label: "Financial setup", description: "Payout preferences (optional)." },
   { id: "complete", label: "Complete", description: "Your portfolio is ready." },
 ] as const;

@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useToast } from "@/shared/hooks/use-toast";
+import { saveOnboardingSettings } from "@/features/onboarding/lib/saveOnboarding";
 import { errorToast } from "@/shared/lib/errorToast";
 import AgencyLayout from "@/features/agency/components/AgencyLayout";
 import { AGENCY_ROUTES } from "@/features/agency/lib/agencyPaths";
@@ -24,6 +25,7 @@ import {
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { OnboardingCompletion } from "@/features/onboarding/components/OnboardingCompletion";
 import { buildCompletionModel, agencyCompletionItems, agencyRecommendations } from "@/features/onboarding/lib/completion";
+import { useSkippedOnboardingSteps } from "../hooks/useSkippedOnboardingSteps";
 import { useOnboardingDraft } from "@/features/onboarding/hooks/useOnboardingDraft";
 import { ResendVerificationButton } from "@/features/auth/components/ResendVerificationButton";
 
@@ -50,26 +52,9 @@ async function fetchAgencyFacts(userId: string): Promise<AgencyFactsRow> {
   };
 }
 
-/** Read-modify-write merge of company_settings.brand_config.onboarding. */
-async function saveOnboardingConfig(userId: string, companyName: string, patch: Record<string, unknown>) {
-  const { data: existing } = await supabase
-    .from("company_settings")
-    .select("brand_config")
-    .eq("manager_user_id", userId)
-    .maybeSingle();
-  const current = (existing?.brand_config && typeof existing.brand_config === "object"
-    ? existing.brand_config
-    : {}) as Record<string, unknown>;
-  const onboarding = (current.onboarding && typeof current.onboarding === "object"
-    ? current.onboarding
-    : {}) as Record<string, unknown>;
-  const { error } = await supabase.rpc('save_manager_company_settings_atomic', {
-    p_payload: {
-      company_name: companyName,
-      brand_config: { ...current, onboarding: { ...onboarding, ...patch } },
-    },
-  });
-  if (error) throw error;
+/** Merges into brand_config.onboarding and keeps every other stored setting intact. */
+async function saveOnboardingConfig(userId: string, companyName: string | null, patch: Record<string, unknown>) {
+  await saveOnboardingSettings(userId, { companyName, onboardingPatch: patch });
 }
 
 export default function AgencyOnboardingPage() {
@@ -77,6 +62,8 @@ export default function AgencyOnboardingPage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [stepIdx, setStepIdx] = useState(0);
+  const { skipped: skippedSteps, loaded: skipsLoaded, markSkipped } = useSkippedOnboardingSteps(userId);
+
   const userId = user?.id ?? null;
   const [agencyName, setAgencyName, clearAgencyNameDraft] = useOnboardingDraft("agency-name", userId);
   const [focus, setFocus] = useState<AgencyPortfolioFocus | null>(null);
@@ -108,15 +95,27 @@ export default function AgencyOnboardingPage() {
   const currentId = ORDER[Math.min(stepIdx, ORDER.length - 1)];
 
   const skipStep = () => setStepIdx((i) => Math.min(i + 1, ORDER.length - 1));
+
+  // Resume at the first unfinished DATA step once facts load. Account/verification/team are
+  // navigation steps that are never auto-completed, so they do not hold the person back.
+  const resumed = useRef(false);
+  useEffect(() => {
+    if (resumed.current || !facts || !skipsLoaded) return;
+    resumed.current = true;
+    const dataSteps = ["profile", "portfolio", "clients", "property"];
+    const firstOpen = ORDER.findIndex((id) => dataSteps.includes(id) && !completedIds.has(id) && !skippedSteps.has(id));
+    setStepIdx(firstOpen === -1 ? ORDER.length - 1 : firstOpen);
+  }, [facts, completedIds, skippedSteps, skipsLoaded]);
   const goBack = () => setStepIdx((i) => Math.max(i - 1, 0));
-  const resolvedCompanyName = agencyName.trim() || facts?.agencyName || "My agency";
+  const skipOptional = () => {
+    markSkipped(ORDER[Math.min(stepIdx, ORDER.length - 1)]);
+    skipStep();
+  };
+  const resolvedCompanyName = agencyName.trim() || facts?.agencyName || null;
 
   const saveProfile = useMutation({
     mutationFn: async () => {
-      const { error: upsertError } = await supabase.rpc('save_manager_company_settings_atomic', {
-        p_payload: { company_name: agencyName.trim() },
-      });
-      if (upsertError) throw upsertError;
+      await saveOnboardingSettings(userId!, { companyName: agencyName.trim() });
     },
     onSuccess: () => {
       clearAgencyNameDraft();
@@ -207,7 +206,7 @@ export default function AgencyOnboardingPage() {
       <div className="space-y-6">
         <ol className="grid grid-cols-1 gap-2 sm:grid-cols-4 lg:grid-cols-8">
           {AGENCY_ONBOARDING_STEPS.map((step, i) => {
-            const done = i < stepIdx || completedIds.has(step.id);
+            const done = completedIds.has(step.id);
             const active = i === stepIdx;
             return (
               <li key={step.id} className="flex-1">
@@ -262,7 +261,7 @@ export default function AgencyOnboardingPage() {
                 Continue <ArrowRight className="h-4 w-4" />
               </Button>
               <ResendVerificationButton email={user?.email} redirectTo={`${window.location.origin}/agency/onboarding`} />
-              <Button variant="ghost" onClick={skipStep} className="gap-1.5">
+              <Button variant="ghost" onClick={skipOptional} className="gap-1.5">
                 <SkipForward className="h-4 w-4" /> Skip for now
               </Button>
             </div>
@@ -371,7 +370,7 @@ export default function AgencyOnboardingPage() {
                   {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Save and continue
                 </Button>
-                <Button type="button" variant="outline" onClick={skipStep}>
+                <Button type="button" variant="outline" onClick={skipOptional}>
                   <SkipForward className="mr-1.5 h-4 w-4" /> Skip for now
                 </Button>
               </div>
@@ -417,7 +416,7 @@ export default function AgencyOnboardingPage() {
                   {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   <Users className="mr-1.5 h-4 w-4" /> Save and continue
                 </Button>
-                <Button type="button" variant="outline" onClick={skipStep}>
+                <Button type="button" variant="outline" onClick={skipOptional}>
                   <SkipForward className="mr-1.5 h-4 w-4" /> Skip for now
                 </Button>
               </div>
@@ -469,7 +468,7 @@ export default function AgencyOnboardingPage() {
                   {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   <Users className="mr-1.5 h-4 w-4" /> Send invite
                 </Button>
-                <Button type="button" variant="outline" onClick={skipStep}>
+                <Button type="button" variant="outline" onClick={skipOptional}>
                   <SkipForward className="mr-1.5 h-4 w-4" /> Skip for now
                 </Button>
               </div>

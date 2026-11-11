@@ -1,6 +1,7 @@
 import { serve } from "std/http/server.ts";
 import { withMiddleware, errorResponse } from "../_shared/middleware.ts";
 import { requireEnv } from "../_shared/env.ts";
+import { stkChargeAmount } from "../_shared/mpesaAmount.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
 
@@ -49,6 +50,10 @@ serve(withMiddleware({
   const payable = rows.filter((r: any) => ["pending","overdue","partially_paid"].includes(r.status) && Number(r.balance_due) > 0);
   if (payable.length !== rows.length) throw errorResponse("One or more selected bills are already paid or unavailable", 409);
   const expected = payable.reduce((s: number, r: any) => s + Number(r.balance_due), 0);
+  // Charge the server-computed balance rounded UP to a whole shilling (see mpesaAmount.ts);
+  // the client figure is only sanity-checked.
+  const chargeAmount = stkChargeAmount(expected);
+  if (chargeAmount <= 0) throw errorResponse("These bills have no outstanding balance.", 400);
   if (Math.abs(Math.round(amount) - Math.round(expected)) > 1) throw errorResponse(`Amount mismatch: expected KES ${Math.round(expected)}`, 400);
 
   const primary = payable[0];
@@ -119,6 +124,9 @@ serve(withMiddleware({
   const password = btoa(`${shortcode}${passkey}${timestamp}`);
   const unitNumber = primary.unit_number || "HOSTEL";
   const accountReference = String(route.account_label || primary.unit_number || "HOSTEL").slice(0,12);
+  const destinationLabel = (resolvedPaymentType === "paybill"
+    ? `M-Pesa Paybill ${shortcode}${accountReference ? ` · Acc ${accountReference}` : ""}`
+    : `M-Pesa Till ${shortcode}`).slice(0, 120);
   // Create the reconciliation record BEFORE contacting Safaricom. If the STK call
   // succeeds but a database write fails, we must never end up with money in flight
   // and no local transaction to reconcile.
@@ -134,8 +142,9 @@ serve(withMiddleware({
   const { data: tx, error: txError } = await ctx.supabase.from('payment_transactions').insert({
     invoice_id: primary.invoice_id, tenant_id: invoice.tenant_id, manager_id: managerId, landlord_id: landlordId,
     payment_receiver_type: receiverType, unit_id: invoice.unit_id, property_id: invoice.property_id,
-    unit_number: unitNumber, amount: amount, phone_number: formattedPhone, payment_type: resolvedPaymentType,
+    unit_number: unitNumber, amount: chargeAmount, phone_number: formattedPhone, payment_type: resolvedPaymentType,
     status: 'initiating', initiated_at: new Date().toISOString(), callback_secret: callbackSecret, payer_party_id: party.id,
+    collection_account_id: route.id ?? null, destination_label: destinationLabel,
     notes: JSON.stringify({ shared_payment: true, invoice_ids: invoiceIds, payer_name: payerName.slice(0,160) })
   }).select('id').single();
   if (txError || !tx) throw errorResponse('Could not record payment transaction', 500);
@@ -146,7 +155,7 @@ serve(withMiddleware({
     body: JSON.stringify({
       BusinessShortCode: shortcode, Password: password, Timestamp: timestamp,
       TransactionType: resolvedPaymentType === 'paybill' ? 'CustomerPayBillOnline' : 'CustomerBuyGoodsOnline',
-      Amount: Math.round(amount), PartyA: formattedPhone, PartyB: shortcode, PhoneNumber: formattedPhone,
+      Amount: chargeAmount, PartyA: formattedPhone, PartyB: shortcode, PhoneNumber: formattedPhone,
       CallBackURL: `${SUPABASE_URL}/functions/v1/mpesa-callback?secret=${callbackSecret}`,
       AccountReference: accountReference,
       TransactionDesc: `Shared payment x${invoiceIds.length} - ${unitNumber}`,
@@ -170,7 +179,11 @@ serve(withMiddleware({
     console.error('[initiate-shared-payment] failed to attach Safaricom IDs', { transactionId: tx.id, error: txUpdateError.message });
   }
   const { error: consumeError } = await ctx.supabase.rpc('consume_shared_payment_link_atomic', { p_token: token, p_grant: accessGrant });
-  if (consumeError) throw errorResponse(consumeError.message || 'Payment link could not be consumed', 409);
+  if (consumeError) {
+    // The STK prompt is already on the payer's phone. Failing here would invite a second payment,
+    // so record it and carry on; the callback still reconciles by callback secret.
+    console.error('[initiate-shared-payment] could not consume payment link', { transactionId: tx.id, error: consumeError.message });
+  }
 
   return { success: true, checkoutRequestId: result.CheckoutRequestID, merchantRequestId: result.MerchantRequestID, transactionId: tx.id, invoiceIds, payerName };
 }));

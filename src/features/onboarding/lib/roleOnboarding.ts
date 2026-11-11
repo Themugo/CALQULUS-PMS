@@ -47,7 +47,7 @@ const ROLE_PATHS: Record<RoleOnboardingRole, RoleStepDef[]> = {
   manager: [
     { id: "company", label: "Company", description: "Name your organization on receipts and statements", optional: true, href: "/settings?tab=company" },
     { id: "property", label: "Property", description: "Add the first building you manage", optional: false, href: "/properties" },
-    { id: "units", label: "Units", description: "Set how many units tenants can occupy", optional: false, href: "/properties/:firstPropertyId" },
+    { id: "units", label: "Units", description: "Set how many units tenants can occupy", optional: false, href: "/properties" },
     { id: "tenants", label: "Tenants", description: "Invite a tenant — you enter rent and deposit for them", optional: false, href: "/invites" },
     { id: "billing", label: "Billing", description: "Create a lease and issue the first invoice", optional: false, href: "/leases" },
     { id: "payments", label: "Payments", description: "Connect collections or record the first payment", optional: true, href: "/settings?tab=payments" },
@@ -61,12 +61,12 @@ const ROLE_PATHS: Record<RoleOnboardingRole, RoleStepDef[]> = {
   ],
   landlord: [
     { id: "profile", label: "Profile", description: "Where collections land", optional: true, href: "/landlord/settings" },
-    { id: "properties", label: "Properties", description: "Link the buildings you own", optional: false, href: "/landlord/properties" },
-    { id: "revenue", label: "Revenue", description: "See collected vs expected", optional: true, href: "/landlord/revenue" },
+    { id: "properties", label: "Properties", description: "Link the buildings you own", optional: false, href: "/landlord/portfolio" },
+    { id: "revenue", label: "Revenue", description: "See collected vs expected", optional: true, href: "/landlord/financials" },
   ],
   tenant: [
     { id: "invite", label: "Invitation", description: "Use the code from your manager's invite", optional: false, href: "/tenant/invitation" },
-    { id: "profile", label: "Profile", description: "Name, phone — rent is already set", optional: false, href: "/tenant/account" },
+    { id: "profile", label: "Profile", description: "Name, phone — rent is already set", optional: false, href: "/portal/profile" },
     { id: "lease", label: "Lease", description: "Accept the existing lease terms", optional: false, href: "/portal" },
   ],
 };
@@ -88,8 +88,10 @@ export function resolveRoleOnboarding(
     };
   });
 
-  // Second pass: mark current (first incomplete-and-not-skipped step)
-  const currentIndex = steps.findIndex((step) => !step.complete && !step.skipped);
+  // Second pass: mark current. Only REQUIRED steps hold the journey open: an optional step
+  // (company name, payments...) is offered but never blocks "complete", otherwise a person
+  // who skips it can never reach 100%.
+  const currentIndex = steps.findIndex((step) => !step.complete && !step.skipped && !step.optional);
   const resolved: RoleStep[] = steps.map((step, i) => ({
     ...step,
     status: (step.complete || step.skipped
@@ -102,7 +104,9 @@ export function resolveRoleOnboarding(
   const currentStepId = currentIndex >= 0 ? resolved[currentIndex].id : null;
   const completedCount = resolved.filter((step) => step.complete || step.skipped).length;
   const totalCount = resolved.length;
-  const percent = totalCount === 0 ? (totalCount ? 100 : 0) : Math.round((completedCount / totalCount) * 100);
+  const requiredSteps = resolved.filter((step) => !step.optional);
+  const requiredDone = requiredSteps.filter((step) => step.complete).length;
+  const percent = requiredSteps.length === 0 ? 100 : Math.round((requiredDone / requiredSteps.length) * 100);
   const isComplete = currentStepId === null;
 
   const nextAction = currentStepId

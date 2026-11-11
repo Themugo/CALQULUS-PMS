@@ -29,7 +29,7 @@ import { serve } from "std/http/server.ts";
 import { createClient } from "supabase/supabase-js@2";
 import { requireEnv, getEnv } from "../_shared/env.ts";
 import { timingSafeEqual, recordWebhookFailure } from "../_shared/webhookHelpers.ts";
-import { hmacSha512Hex } from "../_shared/paystackMobileMoney.ts";
+import { hmacSha512Hex, isKesCharge } from "../_shared/paystackMobileMoney.ts";
 import { roundMoney } from "../_shared/money.ts";
 
 const SUPABASE_URL = requireEnv("SUPABASE_URL");
@@ -127,6 +127,9 @@ serve(async (req) => {
     switch (eventType) {
       case "charge.success": {
         if (!reference) throw new Error("charge.success missing reference");
+        if (!isKesCharge(data.currency)) {
+          throw new Error(`charge.success currency ${String(data.currency)} is not KES for reference=${reference}`);
+        }
 
         if (isManagerPlatformPayment) {
           const invoiceId = metadata.invoice_id as string | undefined;

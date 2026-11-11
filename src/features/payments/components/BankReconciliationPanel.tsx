@@ -105,6 +105,13 @@ const BankReconciliationPanel: React.FC<BankReconciliationPanelProps> = ({ manag
       });
       if (error) throw error;
       if (!data?.success) throw new Error('Bank reconciliation did not complete');
+      // The payment is recorded; send the receipt/notifications once. A failure here must not
+      // report the reconciliation as failed.
+      const transactionId = (data as { transaction_id?: string }).transaction_id;
+      if (transactionId && !(data as { idempotent?: boolean }).idempotent) {
+        const { error: announceError } = await supabase.functions.invoke('announce-payment', { body: { transactionId } });
+        if (announceError) toast({ title: 'Payment matched, receipt not sent', description: 'The payment is recorded. Resend the receipt from the payment.', variant: 'destructive' });
+      }
     },
     onSuccess: () => {
       toast({ title: 'Payment matched', description: 'Invoice updated and receipt sent.' });
