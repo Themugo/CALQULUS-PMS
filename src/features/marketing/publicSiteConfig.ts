@@ -1,5 +1,6 @@
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+import { formatKes, type CommercialTier } from "@/shared/lib/commercialCatalog";
 
 export type PublicSiteSectionId = "hero" | "property-types" | "portals" | "why" | "featured" | "trust" | "cta";
 export type PublicSiteRailId = "search" | "highlights" | "insights";
@@ -141,6 +142,13 @@ export interface PublicSiteBrand {
   logoUrl: string | null;
 }
 
+export interface PublicSiteHeadings {
+  propertyTypes: { eyebrow: string; title: string; browseLabel: string; browseHref: string };
+  portals: { eyebrow: string; title: string };
+  featured: { eyebrow: string; title: string; browseLabel: string; browseHref: string; emptyCopy: string };
+  rail: { highlightsTitle: string; insightsTitle: string };
+}
+
 export interface PublicSiteConfig {
   version: 1;
   brand: PublicSiteBrand;
@@ -173,6 +181,7 @@ export interface PublicSiteConfig {
     floatingCards: PublicSiteHeroPromo[];
     pills: PublicSiteHeroPill[];
   };
+  headings: PublicSiteHeadings;
   propertyTypes: PublicSitePropertyType[];
   portals: PublicSitePortal[];
   why: {
@@ -234,7 +243,7 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
       columns: [
         { id: "solutions", title: "Solutions", items: [{ id: "s1", label: "Property Management", href: "#why" }, { id: "s2", label: "Tenant Management", href: "#portals" }, { id: "s3", label: "Lease Management", href: "#why" }, { id: "s4", label: "Financial Management", href: "#why" }, { id: "s5", label: "Maintenance Management", href: "#why" }] },
         { id: "properties", title: "Properties", items: [{ id: "p1", label: "Residentials", href: "/discover/residential" }, { id: "p2", label: "Estates", href: "/discover/estates" }, { id: "p3", label: "Offices", href: "/discover/offices" }, { id: "p4", label: "Institutions", href: "/discover/institutions" }] },
-        { id: "resources", title: "Resources", items: [{ id: "r1", label: "Insights", href: "#insights" }, { id: "r2", label: "Portals", href: "#portals" }, { id: "r3", label: "Pricing", href: PUBLIC_ROUTES.pricing }, { id: "r4", label: "Property Search", href: "/discover/residential" }] },
+        { id: "resources", title: "Resources", items: [{ id: "r1", label: "Sign in", href: PUBLIC_ROUTES.portalAccessSignIn }, { id: "r2", label: "Portals", href: "#portals" }, { id: "r3", label: "Pricing", href: PUBLIC_ROUTES.pricing }, { id: "r4", label: "Property Search", href: "/discover/residential" }] },
         { id: "company", title: "Company", items: [{ id: "c1", label: "About Us", href: "#trust" }, { id: "c2", label: "Contact", href: "mailto:enterprise@calqulusrms.com" }, { id: "c3", label: "Privacy Policy", href: PUBLIC_ROUTES.legalPrivacy }, { id: "c4", label: "Terms of Service", href: PUBLIC_ROUTES.legalTerms }] },
       ],
       socials: [
@@ -292,10 +301,22 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     ],
     pills: [
       { id: "portals", label: "4 Powerful Portals", icon: "portals", enabled: true },
-      { id: "secure", label: "100% Secure", icon: "secure", enabled: true },
+      { id: "secure", label: "Secure by Design", icon: "secure", enabled: true },
       { id: "insights", label: "Real-time Insights", icon: "insights", enabled: true },
       { id: "reliable", label: "Scalable & Reliable", icon: "reliable", enabled: true },
     ],
+  },
+  headings: {
+    propertyTypes: { eyebrow: "EXPLORE PROPERTY TYPES", title: "Different properties. Smarter management.", browseLabel: "Browse listings", browseHref: "/discover/residential" },
+    portals: { eyebrow: "ACCESS YOUR PORTAL", title: "Choose your portal to get started." },
+    featured: {
+      eyebrow: "FEATURED PROPERTIES",
+      title: "Discover premium properties across every sector.",
+      browseLabel: "Browse listings",
+      browseHref: "/discover/residential",
+      emptyCopy: "No featured properties are published yet. Browse all listings to see what is available.",
+    },
+    rail: { highlightsTitle: "Platform highlights", insightsTitle: "Latest insights" },
   },
   propertyTypes: [
     { id: "residential", title: "Residentials", description: "Houses, Apartments, Condos", image: PROPERTY_IMAGES.residential, icon: "home", href: "/discover/residential", enabled: true },
@@ -321,16 +342,16 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     ],
   },
   featured: [
-    { id: "f1", eyebrow: "RESIDENTIAL", title: "Sunset Apartments", location: "Westlands, Nairobi", detail: "2 – 3 Bedrooms · Modern Amenities", price: "KES 45,000/mo", image: PROPERTY_IMAGES.residential, href: "/discover/residential", enabled: true },
-    { id: "f2", eyebrow: "ESTATE", title: "Greenfield Estate", location: "Ruiru, Kiambu", detail: "Gated Community · 24/7 Security", price: "KES 35,000/mo", image: PROPERTY_IMAGES.commercial, href: "/discover/estates", enabled: true },
-    { id: "f3", eyebrow: "OFFICE", title: "Executive Towers", location: "Upper Hill, Nairobi", detail: "Premium Offices · Excellent Location", price: "KES 120,000/mo", image: PROPERTY_IMAGES.office, href: "/discover/offices", enabled: true },
-    { id: "f4", eyebrow: "RESIDENTIAL", title: "Parkview Villas", location: "Karen, Nairobi", detail: "4 Bedrooms · Private Garden", price: "KES 250,000/mo", image: PROPERTY_IMAGES.residential, href: "/discover/residential", enabled: true },
+    { id: "f1", eyebrow: "RESIDENTIAL", title: "Sunset Apartments", location: "Westlands, Nairobi", detail: "2 – 3 Bedrooms · Modern Amenities", price: "KES 45,000/mo", image: PROPERTY_IMAGES.residential, href: "/discover/residential", enabled: false },
+    { id: "f2", eyebrow: "ESTATE", title: "Greenfield Estate", location: "Ruiru, Kiambu", detail: "Gated Community · 24/7 Security", price: "KES 35,000/mo", image: PROPERTY_IMAGES.commercial, href: "/discover/estates", enabled: false },
+    { id: "f3", eyebrow: "OFFICE", title: "Executive Towers", location: "Upper Hill, Nairobi", detail: "Premium Offices · Excellent Location", price: "KES 120,000/mo", image: PROPERTY_IMAGES.office, href: "/discover/offices", enabled: false },
+    { id: "f4", eyebrow: "RESIDENTIAL", title: "Parkview Villas", location: "Karen, Nairobi", detail: "4 Bedrooms · Private Garden", price: "KES 250,000/mo", image: PROPERTY_IMAGES.residential, href: "/discover/residential", enabled: false },
   ],
   highlights: [
     { id: "h1", value: "Role-based", label: "Workspaces for every stakeholder", icon: "users", enabled: true },
     { id: "h2", value: "Connected", label: "Property records linked across workflows", icon: "property", enabled: true },
     { id: "h3", value: "Auditable", label: "Activity visible across core operations", icon: "support", enabled: true },
-    { id: "h4", value: "Configurable", label: "Public experience managed from one studio", icon: "uptime", enabled: true },
+    { id: "h4", value: "M-Pesa ready", label: "Rent collected by STK push, receipted instantly", icon: "uptime", enabled: true },
   ],
   insights: [
     { id: "i1", category: "Insights", title: "Publish your first CALQULUS guide", meta: "Admin-managed", image: PROPERTY_IMAGES.residential, href: "#insights", enabled: false },
@@ -338,10 +359,17 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     { id: "i3", category: "Insights", title: "Add a market or product update", meta: "Admin-managed", image: PROPERTY_IMAGES.commercial, href: "#insights", enabled: false },
   ],
   trust: {
-    eyebrow: "TRUST & PARTNERSHIPS",
+    eyebrow: "TRUST & INTEGRATIONS",
     title: "Built for serious property operations",
-    copy: "Publish verified organizations, approved partner marks and real customer stories here from Public Site Studio.",
-    logos: [],
+    copy: "Collect rent where your tenants already pay, reconcile every deposit, and keep an auditable record of each payment and receipt.",
+    logos: [
+      { id: "t-mpesa", name: "M-Pesa STK Push", image: null, href: "#", enabled: true },
+      { id: "t-cards", name: "Paystack Cards", image: null, href: "#", enabled: true },
+      { id: "t-bank", name: "Bank Reconciliation", image: null, href: "#", enabled: true },
+      { id: "t-receipts", name: "Instant Receipts", image: null, href: "#", enabled: true },
+      { id: "t-whatsapp", name: "WhatsApp Notices", image: null, href: "#", enabled: true },
+      { id: "t-audit", name: "Audit Trail", image: null, href: "#", enabled: true },
+    ],
     quote: "Verified customer stories and partner relationships can be published here as they are approved.",
     person: "Public Site Studio",
     role: "Managed trust content",
@@ -364,8 +392,8 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
   },
   cta: {
     eyebrow: "READY TO TRANSFORM YOUR REAL ESTATE MANAGEMENT?",
-    title: "Join thousands of property professionals already growing with CALQULUS.",
-    copy: "Bring property operations, people and performance into one connected experience.",
+    title: "Run your whole portfolio from one connected workspace.",
+    copy: "Properties, tenants, rent collection and maintenance in one place. Plans start at {startingPrice} per property each month.",
     primaryLabel: "Get Started",
     primaryHref: PUBLIC_ROUTES.portalAccessSignUp,
     secondaryLabel: "Contact Sales",
@@ -402,6 +430,40 @@ function safeUrl(value: unknown, fallback: string): string {
   if (!url || /^(?:javascript|data|vbscript):/i.test(url)) return fallback;
   if (/^(?:https?:\/\/|mailto:|tel:|#|\/|\?)/i.test(url)) return url;
   return fallback;
+}
+
+function mergeHeadings(input: unknown): PublicSiteHeadings {
+  const d = DEFAULT_PUBLIC_SITE_CONFIG.headings;
+  const h = isRecord(input) ? input : {};
+  const pt = isRecord(h.propertyTypes) ? h.propertyTypes : {};
+  const po = isRecord(h.portals) ? h.portals : {};
+  const fe = isRecord(h.featured) ? h.featured : {};
+  const ra = isRecord(h.rail) ? h.rail : {};
+  return {
+    propertyTypes: { eyebrow: safeText(pt.eyebrow, d.propertyTypes.eyebrow), title: safeText(pt.title, d.propertyTypes.title), browseLabel: safeText(pt.browseLabel, d.propertyTypes.browseLabel), browseHref: safeUrl(pt.browseHref, d.propertyTypes.browseHref) },
+    portals: { eyebrow: safeText(po.eyebrow, d.portals.eyebrow), title: safeText(po.title, d.portals.title) },
+    featured: {
+      eyebrow: safeText(fe.eyebrow, d.featured.eyebrow),
+      title: safeText(fe.title, d.featured.title),
+      browseLabel: safeText(fe.browseLabel, d.featured.browseLabel),
+      browseHref: safeUrl(fe.browseHref, d.featured.browseHref),
+      emptyCopy: safeText(fe.emptyCopy, d.featured.emptyCopy),
+    },
+    rail: { highlightsTitle: safeText(ra.highlightsTitle, d.rail.highlightsTitle), insightsTitle: safeText(ra.insightsTitle, d.rail.insightsTitle) },
+  };
+}
+
+/**
+ * Copy may carry a {startingPrice} token. It resolves to the lowest live
+ * per-property rate from subscription_tiers, so the homepage never quotes a
+ * price the billing catalogue no longer carries. With no usable tier the
+ * sentence is dropped rather than showing a stale or invented figure.
+ */
+export function resolveStartingPrice(copy: string, tiers: Pick<CommercialTier, "pricePerProperty">[]): string {
+  if (!copy.includes("{startingPrice}")) return copy;
+  const rates = tiers.map((t) => t.pricePerProperty).filter((n) => Number.isFinite(n) && n > 0);
+  if (!rates.length) return copy.replace(/\s*[^.]*\{startingPrice\}[^.]*\.?/, "").trim();
+  return copy.split("{startingPrice}").join(formatKes(Math.min(...rates)));
 }
 
 export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
@@ -502,6 +564,7 @@ export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
       floatingCards: sourcePromos.length ? sourcePromos.map((item, i) => ({ id: safeText(item.id, `promo-${i}`), label: safeText(item.label, "FEATURED"), title: safeText(item.title, "Discover CALQULUS"), copy: safeText(item.copy, "Explore the connected property experience."), image: typeof item.image === "string" ? item.image : null, href: safeUrl(item.href, "#portals"), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.hero.floatingCards,
       pills: sourcePills.length ? sourcePills.map((item, i) => ({ id: safeText(item.id, `pill-${i}`), label: safeText(item.label, "CALQULUS"), icon: validIcon(item.icon, ["portals", "secure", "insights", "reliable"], "insights") as PublicSiteHeroPill["icon"], enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.hero.pills,
     },
+    headings: mergeHeadings(s.headings),
     propertyTypes: mergedPropertyTypes,
     portals: mergedPortals,
     why: {

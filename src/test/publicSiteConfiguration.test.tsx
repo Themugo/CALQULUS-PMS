@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { DEFAULT_PUBLIC_SITE_CONFIG, mergePublicSiteConfig } from "@/features/marketing/publicSiteConfig";
+import { DEFAULT_PUBLIC_SITE_CONFIG, mergePublicSiteConfig, resolveStartingPrice } from "@/features/marketing/publicSiteConfig";
 
 const migration = "supabase/migrations/20260905000003_public_site_configuration.sql";
 const brandMigration = "supabase/migrations/20260905000004_public_site_brand_svg.sql";
@@ -35,7 +35,12 @@ describe("public site configuration contract", () => {
     expect(DEFAULT_PUBLIC_SITE_CONFIG.hero.pills).toHaveLength(4);
     expect(DEFAULT_PUBLIC_SITE_CONFIG.highlights).toHaveLength(4);
     expect(DEFAULT_PUBLIC_SITE_CONFIG.insights).toHaveLength(3);
-    expect(DEFAULT_PUBLIC_SITE_CONFIG.trust.logos).toHaveLength(0);
+    // Trust strip lists only integrations that exist in the product, never partner marks.
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.trust.logos.map((x) => x.name)).toEqual(expect.arrayContaining(["M-Pesa STK Push", "Bank Reconciliation"]));
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.trust.logos.every((x) => x.href === "#" && x.image === null)).toBe(true);
+    // No invented listings or unsubstantiated claims ship as default public content.
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.featured.every((x) => !x.enabled)).toBe(true);
+    expect(JSON.stringify(DEFAULT_PUBLIC_SITE_CONFIG)).not.toMatch(/join thousands|100% secure/i);
     expect(DEFAULT_PUBLIC_SITE_CONFIG.marketingAds).toHaveLength(1);
     expect(DEFAULT_PUBLIC_SITE_CONFIG.rail.sections.map((x) => x.id)).toEqual(["search", "highlights", "insights"]);
     const ad = mergePublicSiteConfig({ marketingAds: [{ id: "a1", title: "Campaign", placement: "portals", mode: "replace", targetId: "agency", position: "bottom-right", size: "wide", enabled: true }] }).marketingAds[0];
@@ -64,5 +69,27 @@ describe("public site security boundary", () => {
     expect(sql).toContain("Unsupported public site configuration version");
     expect(sql).toContain("REVOKE ALL ON public.platform_public_site_config FROM PUBLIC, anon, authenticated");
     expect(sql).toContain("GRANT EXECUTE ON FUNCTION public.get_public_site_config() TO anon, authenticated, service_role");
+  });
+});
+
+describe("homepage headings and live pricing are backend-driven", () => {
+  it("defaults equal the long-standing headings and a stored config can override each one", () => {
+    expect(DEFAULT_PUBLIC_SITE_CONFIG.headings.portals.title).toBe("Choose your portal to get started.");
+    const merged = mergePublicSiteConfig({ headings: { featured: { title: "Now letting", browseHref: "javascript:alert(1)" }, rail: { insightsTitle: "News" } } });
+    expect(merged.headings.featured.title).toBe("Now letting");
+    expect(merged.headings.featured.browseHref).toBe("/discover/residential");
+    expect(merged.headings.rail.insightsTitle).toBe("News");
+    expect(merged.headings.rail.highlightsTitle).toBe("Platform highlights");
+  });
+
+  it("an older stored config with no headings still renders with defaults", () => {
+    expect(mergePublicSiteConfig({ version: 1 }).headings).toEqual(DEFAULT_PUBLIC_SITE_CONFIG.headings);
+  });
+
+  it("resolves the starting price from live tiers and never quotes a stale figure", () => {
+    const copy = "Tenants and rent. Plans start at {startingPrice} per property each month.";
+    expect(resolveStartingPrice(copy, [{ pricePerProperty: 800 }, { pricePerProperty: 450 }])).toContain("KES 450");
+    expect(resolveStartingPrice(copy, [])).toBe("Tenants and rent.");
+    expect(resolveStartingPrice("No token here.", [])).toBe("No token here.");
   });
 });

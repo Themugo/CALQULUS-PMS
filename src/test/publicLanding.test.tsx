@@ -141,7 +141,7 @@ describe("PublicLandingPage", () => {
   it("renders a deep-navy final CTA with get-started and sign-in actions", () => {
     renderAt("/");
     const heading = screen.getByRole("heading", {
-      name: /join thousands of property professionals already growing with calqulus\./i,
+      name: /run your whole portfolio from one connected workspace\./i,
     });
     const ctaSection = heading.closest("section");
     expect(ctaSection).not.toBeNull();
