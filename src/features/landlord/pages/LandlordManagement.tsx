@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/features/auth/AuthContext";
 import LandlordLayout from "@/features/landlord/components/LandlordLayout";
+import { LandlordCollectionAccount } from "@/features/landlord/components/LandlordCollectionAccount";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
@@ -74,6 +75,7 @@ export default function LandlordManagement() {
             <div className="rounded-lg border p-3"><p className="text-xs text-muted-foreground">Money authority</p><p className="mt-1 font-medium">{ownerMoney === 3 ? "Owner controls finance" : managerOps > 0 ? "Shared / delegated" : "Owner controlled"}</p><p className="text-xs text-muted-foreground">Collections: {r.owner_controls_collections ? "owner" : r.manager_can_collect ? "manager" : "not delegated"}</p></div>
             <div className="rounded-lg border p-3"><p className="text-xs text-muted-foreground">Owner portal</p><p className="mt-1 font-medium flex items-center gap-1"><Eye className="h-3.5 w-3.5" />{r.owner_portal_enabled ? "Enabled" : "Disabled"}</p><p className="text-xs text-muted-foreground">Reporting: {label(r.reporting_frequency)} · {label(r.reporting_delivery)}</p></div>
             <div className="rounded-lg border p-3"><p className="text-xs text-muted-foreground">Financial destination</p><p className="mt-1 font-medium flex items-center gap-1"><WalletCards className="h-3.5 w-3.5" />{label(r.payment_destination || "not configured")}</p><p className="text-xs text-muted-foreground">Owner share: {r.revenue_share_pct}%</p></div>
+            <LandlordCollectionAccount propertyId={r.property_id} destination={r.payment_destination} managerName={r.manager_name} />
             <div className="lg:col-span-4 flex flex-wrap gap-2 text-xs">
               <Badge variant="secondary"><ShieldCheck className="mr-1 h-3 w-3" /> Tenant operations remain governed by the operating relationship</Badge>
               <Badge variant="secondary"><FileBarChart className="mr-1 h-3 w-3" /> Reports: {label(r.reporting_frequency)}</Badge>

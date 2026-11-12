@@ -130,7 +130,7 @@ const PrivacyPolicy: React.FC = () => (
     </Section>
 
     <Section title="7. Security">
-      <p>All data is encrypted in transit (TLS 1.3) and at rest (AES-256). Access to production data is restricted to authorised personnel. We conduct regular security reviews. No system is perfectly secure — if you suspect unauthorised access to your account, contact us immediately at {EMAIL}.</p>
+      <p>Data is encrypted in transit (TLS) and at rest by our infrastructure provider. Access to production data is restricted to authorised personnel. We conduct regular security reviews. No system is perfectly secure — if you suspect unauthorised access to your account, contact us immediately at {EMAIL}.</p>
     </Section>
 
     <Section title="8. Changes to this policy">

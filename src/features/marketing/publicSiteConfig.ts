@@ -296,14 +296,14 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     ],
     floatingCards: [
       { id: "hero-promo-1", label: "NEW", title: "Smart Portfolio Insights", copy: "Make better property decisions with CALQULUS.", image: PROPERTY_IMAGES.commercial, href: "#why", enabled: true },
-      { id: "hero-promo-2", label: "LIST YOUR PROPERTY", title: "Showcase your available spaces", copy: "Put your property in front of the right audience.", image: PROPERTY_IMAGES.residential, href: "/discover/residential", enabled: true },
+      { id: "hero-promo-2", label: "FOR LANDLORDS", title: "See how your property performs", copy: "Rent collected, arrears and statements in one view.", image: PROPERTY_IMAGES.residential, href: PUBLIC_ROUTES.landlordLogin, enabled: true },
       { id: "hero-promo-3", label: "FOR PROPERTY PROFESSIONALS", title: "Modern real estate management", copy: "A complete connected workspace for property teams.", image: PROPERTY_IMAGES.office, href: PUBLIC_ROUTES.managerSignUp, enabled: true },
     ],
     pills: [
       { id: "portals", label: "4 Powerful Portals", icon: "portals", enabled: true },
       { id: "secure", label: "Secure by Design", icon: "secure", enabled: true },
-      { id: "insights", label: "Real-time Insights", icon: "insights", enabled: true },
-      { id: "reliable", label: "Scalable & Reliable", icon: "reliable", enabled: true },
+      { id: "insights", label: "Portfolio Insights", icon: "insights", enabled: true },
+      { id: "reliable", label: "Built to Scale", icon: "reliable", enabled: true },
     ],
   },
   headings: {
@@ -338,7 +338,7 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
       { id: "w1", title: "Manage Everything", copy: "Properties, tenants, leases, finances and maintenance — all in one place.", icon: "stack", enabled: true },
       { id: "w2", title: "Automate Operations", copy: "Reduce manual work and increase efficiency.", icon: "gear", enabled: true },
       { id: "w3", title: "Real-time Insights", copy: "Better information for better decisions.", icon: "chart", enabled: true },
-      { id: "w4", title: "Grow with Confidence", copy: "Built to scale from one property to thousands.", icon: "leaf", enabled: true },
+      { id: "w4", title: "Grow with Confidence", copy: "Built to scale from a single property to a large portfolio.", icon: "leaf", enabled: true },
     ],
   },
   featured: [
@@ -380,8 +380,8 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
   ],
   search: {
     title: "Quick Search",
-    copy: "Find a property or space for your next move.",
-    tabs: [{ id: "buy", label: "Buy", enabled: true }, { id: "rent", label: "Rent", enabled: true }, { id: "all", label: "All", enabled: true }],
+    copy: "Browse rentals and spaces published on CALQULUS.",
+    tabs: [{ id: "rent", label: "Rent", enabled: true }, { id: "offices", label: "Offices", enabled: true }, { id: "all", label: "All", enabled: true }],
     placeholder: "Search location, property type...",
     chips: [
       { id: "c1", label: "Residential", href: "/discover/residential", icon: "home", enabled: true },
@@ -431,6 +431,15 @@ function safeUrl(value: unknown, fallback: string): string {
   if (/^(?:https?:\/\/|mailto:|tel:|#|\/|\?)/i.test(url)) return url;
   return fallback;
 }
+
+type SearchTab = { id: string; label: string; enabled: boolean };
+/** CALQULUS manages rentals only. A stored "Buy"/"Sale" tab (older studio saves) becomes the Offices tab. */
+function legacySaleTab(tab: SearchTab): SearchTab {
+  return /^(buy|sale|sell|purchase)$/i.test(tab.id) || /^(buy|sale|sell|purchase)$/i.test(tab.label.trim())
+    ? { id: "offices", label: "Offices", enabled: tab.enabled }
+    : tab;
+}
+function dedupeTabs(tabs: SearchTab[]): SearchTab[] { return tabs.filter((tab, i, all) => all.findIndex((x) => x.id === tab.id) === i); }
 
 function mergeHeadings(input: unknown): PublicSiteHeadings {
   const d = DEFAULT_PUBLIC_SITE_CONFIG.headings;
@@ -610,7 +619,7 @@ export function mergePublicSiteConfig(input: unknown): PublicSiteConfig {
       title: safeText(search.title, DEFAULT_PUBLIC_SITE_CONFIG.search.title),
       copy: safeText(search.copy, DEFAULT_PUBLIC_SITE_CONFIG.search.copy),
       placeholder: safeText(search.placeholder, DEFAULT_PUBLIC_SITE_CONFIG.search.placeholder),
-      tabs: sourceSearchTabs.length ? sourceSearchTabs.map((item, i) => ({ id: safeText(item.id, `tab-${i}`), label: safeText(item.label, "All"), enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.search.tabs,
+      tabs: sourceSearchTabs.length ? dedupeTabs(sourceSearchTabs.map((item, i) => legacySaleTab({ id: safeText(item.id, `tab-${i}`), label: safeText(item.label, "All"), enabled: safeBool(item.enabled, true) }))) : DEFAULT_PUBLIC_SITE_CONFIG.search.tabs,
       chips: sourceSearchChips.length ? sourceSearchChips.map((item, i) => ({ id: safeText(item.id, `chip-${i}`), label: safeText(item.label, "Property"), href: safeUrl(item.href, "/discover/residential"), icon: validIcon(item.icon, ["home", "building", "office", "landmark"], "building") as PublicSiteConfig["search"]["chips"][number]["icon"], enabled: safeBool(item.enabled, true) })) : DEFAULT_PUBLIC_SITE_CONFIG.search.chips,
     },
     cta: {

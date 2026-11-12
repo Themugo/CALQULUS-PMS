@@ -23,6 +23,8 @@ import { CreditCard, Building2, Smartphone, Calendar, Shield, Info, Copy, CheckC
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
+import { Link } from 'react-router-dom';
+import { PaymentInstructionsGuide } from './PaymentInstructionsGuide';
 
 const fmt = (n: number | null | undefined) =>
   n == null
@@ -176,7 +178,13 @@ const TenantPaymentDetails: React.FC = () => {
   };
 
   if (isLoading || routesLoading) return <Skeleton className="h-48 w-full" />;
-  if (!details && paymentRoutes.length === 0) return null;
+  if (!details && paymentRoutes.length === 0) {
+    return (
+      <Card><CardContent className="py-6 text-center text-sm text-muted-foreground">
+        Your property manager has not published payment details for your unit yet. Use Pay now above, or contact them for where to pay.
+      </CardContent></Card>
+    );
+  }
 
   const depositPaid =
     Number(details?.house_deposit ?? 0) - Number(details?.deposit_balance ?? details?.house_deposit ?? 0);
@@ -308,6 +316,9 @@ const TenantPaymentDetails: React.FC = () => {
                   <CardDescription>{route.property_name}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
+                  {!route.payment_method && (
+                    <p className="rounded-lg bg-muted/30 p-3 text-xs text-muted-foreground">Payment details for this unit have not been published yet. Please contact your property manager.</p>
+                  )}
                   {destination && (
                     <div className="rounded-xl bg-primary/5 border border-primary/15 p-4">
                       <p className="text-xs font-semibold text-primary uppercase tracking-wide">{isPaybill ? 'M-Pesa Paybill' : 'M-Pesa Till'}</p>
@@ -340,7 +351,14 @@ const TenantPaymentDetails: React.FC = () => {
                       <p className="whitespace-pre-line text-muted-foreground">{route.payment_instructions}</p>
                     </div>
                   )}
-                  <p className="text-xs text-muted-foreground">This destination is configured for this unit and is the same route used by your payment prompts and bills.</p>
+                  <PaymentInstructionsGuide
+                    paybillNumber={isPaybill ? route.paybill_number : null}
+                    tillNumber={isTill ? route.till_number : null}
+                    accountReference={accRef}
+                    bankName={route.payment_method === 'bank_transfer' ? route.bank_name : undefined}
+                    accountNumber={route.payment_method === 'bank_transfer' ? route.bank_account_number : undefined}
+                  />
+                  <p className="text-xs text-muted-foreground">This is the same account your bills and payment prompts use. Paid outside the app? <Link to="/portal/receipts" className="font-medium text-primary underline-offset-2 hover:underline">Upload your proof of payment</Link>.</p>
                 </CardContent>
               </Card>
             );

@@ -11,6 +11,7 @@ import { OfflineBanner, OfflineIndicator } from '@/shared/components/ui/offline-
 import { invoiceStatusLabel, invoiceStatusTone, statusBadgeClass } from '@/shared/lib/statusBadge';
 import TenantLayout from '@/features/tenant-portal/components/TenantLayout';
 import TenantBillsHub from '@/features/tenant-portal/components/TenantBillsHub';
+import TenantPaymentDetails from '@/features/tenant-portal/components/TenantPaymentDetails';
 import TenantPayNowDialog, { type PayableInvoice } from '@/features/tenant-portal/components/TenantPayNowDialog';
 import TenantPaymentShareButton from '@/features/tenant-portal/components/TenantPaymentShareButton';
 
@@ -118,6 +119,13 @@ const PaymentHistory = () => {
                 setStkOpen(true);
               }}
             />
+            <section aria-labelledby="pay-manually-heading" className="space-y-3 pt-3">
+              <div>
+                <h2 id="pay-manually-heading" className="text-base font-semibold text-foreground">Pay manually</h2>
+                <p className="text-xs text-muted-foreground">Prefer to pay from your own M-Pesa or bank app? Use the details below, then upload your proof on the Receipts page so it is matched to your bill.</p>
+              </div>
+              <TenantPaymentDetails />
+            </section>
           </div>
         ) : null}
 

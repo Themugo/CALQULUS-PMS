@@ -47,7 +47,7 @@ export const PaymentSetupStatus = () => {
     queryFn: async () => {
       if (!user?.id) return null;
 
-      const [propertiesRes, mpesaListRes, bankRes, receiptRes] = await Promise.all([
+      const [propertiesRes, mpesaListRes, bankRes, receiptRes, routeRes] = await Promise.all([
         supabase.from('properties').select('id, name').eq('manager_id', user.id).order('name'),
         fetchMpesaList(),
         supabase
@@ -59,6 +59,12 @@ export const PaymentSetupStatus = () => {
           .select('auto_send_receipts')
           .eq('manager_user_id', user.id)
           .maybeSingle(),
+        // Collection accounts are what a tenant is shown for manual payment and what STK routes to.
+        supabase
+          .from('payment_collection_accounts')
+          .select('property_id, agency_id, unit_id, tenant_id, lease_id')
+          .eq('manager_id', user.id)
+          .eq('is_active', true),
       ]);
 
       const properties = propertiesRes.data ?? [];
@@ -76,25 +82,33 @@ export const PaymentSetupStatus = () => {
 
       const receiptsOn = receiptRes.data?.auto_send_receipts !== false;
 
+      // A property is "visible to tenants" when it has its own account, or a broader
+      // manager/agency account that is not tied to a single property.
+      const routeRows = routeRes.data ?? [];
+      const broadRoute = routeRows.some((r) => !r.property_id);
+      const routeByProperty = new Set(routeRows.filter((r) => r.property_id).map((r) => r.property_id));
+
       const rows = [
         {
           id: 'default',
           name: 'Company default',
           mpesaReady: mpesaByProperty.get(null) ?? false,
           bankReady: bankByProperty.get(null) ?? false,
+          routeReady: broadRoute,
         },
         ...properties.map((p) => ({
           id: p.id,
           name: p.name,
           mpesaReady: mpesaByProperty.get(p.id) ?? mpesaByProperty.get(null) ?? false,
           bankReady: bankByProperty.get(p.id) ?? bankByProperty.get(null) ?? false,
+          routeReady: routeByProperty.has(p.id) || broadRoute,
         })),
       ];
 
-      const configured = rows.filter((r) => r.mpesaReady || r.bankReady).length;
+      const configured = rows.filter((r) => (r.mpesaReady || r.bankReady) && r.routeReady).length;
       const score = properties.length
         ? Math.round((configured / rows.length) * 100)
-        : rows[0]?.mpesaReady
+        : rows[0]?.mpesaReady && rows[0]?.routeReady
           ? 100
           : 0;
 
@@ -130,8 +144,8 @@ export const PaymentSetupStatus = () => {
           </Badge>
         </div>
         <CardDescription>
-          Each property can have its own M-Pesa paybill and bank webhook. Missing per-property config
-          falls back to company default.
+          Each property can have its own M-Pesa paybill and bank webhook. A property is only ready when
+          its tenants can also see where to pay: set a payment destination so manual payments and bills show it.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -160,6 +174,7 @@ export const PaymentSetupStatus = () => {
                   <TableHead>Property</TableHead>
                   <TableHead className="text-center">M-Pesa</TableHead>
                   <TableHead className="text-center">Bank</TableHead>
+                  <TableHead className="text-center">Tenants see where to pay</TableHead>
                   <TableHead />
                 </TableRow>
               </TableHeader>
@@ -179,6 +194,13 @@ export const PaymentSetupStatus = () => {
                         <CheckCircle2 className="h-4 w-4 text-green-600 inline" />
                       ) : (
                         <Circle className="h-4 w-4 text-muted-foreground inline" />
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {row.routeReady ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-600 inline" aria-label="Payment details published" />
+                      ) : (
+                        <Circle className="h-4 w-4 text-amber-500 inline" aria-label="No payment details published" />
                       )}
                     </TableCell>
                     <TableCell className="text-right">

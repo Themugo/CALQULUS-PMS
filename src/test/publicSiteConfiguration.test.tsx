@@ -93,3 +93,22 @@ describe("homepage headings and live pricing are backend-driven", () => {
     expect(resolveStartingPrice("No token here.", [])).toBe("No token here.");
   });
 });
+
+describe("public site only presents supported (rental / management) business", () => {
+  it("ships no sale or purchase wording in its default content", () => {
+    const text = JSON.stringify(DEFAULT_PUBLIC_SITE_CONFIG);
+    expect(text).not.toMatch(/\b(buy|for sale|sale|sell|purchase|mortgage)\b/i);
+    expect(text).not.toMatch(/list your property|thousands/i);
+  });
+
+  it("converts a previously saved Buy tab into Offices and never duplicates tabs", () => {
+    const merged = mergePublicSiteConfig({ search: { tabs: [{ id: "buy", label: "Buy", enabled: true }, { id: "rent", label: "Rent", enabled: true }, { id: "offices", label: "Offices", enabled: true }] } });
+    expect(merged.search.tabs.map((t) => t.id)).toEqual(["offices", "rent"]);
+    expect(merged.search.tabs.some((t) => /buy|sale/i.test(t.label))).toBe(false);
+  });
+
+  it("discovery page has no sale branch", () => {
+    const src = readFileSync("src/features/marketing/PublicPropertyDiscoveryPage.tsx", "utf8");
+    expect(src).not.toMatch(/for sale|SALE & LETTING|selling|purchase/i);
+  });
+});

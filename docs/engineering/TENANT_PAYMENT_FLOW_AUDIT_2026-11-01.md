@@ -166,3 +166,19 @@ Verified on throwaway Postgres: stamp once only, confirmed row survives the swee
 **Verified** on throwaway Postgres: 60% of 12,000 = 7,200 (5,000 + 2,000 ok, +300 refused, exactly the last 200 allowed); fixed 2,000 payer (2,000 ok, +1 refused); unlimited payer and `self` unconstrained; refused payments left no transaction or allocation behind; share status correct.
 
 **Decisions to confirm**: no manager override (changing the payer's share is the way to allow more); when both a fixed amount and a percentage are set the fixed amount wins; penalties are outside the share; enforcement covers manual recording only (the payer portal uses separate payer-party links without shares).
+
+## Addendum (i) — public-surface honesty, landlord collection account, tenant manual payment (2026-11-12)
+
+**Public surface.** CALQULUS manages rentals; there is no sale or listing marketplace. Removed: the "Buy" search tab (a stored Buy/Sale tab is converted to Offices on load), the sale branch of the discovery page, the "List your property" hero card, the "thousands" and "100% secure" claims, the invented Help Centre status/uptime and the "Dispatched" support-ticket confirmation. Migration `…000025` corrects the seeded Enterprise tier text ("unlimited", "white label") only where it is still the seed text.
+
+**Landlord collection account.** The database allowed a landlord-owned account, but no landlord UI existed, and a property-scoped account outranks landlord-level ones in routing. `…000026` adds `save_landlord_collection_account_atomic`: only the primary owner, only when the property's effective destination is the landlord. Landlord → Management shows the editor, or explains who collects.
+
+**Tenant manual payment.** `TenantPaymentDetails` (destination, copy-able account number, step-by-step guide, link to proof upload) was not mounted anywhere. It now sits on the tenant Payments page under "Pay manually". `…000027`: the tenant routes function now applies the destination-first rule (it could show the agency paybill while bills paid the landlord), and per-bill instructions return the account reference with the unit-number fallback.
+
+**Manager readiness.** The payment-setup card now also requires that tenants can see payment details for a property.
+
+**Static route audit.** Every literal link/navigate target resolves to a route, except `/landlord/properties` (landlord onboarding button, fixed to `/landlord/portfolio`).
+
+**Dead code, not reachable from any route (not deleted):** the webhost demo suites (SOC 2 / ISO 27001 / insurance and contractor marketplaces / financial partners / penetration testing / predictive maintenance / utility providers), `EnterpriseAdminPlatform`, `MobileTenantHome`, `ManagerBankDetails` (reads a legacy table), `RestApiExplorer`. They contain invented figures and unsupported products; delete or keep out of any future route.
+
+**Not verified live.** Nothing here ran against the real database, a browser session as each role, or Safaricom. Migrations `…000019`–`…000027` are unapplied.

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { PLATFORM_BRAND_CONFIG } from "@/core/brand/platformBrand";
+import { LiveSystemStatus } from "@/shared/components/layout/LiveSystemStatus";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +23,6 @@ import {
   ExternalLink,
   ShieldCheck,
   Send,
-  CheckCircle2,
   Sparkles,
 } from "lucide-react";
 
@@ -35,65 +36,60 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [ticketSubject, setTicketSubject] = useState("");
   const [ticketMessage, setTicketMessage] = useState("");
-  const [ticketSubmitted, setTicketSubmitted] = useState(false);
+
+  const supportEmail = PLATFORM_BRAND_CONFIG.contact.email;
 
   const docs = [
     {
-      title: "Rent Reconciliation & M-Pesa Integration",
+      title: "How rent payments reach the right account",
       category: "Billing & Collections",
-      desc: "Learn how automatic Paybill and STK push matches tenant accounts in real-time.",
+      desc: "Tenants pay by M-Pesa STK push, card, or manually to the paybill, till or bank details shown in their portal. Each bill goes to the account its owner configured.",
     },
     {
-      title: "Water Billing & Sub-Meter Calculations",
+      title: "Recording a payment made outside the app",
+      category: "Billing & Collections",
+      desc: "Managers can record cash, bank or M-Pesa payments against a tenant, optionally on behalf of a registered payer. Tenants can also upload a receipt for review.",
+    },
+    {
+      title: "Water billing from meter readings",
       category: "Operations",
-      desc: "Step-by-step guide to logging sub-meter units and auto-generating utility invoices.",
+      desc: "Log meter readings for a unit and generate the water invoice for that period.",
     },
     {
-      title: "Managing Landlord Payouts & Revenue Share",
-      category: "Financials",
-      desc: "Configure operating models, agent commissions, and disbursement schedules.",
-    },
-    {
-      title: "Tenant Invitation & Digital Lease Execution",
+      title: "Inviting tenants and keeping leases current",
       category: "Tenants & Leases",
-      desc: "Sending pre-filled SMS/email invites and managing lease agreement signatures.",
+      desc: "Invite tenants by SMS or email, then track lease terms, renewals and notices from the tenant record.",
     },
   ];
 
   const faqs = [
     {
-      q: "How are M-Pesa Paybill transactions matched to tenants?",
-      a: "CALQULUS PMS uses the tenant's national ID, account number, or registered phone number to automatically reconcile payments into tenant ledger invoices.",
+      q: "How is a bank or paybill payment matched to a tenant?",
+      a: "By the account number or reference the tenant used, and only when it identifies exactly one tenant. Anything unclear is held in Bank Reconciliation for a manager to match by hand.",
     },
     {
-      q: "Can submanagers create property listings?",
-      a: "Submanager permissions are configured by Managers under Settings → Team. Only submanagers with 'Write' property permissions can create or edit property records.",
+      q: "Where does a tenant find where to pay manually?",
+      a: "In the tenant portal, on each bill: the paybill, till or bank details of the account that bill belongs to are shown there, with a receipt upload for manual payments.",
     },
     {
-      q: "Why can't Webhosts view individual tenant names?",
-      a: "By architectural design, CALQULUS PMS enforces a strict Webhost Firewall protecting tenant PII. Webhosts only oversee system health, subscriptions, and aggregate metrics.",
+      q: "Can submanagers change property records?",
+      a: "Submanager permissions are set by the Manager under Settings → Team. Only submanagers with write permission on properties can create or edit them.",
+    },
+    {
+      q: "Why can't platform administrators see tenant names?",
+      a: "Platform administrators oversee subscriptions, system health and aggregate figures. Tenant personal details stay with the managing organisation.",
     },
   ];
 
   const shortcuts = [
-    { keys: ["⌘", "K"], label: "Open Command Palette & Search" },
-    { keys: ["G", "D"], label: "Go to Main Dashboard" },
-    { keys: ["G", "T"], label: "Go to Tenants Registry" },
-    { keys: ["G", "B"], label: "Go to Billing & Invoices" },
-    { keys: ["G", "W"], label: "Go to Water Meter Billing" },
-    { keys: ["G", "M"], label: "Go to Maintenance Work Orders" },
-    { keys: ["Esc"], label: "Close Active Modals / Drawers" },
+    { keys: ["Ctrl / ⌘", "K"], label: "Focus global search" },
+    { keys: ["Esc"], label: "Close dialogs and the mobile menu" },
   ];
 
-  const handleSupportSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!ticketSubject || !ticketMessage) return;
-    setTicketSubmitted(true);
-    setTimeout(() => {
-      setTicketSubmitted(false);
-      setTicketSubject("");
-      setTicketMessage("");
-    }, 4000);
+  const supportMailto = (subject: string, message: string) => {
+    const where = typeof window !== "undefined" ? window.location.pathname : "";
+    const body = `${message}\n\n---\nPage: ${where}`;
+    return `mailto:${supportEmail}?subject=${encodeURIComponent(subject || "CALQULUS support request")}&body=${encodeURIComponent(body)}`;
   };
 
   const filteredDocs = docs.filter(
@@ -118,14 +114,10 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
                   CALQULUS Help & Support Center
                 </DialogTitle>
                 <DialogDescription className="text-xs text-muted-foreground">
-                  Access documentation, shortcuts, support tickets, and system health status.
+                  Guides, answers to common questions, shortcuts, how to reach support, and a live connection check.
                 </DialogDescription>
               </div>
             </div>
-            <Badge variant="outline" className="hidden sm:inline-flex items-center gap-1 text-[11px] text-success border-success/40">
-              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-              v2.4.0 Operational
-            </Badge>
           </div>
 
           {/* Quick Search Bar */}
@@ -170,14 +162,14 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
                 className="gap-1.5 text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none bg-transparent px-1 pb-2"
               >
                 <MessageSquare className="h-3.5 w-3.5" />
-                Support Ticket
+                Contact Support
               </TabsTrigger>
               <TabsTrigger
                 value="status"
                 className="gap-1.5 text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none bg-transparent px-1 pb-2"
               >
                 <Activity className="h-3.5 w-3.5" />
-                System Health
+                Connection check
               </TabsTrigger>
             </TabsList>
           </div>
@@ -189,10 +181,10 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
                 {filteredDocs.map((doc, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 rounded-lg border border-border/80 bg-card hover:border-border/100 hover:shadow-xs transition-all cursor-pointer group"
+                    className="p-3.5 rounded-lg border border-border/80 bg-card "
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">
+                      <p className="text-xs font-bold text-foreground">
                         {doc.title}
                       </p>
                       <Badge variant="outline" className="text-[10px]">
@@ -249,81 +241,37 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
             </ScrollArea>
           </TabsContent>
 
-          {/* Tab 4: Support Ticket */}
+          {/* Tab 4: Contact support — opens the user's own email client; nothing is sent from here. */}
           <TabsContent value="support" className="p-4 sm:p-6 m-0 focus-visible:outline-hidden">
-            {ticketSubmitted ? (
-              <div className="p-8 text-center space-y-3 bg-success/10 border border-success/20 rounded-xl">
-                <CheckCircle2 className="h-10 w-10 text-success mx-auto" />
-                <h3 className="text-sm font-bold text-foreground">Support Ticket Dispatched</h3>
-                <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                  Our engineering support desk has received your ticket. A response will be dispatched to your email shortly.
-                </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!ticketSubject.trim() || !ticketMessage.trim()) return;
+                window.location.href = supportMailto(ticketSubject.trim(), ticketMessage.trim());
+              }}
+              className="space-y-3"
+            >
+              <p className="text-xs text-muted-foreground">
+                This opens an email to <span className="font-semibold text-foreground">{supportEmail}</span> in your email app, with the page you are on included.
+              </p>
+              <div className="space-y-1">
+                <label htmlFor="help-subject" className="text-xs font-medium text-foreground">Subject</label>
+                <Input id="help-subject" placeholder="e.g., Bank deposit not matched to a tenant" className="h-8 text-xs" value={ticketSubject} onChange={(e) => setTicketSubject(e.target.value)} />
               </div>
-            ) : (
-              <form onSubmit={handleSupportSubmit} className="space-y-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-foreground">Subject / Issue Summary</label>
-                  <Input
-                    placeholder="e.g., M-Pesa Paybill Reconciliation delay for Unit 302"
-                    className="h-8 text-xs"
-                    value={ticketSubject}
-                    onChange={(e) => setTicketSubject(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-medium text-foreground">Detailed Message</label>
-                  <textarea
-                    rows={4}
-                    placeholder="Provide property name, transaction ref, or specific details..."
-                    className="w-full rounded-md border border-border/80 bg-background p-2.5 text-xs focus:ring-1 focus:ring-primary focus:outline-hidden"
-                    value={ticketMessage}
-                    onChange={(e) => setTicketMessage(e.target.value)}
-                  />
-                </div>
-                <Button type="submit" size="sm" className="w-full gap-2 text-xs font-semibold">
-                  <Send className="h-3.5 w-3.5" />
-                  Submit Support Ticket
-                </Button>
-              </form>
-            )}
+              <div className="space-y-1">
+                <label htmlFor="help-message" className="text-xs font-medium text-foreground">Message</label>
+                <textarea id="help-message" rows={4} placeholder="Property name, transaction reference, or what you were doing…" className="w-full rounded-md border border-border/80 bg-background p-2.5 text-xs focus:ring-1 focus:ring-primary focus:outline-hidden" value={ticketMessage} onChange={(e) => setTicketMessage(e.target.value)} />
+              </div>
+              <Button type="submit" size="sm" className="w-full gap-2 text-xs font-semibold" disabled={!ticketSubject.trim() || !ticketMessage.trim()}>
+                <Send className="h-3.5 w-3.5" />
+                Open email to support
+              </Button>
+            </form>
           </TabsContent>
 
-          {/* Tab 5: System Status */}
+          {/* Tab 5: connection check, measured live from this device */}
           <TabsContent value="status" className="p-4 sm:p-6 m-0 focus-visible:outline-hidden">
-            <div className="space-y-3 text-xs">
-              <div className="p-3.5 rounded-lg border border-border/80 bg-card flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-success" />
-                  <div>
-                    <p className="font-bold text-foreground">PostgreSQL & Supabase Auth</p>
-                    <p className="text-[11px] text-muted-foreground">Operational (99.99% Uptime)</p>
-                  </div>
-                </div>
-                <Badge variant="outline" className="text-success border-success/40">Healthy</Badge>
-              </div>
-
-              <div className="p-3.5 rounded-lg border border-border/80 bg-card flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-success" />
-                  <div>
-                    <p className="font-bold text-foreground">M-Pesa Express & Paybill Gateway</p>
-                    <p className="text-[11px] text-muted-foreground">Connected (Latency: 140ms)</p>
-                  </div>
-                </div>
-                <Badge variant="outline" className="text-success border-success/40">Active</Badge>
-              </div>
-
-              <div className="p-3.5 rounded-lg border border-border/80 bg-card flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-success" />
-                  <div>
-                    <p className="font-bold text-foreground">Edge Functions & Notification Engine</p>
-                    <p className="text-[11px] text-muted-foreground">3 Deployed Functions Online</p>
-                  </div>
-                </div>
-                <Badge variant="outline" className="text-success border-success/40">Online</Badge>
-              </div>
-            </div>
+            <LiveSystemStatus />
           </TabsContent>
         </Tabs>
 
@@ -331,15 +279,10 @@ export function HelpCenterModal({ open, onOpenChange }: HelpCenterModalProps) {
         <div className="p-3 px-6 border-t border-border bg-muted/30 flex items-center justify-between text-[11px] text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-            CALQULUS PMS Knowledge Base
+            CALQULUS PMS Help
           </span>
-          <a
-            href="https://www.calqulus.site/docs"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1 text-primary hover:underline font-medium"
-          >
-            Full Documentation Portal <ExternalLink className="h-3 w-3" />
+          <a href={`mailto:${supportEmail}`} className="flex items-center gap-1 text-primary hover:underline font-medium">
+            {supportEmail} <ExternalLink className="h-3 w-3" />
           </a>
         </div>
       </DialogContent>

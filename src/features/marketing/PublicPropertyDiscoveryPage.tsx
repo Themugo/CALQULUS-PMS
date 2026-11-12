@@ -7,7 +7,7 @@ import { usePublicSiteConfig } from "@/features/marketing/hooks/usePublicSiteCon
 import { PROPERTY_IMAGES } from "@/features/marketing/propertyImages";
 
 const LABELS: Record<string, { title: string; copy: string; image: string; icon: typeof Home }> = {
-  residential: { title: "Residential properties", copy: "Explore homes, apartments and rental communities. Published adverts appear here as they are approved.", image: PROPERTY_IMAGES.residential, icon: Home },
+  residential: { title: "Residential properties", copy: "Explore homes, apartments and rental communities to let. Published adverts appear here as they are approved.", image: PROPERTY_IMAGES.residential, icon: Home },
   estates: { title: "Estates", copy: "Explore managed estates and multi-unit communities. Published adverts can be routed here from the homepage.", image: PROPERTY_IMAGES.commercial, icon: Building2 },
   offices: { title: "Office properties", copy: "Explore offices and professional workspaces. Published inventory can be connected without changing the homepage.", image: PROPERTY_IMAGES.office, icon: Building2 },
   institutions: { title: "Institutional properties", copy: "Explore purpose-built property portfolios and facilities. Published inventory appears here when approved.", image: PROPERTY_IMAGES.commercial, icon: Landmark },
@@ -39,13 +39,13 @@ export default function PublicPropertyDiscoveryPage() {
     .filter((item) => {
       if (mode === "all") return true;
       const haystack = `${item.eyebrow} ${item.detail} ${item.price}`.toLowerCase();
-      return mode === "rent" ? /(rent|let|\/mo|monthly)/i.test(haystack) : /(sale|selling|buy|purchase)/i.test(haystack);
+      return mode === "rent" ? /(rent|let|\/mo|monthly)/i.test(haystack) : true;
     });
   const filtered = filterPublicListings(featured, q);
   const heading = categoryDefinition?.title || current.title;
   const summary = categoryDefinition?.description || current.copy;
   const heroImage = categoryDefinition?.image || current.image;
-  const resultLabel = mode === "buy" ? "Properties for sale" : mode === "rent" ? "Properties to let" : "Available listings";
+  const resultLabel = mode === "rent" ? "Properties to let" : "Available listings";
   const noResultsCopy = q
     ? `No published ${categoryName.toLowerCase()} listings match “${q}”. Try a broader location, property name or detail.`
     : `There are no published ${categoryName.toLowerCase()} adverts yet. Once a real advert is activated in Public Site Studio, it will appear here.`;
@@ -69,7 +69,7 @@ export default function PublicPropertyDiscoveryPage() {
       <section className="bg-background py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div><p className="text-sm font-bold tracking-[.2em] text-primary">SALE & LETTING</p><h2 className="mt-2 font-heading text-3xl font-semibold tracking-tight">{resultLabel}</h2></div>
+            <div><p className="text-sm font-bold tracking-[.2em] text-primary">RENTALS & SPACES</p><h2 className="mt-2 font-heading text-3xl font-semibold tracking-tight">{resultLabel}</h2></div>
             <p className="max-w-md text-sm leading-6 text-muted-foreground sm:text-right">{q ? `Showing published ${categoryName.toLowerCase()} results related to “${q}”.` : "Only published public-site adverts appear here; private portfolio records are never exposed."}</p>
           </div>
           {filtered.length ? (

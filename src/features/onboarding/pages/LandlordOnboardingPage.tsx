@@ -329,7 +329,7 @@ export default function LandlordOnboardingPage() {
             <h2 className="font-heading text-lg font-semibold">First property</h2>
             <p className="mt-1 text-sm text-muted-foreground">Add a building or unit you own. If a manager or agency already manages your property, they can link it to your account instead and this step completes by itself.</p>
             <div className="mt-5 flex gap-2">
-              <Button onClick={() => navigate("/landlord/properties")} className="gap-1.5">
+              <Button onClick={() => navigate("/landlord/portfolio")} className="gap-1.5">
                 Add a property <ArrowRight className="h-4 w-4" />
               </Button>
               <Button variant="outline" onClick={goBack}>
