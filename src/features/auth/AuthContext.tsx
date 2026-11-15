@@ -428,23 +428,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [location.pathname, user?.id, currentRoleName, userRolesKey, resolveRole, fetchWebhostPermissions, fetchPlatformAdminInfo, fetchSubmanagerPermissions, fetchLandlordPropertyIds]);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error ? new Error(error.message) : null };
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      return { error: error ? new Error(error.message) : null };
+    } catch (e) {
+      return { error: new Error(e instanceof Error ? e.message : 'Failed to fetch') };
+    }
   }, []);
 
   const signInWithGoogle = useCallback(async (redirectTo?: string, portal?: OauthPortal) => {
     if (portal) rememberOauthPortal(portal);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: redirectTo || window.location.href },
-    });
-    return { error: error ? new Error(error.message) : null };
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: redirectTo || window.location.href },
+      });
+      return { error: error ? new Error(error.message) : null };
+    } catch (e) {
+      return { error: new Error(e instanceof Error ? e.message : 'Failed to fetch') };
+    }
   }, []);
 
   const signUp = useCallback(async (email: string, password: string, fullName: string, role: AppRole, _tenantId?: string, extraMetadata?: Record<string, unknown>) => {
     const redirectPath = signupRedirectPath(role);
-    const { data, error } = await supabase.auth.signUp({ email, password,
-      options: { emailRedirectTo: `${window.location.origin}${redirectPath}`, data: { ...extraMetadata, full_name: fullName, role } } });
+    let signUpResult;
+    try {
+      signUpResult = await supabase.auth.signUp({ email, password,
+        options: { emailRedirectTo: `${window.location.origin}${redirectPath}`, data: { ...extraMetadata, full_name: fullName, role } } });
+    } catch (e) {
+      return { error: new Error(e instanceof Error ? e.message : 'Failed to fetch') };
+    }
+    const { data, error } = signUpResult;
     if (error) return { error: new Error(error.message) };
     if (data.user) {
       // Role rows are created by handle_new_auth_user() and/or the

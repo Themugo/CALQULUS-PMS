@@ -33,7 +33,7 @@ export default function ArchivedManagementPeriods() {
       const names = new Map((props ?? []).map((p: { id: string; name: string }) => [p.id, p.name]));
       return mine
         .filter((r: { archive_access_until: string | null }) => !r.archive_access_until || new Date(r.archive_access_until) > new Date())
-        .map((r: Period) => ({ ...r, name: names.get(r.property_id) ?? "Property" }));
+        .map((r: Omit<Period, "name">) => ({ ...r, name: names.get(r.property_id) ?? "Property" }));
     },
   });
 

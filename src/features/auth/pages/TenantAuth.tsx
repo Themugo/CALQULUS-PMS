@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BackendStatusNotice } from '@/features/auth/components/BackendStatusNotice';
 import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
@@ -417,7 +418,7 @@ const TenantAuth = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSignup} className="space-y-4">
+            <><BackendStatusNotice /><form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input
@@ -491,7 +492,7 @@ const TenantAuth = () => {
                   'Create Account'
                 )}
               </Button>
-            </form>
+            </form></>
             
             <div className="mt-4 pt-4 border-t border-border text-center">
               <Button
@@ -539,7 +540,7 @@ const TenantAuth = () => {
           )}
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignup} className="space-y-4">
+          <><BackendStatusNotice /><form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="signup-name">Full Name</Label>
               <Input
@@ -632,7 +633,7 @@ const TenantAuth = () => {
             >
               {isSubmitting ? 'Creating account...' : 'Create Account'}
             </Button>
-          </form>
+          </form></>
         </CardContent>
         <CardFooter className="border-t border-border pt-6">
           <div className="text-center w-full">

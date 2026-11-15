@@ -1,4 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
+import { BackendStatusNotice } from "@/features/auth/components/BackendStatusNotice";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
@@ -184,7 +185,8 @@ export function PortalLoginCard({
       <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-[26px]">Welcome Back!</h2>
       <p className="mt-1 text-[15px] leading-6 text-muted-foreground">Sign in to your {portalLabel} portal</p>
 
-      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+      <div className="mt-4"><BackendStatusNotice /></div>
+      <form onSubmit={onSubmit} className="mt-2 space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="portal-login-email" className="text-[15px] font-medium text-foreground">
             Email address

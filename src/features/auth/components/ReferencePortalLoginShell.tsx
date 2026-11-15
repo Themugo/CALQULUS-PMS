@@ -3,6 +3,7 @@ import { Building2, Briefcase, UserRound, LockKeyhole, Mail } from "lucide-react
 import { Link } from "react-router-dom";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { PUBLIC_ROUTES } from "@/features/marketing/publicConfig";
+import { sanitizeAuthError } from "@/features/auth/lib/authFlow";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/shared/hooks/use-toast";
 import { cn } from "@/shared/lib/utils";
@@ -106,14 +107,19 @@ export function ReferencePortalLoginShell({
   const { toast } = useToast();
 
   const handleGoogleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}${LOGIN_ROUTES[portal]}` },
-    });
+    let error: { message: string } | null;
+    try {
+      ({ error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}${LOGIN_ROUTES[portal]}` },
+      }));
+    } catch (e) {
+      error = { message: e instanceof Error ? e.message : "Failed to fetch" };
+    }
     if (error) {
       toast({
         title: "Google sign-in unavailable",
-        description: error.message,
+        description: sanitizeAuthError(error.message),
         variant: "destructive",
       });
     }

@@ -30,7 +30,7 @@ export default function PropertyManagementHandover() {
     queryKey: ["landlord-handover", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
-      const { data: links } = await supabase.from("property_landlords").select("property_id").eq("landlord_user_id", user.id);
+      const { data: links } = await supabase.from("property_landlords").select("property_id").eq("landlord_user_id", user!.id);
       const ids = (links ?? []).map((l) => l.property_id);
       if (!ids.length) return { rows: [] as Row[], open: [] as Transfer[] };
       const [props, open] = await Promise.all([
