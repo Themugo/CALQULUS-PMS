@@ -38,6 +38,23 @@ export const signupRedirectPath = (role: AppRole): string => {
   return ROLE_LOGIN.manager;
 };
 
+/** True when the browser could not reach the auth backend at all (offline, DNS, paused project, blocked request). */
+export const isNetworkAuthError = (message: string | undefined | null): boolean => {
+  const msg = (message ?? "").toLowerCase();
+  return (
+    msg.includes("network") ||
+    msg.includes("failed to fetch") ||
+    msg.includes("load failed") ||
+    msg.includes("fetch failed") ||
+    msg.includes("authretryablefetcherror") ||
+    msg.includes("timed out") ||
+    msg.includes("timeout")
+  );
+};
+
+export const BACKEND_UNREACHABLE_MESSAGE =
+  "We could not reach the CALQULUS service. Check your internet connection and try again. If it keeps happening, the service may be temporarily unavailable: contact support.";
+
 export const sanitizeAuthError = (message: string): string => {
   const msg = message.toLowerCase();
   // Neutral wording: must not confirm whether an address has an account.
@@ -45,11 +62,11 @@ export const sanitizeAuthError = (message: string): string => {
   if (msg.includes("invalid login credentials")) return "Invalid email or password.";
   if (msg.includes("email not confirmed")) return "Please verify your email address.";
   if (msg.includes("rate limit")) return "Too many attempts. Please try again later.";
+  if (msg.includes("supabase is not configured")) return "Sign-in is not available on this deployment yet. Contact support.";
   if (msg.includes("jwt expired") || msg.includes("session_not_found") || msg.includes("session missing"))
     return "Your session has expired. Please sign in again.";
   if (msg.includes("user not found")) return "Invalid email or password.";
-  if (msg.includes("network") || msg.includes("failed to fetch"))
-    return "Network error. Please check your connection and try again.";
+  if (isNetworkAuthError(message)) return BACKEND_UNREACHABLE_MESSAGE;
   return "An unexpected error occurred. Please try again.";
 };
 
@@ -77,7 +94,19 @@ const fetchCurrentUserRoles = async (): Promise<AppRole[]> => {
 export const ensureSignedInRole = async (
   allowedRoles: AppRole[],
 ): Promise<{ ok: true; roles: AppRole[] } | { ok: false; roles: AppRole[]; message: string }> => {
-  const roles = await fetchCurrentUserRoles();
+  let roles: AppRole[];
+  try {
+    roles = await fetchCurrentUserRoles();
+  } catch (err) {
+    const raw = err instanceof Error ? err.message : String(err);
+    return {
+      ok: false,
+      roles: [],
+      message: isNetworkAuthError(raw)
+        ? BACKEND_UNREACHABLE_MESSAGE
+        : "We could not check your account access. Please try again.",
+    };
+  }
   if (roles.some((role) => allowedRoles.includes(role))) {
     return { ok: true, roles };
   }

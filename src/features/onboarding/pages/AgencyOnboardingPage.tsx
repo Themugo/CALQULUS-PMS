@@ -62,9 +62,8 @@ export default function AgencyOnboardingPage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [stepIdx, setStepIdx] = useState(0);
-  const { skipped: skippedSteps, loaded: skipsLoaded, markSkipped } = useSkippedOnboardingSteps(userId);
-
   const userId = user?.id ?? null;
+  const { skipped: skippedSteps, loaded: skipsLoaded, markSkipped } = useSkippedOnboardingSteps(userId);
   const [agencyName, setAgencyName, clearAgencyNameDraft] = useOnboardingDraft("agency-name", userId);
   const [focus, setFocus] = useState<AgencyPortfolioFocus | null>(null);
   const [collectionModel, setCollectionModel] = useState<AgencyCollectionModel | null>(null);

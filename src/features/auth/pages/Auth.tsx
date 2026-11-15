@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BackendStatusNotice } from '@/features/auth/components/BackendStatusNotice';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/shared/components/ui/button';
@@ -199,7 +200,8 @@ const Auth = () => {
         <section className="rounded-2xl border border-border bg-card p-6 shadow-2xl shadow-black/10 sm:p-8" aria-label="Create manager account">
           <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground">Create your manager account</h2>
           <p className="mt-1 text-sm text-muted-foreground">Start managing your properties in minutes.</p>
-          <form onSubmit={handleSignup} className="mt-6 space-y-4">
+          <div className="mt-4"><BackendStatusNotice /></div>
+          <form onSubmit={handleSignup} className="mt-2 space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="signup-name" className="text-sm font-medium text-foreground">Full Name</Label>
               <Input id="signup-name" type="text" placeholder="John Doe" value={signupFullName} onChange={(e) => setSignupFullName(e.target.value)} required className="h-11 border-border bg-card text-foreground placeholder:text-muted-foreground" />

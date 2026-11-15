@@ -22,7 +22,7 @@ export default function IncomingManagementRequests() {
       const { data: rows } = await supabase
         .from("property_management_transfers")
         .select("id, property_id, created_at, reason")
-        .eq("to_operator_id", user.id)
+        .eq("to_operator_id", user!.id)
         .eq("status", "proposed")
         .order("created_at");
       const ids = (rows ?? []).map((r) => r.property_id);

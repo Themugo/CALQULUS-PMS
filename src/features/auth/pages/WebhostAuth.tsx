@@ -6,6 +6,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Globe, Shield, Eye, EyeOff, ChevronRight, Lock, Crown, BarChart3 } from 'lucide-react';
+import { BackendStatusNotice } from '@/features/auth/components/BackendStatusNotice';
 import { ensureSignedInRole, sanitizeAuthError } from '@/features/auth/lib/authFlow';
 import { BrandMark } from '@/shared/components/branding/BrandMark';
 import { AuthLoadingScreen } from '@/features/auth/components/AuthHeroChrome';
@@ -129,6 +130,7 @@ const WebhostAuth = () => {
               <p className="text-muted-foreground text-sm">Authorized access only</p>
             </div>
 
+            <BackendStatusNotice />
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
