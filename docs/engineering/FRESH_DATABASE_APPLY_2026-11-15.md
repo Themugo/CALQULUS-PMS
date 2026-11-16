@@ -4,7 +4,7 @@ State found 2026-11-15: project `hmgpltrjlsescfquqxeg` restored and healthy, but
 0 auth users, 3 stub migration rows and 0 edge functions.
 
 ## What was done in the repo
-* All 284 migrations replayed in order on a throwaway Postgres 16 with Supabase stand-ins
+* All 285 migrations replayed in order on a throwaway Postgres 16 with Supabase stand-ins
   (auth, storage, cron, net, vault): result 232 tables, 611 functions, 384 RLS policies, RLS on
   every table, signup trigger creates profile + pending role, admin SQL verified.
 * Versions are now unique and strictly ordered (140 files renumbered, none had been applied anywhere),

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 
-type Reach = "checking" | "ok" | "down";
+type Reach = "checking" | "ok" | "down" | "unconfigured";
 
 /**
  * Pre-flight check shown on sign-in screens. If the auth service cannot be
@@ -16,7 +16,8 @@ export function BackendStatusNotice() {
     const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
     const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
     if (!url || !key || url.includes("placeholder")) {
-      setState("ok");
+      // Local/preview builds run on the simulated client on purpose; a production build must not.
+      setState(import.meta.env.PROD ? "unconfigured" : "ok");
       return;
     }
     const controller = new AbortController();
@@ -34,6 +35,14 @@ export function BackendStatusNotice() {
     };
   }, []);
 
+  if (state === "unconfigured") {
+    return (
+      <div role="alert" className="mb-4 flex gap-2 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+        <span>This site is not connected to its service yet, so sign-in is unavailable. Please contact support.</span>
+      </div>
+    );
+  }
   if (state !== "down") return null;
   return (
     <div role="alert" className="mb-4 flex gap-2 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
