@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = path.resolve(__dirname, '../..');
-const migration = fs.readFileSync(path.join(root, 'supabase/migrations/20260904000038_controlled_management_reporting_releases.sql'), 'utf8');
+const migration = fs.readFileSync(path.join(root, 'supabase/migrations/20260904000039_controlled_management_reporting_releases.sql'), 'utf8');
 const component = fs.readFileSync(path.join(root, 'src/features/dashboard/components/ControlledManagementReportingCenter.tsx'), 'utf8');
 
 describe('controlled management reporting', () => {

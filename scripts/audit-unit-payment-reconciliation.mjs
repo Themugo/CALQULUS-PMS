@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 const root = process.cwd();
 const read = (p) => fs.readFileSync(path.join(root,p),'utf8');
-const sql = read('supabase/migrations/20260904000006_unit_payment_reconciliation_portal.sql');
+const sql = read('supabase/migrations/20260904000007_unit_payment_reconciliation_portal.sql');
 const ui = read('src/features/billing/components/UnitPaymentReconciliation.tsx');
 const checks = [
   ['manager RPC', sql.includes('get_manager_unit_payment_reconciliation')],

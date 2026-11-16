@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const migration = "supabase/migrations/20260904000037_management_compliance_assurance.sql";
+const migration = "supabase/migrations/20260904000038_management_compliance_assurance.sql";
 const component = "src/features/dashboard/components/ManagementComplianceAssuranceCenter.tsx";
 const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8");
 

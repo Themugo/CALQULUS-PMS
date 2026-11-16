@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 describe("financial close control center", () => {
-  const migration = readFileSync(resolve(process.cwd(), "supabase/migrations/20260904000031_financial_close_owner_statement_integrity.sql"), "utf8");
+  const migration = readFileSync(resolve(process.cwd(), "supabase/migrations/20260904000032_financial_close_owner_statement_integrity.sql"), "utf8");
   const component = readFileSync(resolve(process.cwd(), "src/features/dashboard/components/FinancialCloseControlCenter.tsx"), "utf8");
 
   it("creates an auditable close period and audit trail", () => {

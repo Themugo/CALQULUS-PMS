@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 const root=process.cwd();
 const read=(p)=>fs.readFileSync(path.join(root,p),'utf8');
-const sql=read('supabase/migrations/20260904000008_tenant_share_payment_links.sql');
+const sql=read('supabase/migrations/20260904000009_tenant_share_payment_links.sql');
 const edge=read('supabase/functions/initiate-shared-payment/index.ts');
 const page=read('src/features/payments/pages/PublicPaymentShare.tsx');
 const button=read('src/features/tenant-portal/components/TenantPaymentShareButton.tsx');

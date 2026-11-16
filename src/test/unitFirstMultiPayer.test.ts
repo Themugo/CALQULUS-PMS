@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
 describe('unit-first multi-payer billing', () => {
-  const sql = fs.readFileSync('supabase/migrations/20260904000004_unit_first_multi_payer_bulk_payments.sql', 'utf8');
+  const sql = fs.readFileSync('supabase/migrations/20260904000005_unit_first_multi_payer_bulk_payments.sql', 'utf8');
   it('supports one payment allocated across multiple invoices/units', () => {
     expect(sql).toContain('process_payer_payment_atomic');
     expect(sql).toContain('p_allocations jsonb');

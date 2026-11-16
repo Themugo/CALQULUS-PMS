@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 describe("collections recovery automation", () => {
   const root = resolve(__dirname, "../..");
   it("defines scoped recovery cases and promise tracking", () => {
-    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000023_collections_recovery_automation.sql"), "utf8");
+    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000024_collections_recovery_automation.sql"), "utf8");
     expect(sql).toContain("collection_recovery_cases");
     expect(sql).toContain("sync_collection_recovery_cases_atomic");
     expect(sql).toContain("record_collection_promise_atomic");

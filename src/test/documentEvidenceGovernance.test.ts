@@ -6,7 +6,7 @@ const root = process.cwd();
 
 describe("document and evidence governance", () => {
   it("has the canonical governance migration", () => {
-    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000034_document_evidence_governance.sql"), "utf8");
+    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000035_document_evidence_governance.sql"), "utf8");
     expect(sql).toContain("landlord_document_access_log");
     expect(sql).toContain("verification_status");
     expect(sql).toContain("sha256");
@@ -15,7 +15,7 @@ describe("document and evidence governance", () => {
   });
 
   it("uses private storage and scoped manager/landlord access", () => {
-    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000034_document_evidence_governance.sql"), "utf8");
+    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000035_document_evidence_governance.sql"), "utf8");
     expect(sql).toContain("public.can_manage_property_scope(d.manager_id)");
     expect(sql).toContain("d.landlord_user_id = auth.uid()");
     expect(sql).toContain("public=false");

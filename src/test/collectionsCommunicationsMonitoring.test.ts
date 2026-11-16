@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 const root = resolve(import.meta.dirname, "../..");
 describe("collections communications and promise monitoring", () => {
   it("defines the controlled communication outbox and missed-promise escalation", () => {
-    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000024_collections_communications_promise_monitoring.sql"), "utf8");
+    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000025_collections_communications_promise_monitoring.sql"), "utf8");
     expect(sql).toContain("collection_recovery_communications");
     expect(sql).toContain("queue_collection_recovery_communication_atomic");
     expect(sql).toContain("mark_missed_collection_promises_atomic");

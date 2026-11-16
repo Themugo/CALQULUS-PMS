@@ -4,7 +4,7 @@ import path from "node:path";
 
 describe("financial & operational reconciliation command center", () => {
   const root = process.cwd();
-  const migration = fs.readFileSync(path.join(root, "supabase/migrations/20260904000035_financial_operational_reconciliation_command_center.sql"), "utf8");
+  const migration = fs.readFileSync(path.join(root, "supabase/migrations/20260904000036_financial_operational_reconciliation_command_center.sql"), "utf8");
   const component = fs.readFileSync(path.join(root, "src/features/dashboard/components/FinancialOperationalReconciliationCenter.tsx"), "utf8");
 
   it("defines one canonical cross-domain case model", () => {

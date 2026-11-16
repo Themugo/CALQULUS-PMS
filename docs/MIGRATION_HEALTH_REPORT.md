@@ -41,7 +41,7 @@ The CALQULUS PMS database migration system shows **good overall health** with st
 - `20260506000004_unit_charge_configs_and_line_items.sql`
 - `20260506000016_multi_unit_payment_details.sql`
 - `20260506000021_payment_idempotency.sql`
-- `20260506000022_invoice_number_sequence.sql`
+- `20260506000023_invoice_number_sequence.sql`
 - `20260519000000_webhook_dead_letter_and_idempotency.sql`
 - `20260520000000_payment_idempotency_and_notification_failures.sql`
 - `20260604000000_financial_amount_check_constraints.sql`
@@ -67,7 +67,7 @@ The CALQULUS PMS database migration system shows **good overall health** with st
 - `20260506000006_complete_tenant_unit_relationships.sql`
 - `20260506000008_tenant_portal_completion.sql`
 - `20260506000019_service_providers_and_orphan_tenants.sql`
-- `20260506000026_tenant_portability_and_orphan_support.sql`
+- `20260506000030_tenant_portability_and_orphan_support.sql`
 
 #### Platform & Administration (5 migrations)
 - `20260506000018_property_taxonomy_and_tier_system.sql`
@@ -93,7 +93,7 @@ The CALQULUS PMS database migration system shows **good overall health** with st
 #### Data Integrity & Validation (3 migrations)
 - `20260604000000_financial_amount_check_constraints.sql`
 - `20260605000000_validate_amount_check_constraints.sql`
-- `20260506000022b_unit_first_integrity.sql`
+- `20260506000024_unit_first_integrity.sql`
 
 #### Bug Fixes & Patches (8 migrations)
 - Various fix migrations addressing specific issues
@@ -175,8 +175,8 @@ The CALQULUS PMS database migration system shows **good overall health** with st
 ### Ordering Issues
 
 #### Timestamp Conflicts
-- `20260506000021_payment_idempotency.sql` and `20260506000021_water_company_paybills.sql` have identical timestamps
-- `20260506000022_invoice_number_sequence.sql` and related migrations have similar timestamps
+- `20260506000021_payment_idempotency.sql` and `20260506000022_water_company_paybills.sql` have identical timestamps
+- `20260506000023_invoice_number_sequence.sql` and related migrations have similar timestamps
 - Could cause execution order ambiguity
 
 #### Dependency Violations

@@ -159,7 +159,10 @@ BEGIN
 
   -- Block non-webhosts from altering status or tier
   IF (OLD.status IS DISTINCT FROM NEW.status
-      OR OLD.tier_id IS DISTINCT FROM NEW.tier_id
+      OR OLD.subscription_tier IS DISTINCT FROM NEW.subscription_tier
+      OR OLD.max_properties IS DISTINCT FROM NEW.max_properties
+      OR OLD.max_units IS DISTINCT FROM NEW.max_units
+      OR OLD.platform_rate IS DISTINCT FROM NEW.platform_rate
       OR OLD.approved_by IS DISTINCT FROM NEW.approved_by
       OR OLD.approved_at IS DISTINCT FROM NEW.approved_at
       OR OLD.suspended_by IS DISTINCT FROM NEW.suspended_by

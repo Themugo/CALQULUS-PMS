@@ -556,11 +556,8 @@ GRANT EXECUTE ON FUNCTION public.get_agency_financial_ledger(uuid,date,date) TO 
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.agency_property_in_scope(p_agency_id uuid,p_property_id uuid)
 RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$
+  -- properties.agency_id was removed (20260603000000); scope is via the managing operator only.
   SELECT EXISTS (
-    SELECT 1 FROM public.properties p
-    WHERE p.id=p_property_id AND p.agency_id=p_agency_id
-  )
-  OR EXISTS (
     SELECT 1
     FROM public.property_landlords pl
     WHERE pl.property_id=p_property_id

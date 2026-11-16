@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 
-const migration = fs.readFileSync("supabase/migrations/20260905000001_operational_resilience_recovery_assurance.sql", "utf8");
+const migration = fs.readFileSync("supabase/migrations/20260905000002_operational_resilience_recovery_assurance.sql", "utf8");
 const component = fs.readFileSync("src/features/dashboard/components/OperationalResilienceRecoveryAssuranceCenter.tsx", "utf8");
 const dashboard = fs.readFileSync("src/features/dashboard/pages/Dashboard.tsx", "utf8");
 

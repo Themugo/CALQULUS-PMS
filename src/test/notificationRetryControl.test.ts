@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 
-const sql = readFileSync("supabase/migrations/20260904000014_notification_retry_control.sql", "utf8");
+const sql = readFileSync("supabase/migrations/20260904000015_notification_retry_control.sql", "utf8");
 const edge = readFileSync("supabase/functions/retry-notification-failure/index.ts", "utf8");
 const panel = readFileSync("src/features/payments/components/NotificationFailuresPanel.tsx", "utf8");
 

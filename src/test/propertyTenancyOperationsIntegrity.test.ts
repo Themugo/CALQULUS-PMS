@@ -4,7 +4,7 @@ import path from "node:path";
 
 const migration = path.resolve(
   process.cwd(),
-  "supabase/migrations/20260904000001_property_tenancy_operations_ecosystem.sql",
+  "supabase/migrations/20260904000002_property_tenancy_operations_ecosystem.sql",
 );
 
 describe("property & tenancy operations ecosystem", () => {

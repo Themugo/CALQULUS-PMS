@@ -7,7 +7,7 @@ const read = (p: string) => fs.readFileSync(path.join(root, p), "utf8");
 
 describe("Phase 37-38 core portfolio mutation integrity", () => {
   it("defines atomic property lifecycle RPCs and revokes direct authenticated writes", () => {
-    const sql = read("supabase/migrations/20260903000020_core_portfolio_lifecycle_atomic.sql");
+    const sql = read("supabase/migrations/20260903000029_core_portfolio_lifecycle_atomic.sql");
     expect(sql).toContain("CREATE OR REPLACE FUNCTION public.save_property_atomic");
     expect(sql).toContain("CREATE OR REPLACE FUNCTION public.deactivate_property_atomic");
     expect(sql).toContain("REVOKE INSERT,UPDATE,DELETE ON public.properties FROM authenticated;");
@@ -16,7 +16,7 @@ describe("Phase 37-38 core portfolio mutation integrity", () => {
   });
 
   it("defines atomic unit lifecycle RPCs and synchronizes rent configuration transactionally", () => {
-    const sql = read("supabase/migrations/20260903000020_core_portfolio_lifecycle_atomic.sql");
+    const sql = read("supabase/migrations/20260903000029_core_portfolio_lifecycle_atomic.sql");
     expect(sql).toContain("CREATE OR REPLACE FUNCTION public.save_unit_atomic");
     expect(sql).toContain("CREATE OR REPLACE FUNCTION public.deactivate_unit_atomic");
     expect(sql).toContain("REVOKE INSERT,UPDATE,DELETE ON public.units FROM authenticated;");
@@ -25,7 +25,7 @@ describe("Phase 37-38 core portfolio mutation integrity", () => {
   });
 
   it("makes tenant-to-unit assignment atomic", () => {
-    const sql = read("supabase/migrations/20260903000020_core_portfolio_lifecycle_atomic.sql");
+    const sql = read("supabase/migrations/20260903000029_core_portfolio_lifecycle_atomic.sql");
     expect(sql).toContain("CREATE OR REPLACE FUNCTION public.assign_tenant_to_unit_atomic");
     expect(sql).toContain("CREATE OR REPLACE FUNCTION public.unassign_tenant_from_unit_atomic");
     expect(sql).toContain("Unit already has an active tenant");

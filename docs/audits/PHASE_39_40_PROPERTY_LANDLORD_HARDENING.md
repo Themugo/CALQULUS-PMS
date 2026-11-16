@@ -47,7 +47,7 @@ Blocked:
 
 ## Migration
 
-`supabase/migrations/20260903000018_property_landlord_relationship_atomic.sql`
+`supabase/migrations/20260903000025_property_landlord_relationship_atomic.sql`
 
 ## Notes
 

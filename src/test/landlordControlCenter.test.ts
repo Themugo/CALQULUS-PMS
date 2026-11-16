@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve(process.cwd());
-const migration = readFileSync(resolve(root, "supabase/migrations/20260906000009_landlord_control_center.sql"), "utf8");
+const migration = readFileSync(resolve(root, "supabase/migrations/20260906000010_landlord_control_center.sql"), "utf8");
 const page = readFileSync(resolve(root, "src/features/landlord/pages/LandlordManagement.tsx"), "utf8");
 const routes = readFileSync(resolve(root, "src/app/routes.ts"), "utf8");
 

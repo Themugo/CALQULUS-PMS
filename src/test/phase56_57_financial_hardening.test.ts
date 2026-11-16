@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const payout = fs.readFileSync("supabase/migrations/20260903000027_phase56_payout_reconciliation_atomic.sql", "utf8");
-const dispute = fs.readFileSync("supabase/migrations/20260903000028_phase57_dispute_convergence.sql", "utf8");
+const payout = fs.readFileSync("supabase/migrations/20260903000038_phase56_payout_reconciliation_atomic.sql", "utf8");
+const dispute = fs.readFileSync("supabase/migrations/20260903000039_phase57_dispute_convergence.sql", "utf8");
 
 describe("Phase 56-57 financial hardening", () => {
   it("keeps payout transitions atomic and locked", () => {
