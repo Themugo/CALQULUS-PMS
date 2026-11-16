@@ -53,7 +53,7 @@ Therefore **automated Vitest/typecheck/lint/build are not represented as passing
 
 ## Changed files
 
-- `supabase/migrations/20260904000001_property_tenancy_operations_ecosystem.sql`
+- `supabase/migrations/20260904000002_property_tenancy_operations_ecosystem.sql`
 - `src/features/tenants/components/MoveOutDialog.tsx`
 - `src/test/propertyTenancyOperationsIntegrity.test.ts`
 - `scripts/audit-property-tenancy-operations.mjs`

@@ -31,7 +31,7 @@ describe("landlord-assigned team roles", () => {
     }
   });
   it("permission keys match what save_landlord_team_member_atomic reads", () => {
-    const sql = readFileSync("supabase/migrations/20260903000019_team_and_payer_atomic.sql", "utf8");
+    const sql = readFileSync("supabase/migrations/20260903000027_team_and_payer_atomic.sql", "utf8");
     for (const k of Object.keys(teamRolePreset("custom").permissions).filter((k) => k !== "restrict_to_assigned_properties")) {
       expect(sql).toContain(`'${k}'`);
     }

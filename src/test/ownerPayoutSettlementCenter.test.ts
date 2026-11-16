@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 describe('owner payout settlement integrity', () => {
-  const migration = fs.readFileSync(path.resolve(process.cwd(), 'supabase/migrations/20260904000032_owner_payout_settlement_management.sql'), 'utf8');
+  const migration = fs.readFileSync(path.resolve(process.cwd(), 'supabase/migrations/20260904000033_owner_payout_settlement_management.sql'), 'utf8');
   const component = fs.readFileSync(path.resolve(process.cwd(), 'src/features/dashboard/components/OwnerPayoutSettlementCenter.tsx'), 'utf8');
 
   it('requires closed periods and approved payouts before batching', () => {

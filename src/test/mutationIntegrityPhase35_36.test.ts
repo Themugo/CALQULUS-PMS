@@ -7,7 +7,7 @@ const read = (p: string) => readFileSync(resolve(root, p), 'utf8');
 
 describe('Phase 35-36 mutation integrity', () => {
   it('defines contract and lease atomic lifecycle functions and revokes direct writes', () => {
-    const sql = read('supabase/migrations/20260903000018_contract_lease_lifecycle_atomic.sql');
+    const sql = read('supabase/migrations/20260903000024_contract_lease_lifecycle_atomic.sql');
     for (const fn of ['create_contract_atomic', 'transition_contract_atomic', 'transition_lease_atomic', 'attach_lease_document_atomic', 'assign_lease_tenant_atomic']) {
       expect(sql).toContain(`FUNCTION public.${fn}`);
     }
@@ -17,7 +17,7 @@ describe('Phase 35-36 mutation integrity', () => {
   });
 
   it('defines water and unit utility atomic functions and revokes direct writes', () => {
-    const sql = read('supabase/migrations/20260903000019_water_billing_lifecycle_atomic.sql');
+    const sql = read('supabase/migrations/20260903000028_water_billing_lifecycle_atomic.sql');
     for (const fn of ['save_water_billing_config_atomic', 'record_water_meter_reading_atomic', 'submit_tenant_water_reading_atomic', 'dispute_water_reading_atomic', 'link_water_reading_invoice_atomic', 'save_unit_utility_meter_atomic', 'update_unit_utility_meter_reading_atomic', 'set_unit_utility_meter_active_atomic', 'delete_unit_utility_meter_atomic']) {
       expect(sql).toContain(`FUNCTION public.${fn}`);
     }

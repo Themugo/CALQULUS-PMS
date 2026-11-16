@@ -22,6 +22,9 @@ toast reads "We could not reach the CALQULUS service...".
 3. SQL editor, replacing the email:
 
 ```sql
+-- The role-protection trigger only lets the service role grant webhost; mark this SQL session as such.
+select set_config('request.jwt.claim.role', 'service_role', false);
+
 do $$
 declare uid uuid; em text := 'you@yourdomain.com'; nm text := 'Your Name';
 begin
@@ -32,8 +35,11 @@ begin
   delete from public.user_roles where user_id = uid and role = 'manager' and approval_status = 'pending';
   insert into public.user_roles (user_id, role, approval_status) values (uid, 'webhost', 'approved')
     on conflict do nothing;
-  insert into public.admin_permissions (user_id, admin_level) values (uid, 'super_admin')
-    on conflict (user_id) do update set admin_level = 'super_admin';
+  delete from public.admin_permissions where user_id = uid;
+  insert into public.admin_permissions (user_id, admin_level, can_create_webhosts, can_manage_billing,
+    can_manage_managers, can_manage_properties, can_view_activity_logs, can_manage_system_landlords,
+    can_manage_agencies, can_manage_organizations, can_read_unattached_tenants, can_resolve_unattached_tenants)
+  values (uid, 'super_admin', true, true, true, true, true, true, true, true, true, true);
   insert into public.platform_admins (user_id, admin_type, display_name, email,
     can_create_admins, can_manage_managers, can_manage_billing, can_manage_properties,
     can_manage_landlords, can_view_activity_logs, can_manage_platform_settings, is_immutable)
@@ -46,5 +52,4 @@ end $$;
    Non-admin accounts are refused and signed out. Further admins are invited from the
    webhost dashboard (Admin invitations).
 
-If the insert into `platform_admins` complains about a missing column, open
-`supabase/migrations/20260530000000_platform_admin_hierarchy.sql` and match its column list.
+This exact SQL was run against a full replay of the migration chain on a scratch database.

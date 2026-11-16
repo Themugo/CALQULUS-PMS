@@ -3,7 +3,7 @@ import fs from "node:fs";
 
 describe("budget forecast variance control", () => {
   it("uses planning tables and existing financial truth", () => {
-    const migration=fs.readFileSync("supabase/migrations/20260904000042_budget_forecast_variance_control.sql","utf8");
+    const migration=fs.readFileSync("supabase/migrations/20260904000043_budget_forecast_variance_control.sql","utf8");
     const component=fs.readFileSync("src/features/dashboard/components/BudgetForecastVarianceCenter.tsx","utf8");
     expect(migration).toContain("management_budgets");
     expect(migration).toContain("management_budget_lines");

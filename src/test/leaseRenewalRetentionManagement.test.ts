@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 const root=path.resolve(process.cwd());
-const migration=fs.readFileSync(path.join(root,"supabase/migrations/20260904000026_lease_renewal_retention_management.sql"),"utf8");
+const migration=fs.readFileSync(path.join(root,"supabase/migrations/20260904000027_lease_renewal_retention_management.sql"),"utf8");
 const component=fs.readFileSync(path.join(root,"src/features/leases/components/LeaseRenewalPipeline.tsx"),"utf8");
 describe("lease renewal retention management",()=>{
  it("has authoritative renewal case lifecycle",()=>{expect(migration).toContain("lease_renewal_cases");expect(migration).toContain("create_lease_renewal_case_atomic");expect(migration).toContain("send_lease_renewal_case_atomic");expect(migration).toContain("update_lease_renewal_case_atomic");});

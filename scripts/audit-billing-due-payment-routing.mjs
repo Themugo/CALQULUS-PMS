@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 const root = process.cwd();
-const sql = fs.readFileSync(path.join(root,'supabase/migrations/20260904000003_billing_due_payment_routing.sql'),'utf8');
+const sql = fs.readFileSync(path.join(root,'supabase/migrations/20260904000004_billing_due_payment_routing.sql'),'utf8');
 const required = [
   'billing_due_configurations','get_effective_billing_due_config','resolve_invoice_due_dates',
   'payment_collection_accounts','save_payment_collection_account_atomic','get_invoice_payment_instructions',

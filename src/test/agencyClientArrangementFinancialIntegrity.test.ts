@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const migration = resolve(process.cwd(), "supabase/migrations/20260906000010_agency_client_arrangement_financial_integrity.sql");
+const migration = resolve(process.cwd(), "supabase/migrations/20260906000011_agency_client_arrangement_financial_integrity.sql");
 const ui = resolve(process.cwd(), "src/features/agency/components/AgencyOperationsCenter.tsx");
 
 describe("Agency client arrangement and financial integrity foundation", () => {

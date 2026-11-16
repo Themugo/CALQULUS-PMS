@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const read = p => fs.readFileSync(path.join(root,p),'utf8');
-const sql = read('supabase/migrations/20260904000009_payment_configuration_privacy_device_security.sql');
+const sql = read('supabase/migrations/20260904000010_payment_configuration_privacy_device_security.sql');
 const app = read('src/shared/components/PortalDeviceGate.tsx');
 const publicShare = read('src/features/payments/pages/PublicPaymentShare.tsx');
 const shareFn = read('supabase/functions/initiate-shared-payment/index.ts');

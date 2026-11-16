@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const migration = path.join(root, 'supabase/migrations/20260904000002_financial_billing_operations_ecosystem.sql');
+const migration = path.join(root, 'supabase/migrations/20260904000003_financial_billing_operations_ecosystem.sql');
 const tenantUi = path.join(root, 'src/features/tenant-portal/components/TenantBalanceSummary.tsx');
 const types = path.join(root, 'src/integrations/supabase/types.ts');
 

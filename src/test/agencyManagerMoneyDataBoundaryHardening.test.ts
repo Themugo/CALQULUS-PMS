@@ -4,7 +4,7 @@ import path from "node:path";
 
 const root = path.resolve(process.cwd());
 const migration = fs.readFileSync(
-  path.join(root, "supabase/migrations/20260906000008_agency_manager_money_data_boundary_hardening.sql"),
+  path.join(root, "supabase/migrations/20260906000009_agency_manager_money_data_boundary_hardening.sql"),
   "utf8",
 );
 const routes = fs.readFileSync(path.join(root, "src/app/routes.ts"), "utf8");

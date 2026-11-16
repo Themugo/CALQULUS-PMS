@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 describe("portfolio financial intelligence", () => {
   it("defines the canonical financial intelligence RPC", () => {
-    const sql = readFileSync(resolve(process.cwd(), "supabase/migrations/20260904000021_portfolio_financial_intelligence.sql"), "utf8");
+    const sql = readFileSync(resolve(process.cwd(), "supabase/migrations/20260904000022_portfolio_financial_intelligence.sql"), "utf8");
     expect(sql).toContain("get_manager_portfolio_financial_intelligence");
     expect(sql).toContain("arrears_aging");
     expect(sql).toContain("property_performance");

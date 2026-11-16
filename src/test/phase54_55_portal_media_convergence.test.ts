@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 
-const migration54 = fs.readFileSync('supabase/migrations/20260903000025_phase54_unit_photo_atomic.sql','utf8');
-const migration55 = fs.readFileSync('supabase/migrations/20260903000026_phase55_landlord_portal_atomic.sql','utf8');
+const migration54 = fs.readFileSync('supabase/migrations/20260903000036_phase54_unit_photo_atomic.sql','utf8');
+const migration55 = fs.readFileSync('supabase/migrations/20260903000037_phase55_landlord_portal_atomic.sql','utf8');
 const gallery = fs.readFileSync('src/features/units/components/UnitPhotoGallery.tsx','utf8');
 const bank = fs.readFileSync('src/features/landlord/components/LandlordBankDetails.tsx','utf8');
 const prefs = fs.readFileSync('src/features/landlord/components/LandlordNotificationPreferences.tsx','utf8');

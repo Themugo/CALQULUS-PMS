@@ -292,12 +292,12 @@ describe("logs and side effects", () => {
     expect(calls()).toEqual([]);
   });
 
-  it.skipIf(!posix)("on the real repository the executor is blocked and reports the known defects (1, 2, 4)", () => {
-    const r = run(APPLY, REPO);
-    expect(r.code).toBe(1);
-    expect(r.out).toMatch(/DUPLICATE_VERSIONS/);
-    expect(r.out).toMatch(/NONCONFORMING_FILENAMES/);
-    expect(r.out).toContain("20260506000022b_unit_first_integrity.sql");
+  it.skipIf(!posix)("the real repository no longer has duplicate or non-conforming migration versions (1, 2, 4)", () => {
+    const names = fs.readdirSync(path.join(REPO, "supabase", "migrations")).filter((f) => f.endsWith(".sql"));
+    const versions = names.map((f) => f.split("_")[0]);
+    expect(new Set(versions).size).toBe(versions.length);
+    for (const f of names) expect(f).toMatch(/^\d{14}_[a-z0-9_]+\.sql$/);
+    expect(names).toEqual([...names].sort());
     expect(calls()).toEqual([]);
   });
 });

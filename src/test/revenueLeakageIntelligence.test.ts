@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 describe("revenue leakage intelligence", () => {
   const root = resolve(process.cwd());
   it("defines a scoped receivables intelligence RPC", () => {
-    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000022_revenue_leakage_receivables_intelligence.sql"), "utf8");
+    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000023_revenue_leakage_receivables_intelligence.sql"), "utf8");
     expect(sql).toContain("get_manager_revenue_leakage_intelligence");
     expect(sql).toContain("unallocated_completed_payments");
     expect(sql).toContain("persistent_60d_arrears");

@@ -27,8 +27,8 @@ for(const f of files){
     if(re.test(s)) violations.push(`${path.relative(root,f)} -> ${table}`);
   }
 }
-const mig=fs.readFileSync(path.join(root,'supabase/migrations/20260903000051_phase86_administration_orchestration_convergence.sql'),'utf8');
-const storage=fs.readFileSync(path.join(root,'supabase/migrations/20260903000056_phase87_storage_path_hardening.sql'),'utf8');
+const mig=fs.readFileSync(path.join(root,'supabase/migrations/20260903000069_phase86_administration_orchestration_convergence.sql'),'utf8');
+const storage=fs.readFileSync(path.join(root,'supabase/migrations/20260903000072_phase87_storage_path_hardening.sql'),'utf8');
 const required86=['save_manager_bank_details_atomic','save_manager_ewallet_settings_atomic','save_manager_company_settings_atomic','save_manager_receipt_settings_atomic','provision_submanager_atomic','save_workflow_template_atomic','save_utility_connection_atomic','update_profile_settings_atomic','save_webhost_tier_price_atomic','save_manager_notification_settings_atomic'];
 const missing86=required86.filter(x=>!mig.includes(`FUNCTION public.${x}`));
 const required87=['property_images_scoped_write','property_images_scoped_delete','contracts_scoped_insert','signed_contracts_scoped_insert','profile_photos_scoped_insert','company_logos_scoped_insert'];

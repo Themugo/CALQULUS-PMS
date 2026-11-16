@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 describe("executive portfolio intelligence", () => {
   const root = resolve(process.cwd());
   it("defines a scoped, explainable executive intelligence RPC", () => {
-    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000020_executive_portfolio_intelligence.sql"), "utf8");
+    const sql = readFileSync(resolve(root, "supabase/migrations/20260904000021_executive_portfolio_intelligence.sql"), "utf8");
     expect(sql).toContain("get_manager_executive_portfolio_intelligence");
     expect(sql).toContain("SECURITY DEFINER");
     expect(sql).toContain("manager_submanagers");

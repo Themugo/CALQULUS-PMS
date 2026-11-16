@@ -3,8 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = path.resolve(__dirname, "../..");
-const walletSql = fs.readFileSync(path.join(root, "supabase/migrations/20260903000029_phase58_wallet_ledger_atomic.sql"), "utf8");
-const activationSql = fs.readFileSync(path.join(root, "supabase/migrations/20260903000030_phase59_activation_policy_hardening.sql"), "utf8");
+const walletSql = fs.readFileSync(path.join(root, "supabase/migrations/20260903000040_phase58_wallet_ledger_atomic.sql"), "utf8");
+const activationSql = fs.readFileSync(path.join(root, "supabase/migrations/20260903000042_phase59_activation_policy_hardening.sql"), "utf8");
 
 describe("phase 58-59 financial/auth hardening", () => {
   it("wallet mutations are service-only and idempotent", () => {

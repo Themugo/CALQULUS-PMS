@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const sqlPath = path.join(root, 'supabase/migrations/20260904000001_property_tenancy_operations_ecosystem.sql');
+const sqlPath = path.join(root, 'supabase/migrations/20260904000002_property_tenancy_operations_ecosystem.sql');
 const moveOutPath = path.join(root, 'src/features/tenants/components/MoveOutDialog.tsx');
 const testPath = path.join(root, 'src/test/propertyTenancyOperationsIntegrity.test.ts');
 

@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { DEFAULT_PUBLIC_SITE_CONFIG, mergePublicSiteConfig, resolveStartingPrice } from "@/features/marketing/publicSiteConfig";
 
-const migration = "supabase/migrations/20260905000003_public_site_configuration.sql";
-const brandMigration = "supabase/migrations/20260905000004_public_site_brand_svg.sql";
+const migration = "supabase/migrations/20260905000004_public_site_configuration.sql";
+const brandMigration = "supabase/migrations/20260905000005_public_site_brand_svg.sql";
 
 it("public site defaults contain the approved four property categories and four portals", () => {
   expect(DEFAULT_PUBLIC_SITE_CONFIG.propertyTypes.map((item) => item.title)).toEqual(["Residentials", "Estates", "Offices", "Institutions"]);

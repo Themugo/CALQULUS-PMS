@@ -15,7 +15,7 @@ describe("Phase 11 — atomic manual installment payment path", () => {
   });
 
   it("validates manager/submanager scope inside the security-definer RPC", () => {
-    const src = readRepo("supabase/migrations/20260902000004_atomic_record_payment_installment.sql");
+    const src = readRepo("supabase/migrations/20260902000006_atomic_record_payment_installment.sql");
     expect(src).toContain("auth.role() <> 'authenticated'");
     expect(src).toContain("Manager scope mismatch");
     expect(src).toContain("Submanager is not assigned to this manager");
@@ -25,7 +25,7 @@ describe("Phase 11 — atomic manual installment payment path", () => {
   });
 
   it("makes installment side effects transactional and retry-safe", () => {
-    const src = readRepo("supabase/migrations/20260902000004_atomic_record_payment_installment.sql");
+    const src = readRepo("supabase/migrations/20260902000006_atomic_record_payment_installment.sql");
     expect(src).toContain("ADD COLUMN IF NOT EXISTS payment_reference");
     expect(src).toContain("arrears_schedule_payment_reference_uidx");
     expect(src).toContain("ON CONFLICT (tenant_id, payment_reference)");
