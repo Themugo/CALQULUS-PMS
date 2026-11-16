@@ -3,7 +3,7 @@ import path from "node:path";
 
 describe("landlord settlement transparency", () => {
   const component = fs.readFileSync(path.resolve(process.cwd(), "src/features/landlord/components/LandlordSettlementTransparency.tsx"), "utf8");
-  const migration = fs.readFileSync(path.resolve(process.cwd(), "supabase/migrations/20260904000033_landlord_settlement_transparency.sql"), "utf8");
+  const migration = fs.readFileSync(path.resolve(process.cwd(), "supabase/migrations/20260904000034_landlord_settlement_transparency.sql"), "utf8");
 
   it("uses the landlord-scoped settlement RPC and does not expose tenant identity", () => {
     expect(component).toContain("get_landlord_settlement_transparency");

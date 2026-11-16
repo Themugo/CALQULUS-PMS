@@ -13,7 +13,7 @@ describe("Phase 10 invoice atomicity", () => {
     expect(read("src/features/properties/components/PropertyBillingTab.tsx")).not.toMatch(/from\(["']invoices["']\)[\s\S]{0,300}\.insert\(/);
   });
   it("uses one service-only atomic RPC", () => {
-    const sql = read("supabase/migrations/20260902000004_atomic_invoice_creation_v2.sql");
+    const sql = read("supabase/migrations/20260902000005_atomic_invoice_creation_v2.sql");
     expect(sql).toContain("SECURITY DEFINER");
     expect(sql).toContain("auth.role() <> 'service_role'");
     expect(sql).toContain("ON CONFLICT (generation_key)");

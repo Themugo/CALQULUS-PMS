@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 const root=process.cwd();
 const read=(f)=>fs.readFileSync(path.join(root,f),'utf8');
-const migration=read('supabase/migrations/20260904000010_payment_authority_convergence.sql');
+const migration=read('supabase/migrations/20260904000011_payment_authority_convergence.sql');
 const tenant=read('src/features/tenant-portal/components/TenantPaymentDetails.tsx');
 const stk=read('supabase/functions/initiate-mpesa-stk-push/index.ts');
 const checks=[

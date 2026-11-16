@@ -7,7 +7,7 @@ const read = (p: string) => fs.readFileSync(path.join(root, p), "utf8");
 
 describe("Phase 12-13 payment lifecycle + credit atomicity", () => {
   it("requires existing payment transactions to be pending before first financial processing", () => {
-    const sql = read("supabase/migrations/20260902000004_payment_lifecycle_credit_atomic.sql");
+    const sql = read("supabase/migrations/20260902000007_payment_lifecycle_credit_atomic.sql");
     expect(sql).toContain("Payment transaction is not pending and has no allocations");
     expect(sql).toContain("FOR UPDATE;");
     expect(sql).toContain("Payment transaction ownership mismatch");
@@ -23,7 +23,7 @@ describe("Phase 12-13 payment lifecycle + credit atomicity", () => {
 
   it("makes credit application a single database transaction and never swallows allocation failures", () => {
     const fn = read("supabase/functions/apply-credit/index.ts");
-    const sql = read("supabase/migrations/20260902000004_payment_lifecycle_credit_atomic.sql");
+    const sql = read("supabase/migrations/20260902000007_payment_lifecycle_credit_atomic.sql");
     expect(fn).toContain("apply_tenant_credit_atomic");
     expect(fn).not.toContain("from(\"invoices\").update");
     expect(fn).not.toContain("from(\"payment_allocations\").insert");

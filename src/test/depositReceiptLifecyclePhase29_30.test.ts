@@ -7,7 +7,7 @@ const read = (p: string) => fs.readFileSync(path.join(root, p), 'utf8');
 
 describe('Phase 29–30 deposit and receipt lifecycle', () => {
   it('defines atomic deposit lifecycle RPCs and mutation revocation', () => {
-    const sql = read('supabase/migrations/20260903000011_deposit_lifecycle_atomic.sql');
+    const sql = read('supabase/migrations/20260903000012_deposit_lifecycle_atomic.sql');
     expect(sql).toContain('record_deposit_deduction_atomic');
     expect(sql).toContain('reverse_deposit_deduction_atomic');
     expect(sql).toContain('create_deposit_refund_atomic');
@@ -18,7 +18,7 @@ describe('Phase 29–30 deposit and receipt lifecycle', () => {
   });
 
   it('defines receipt submission/rejection and revokes direct writes', () => {
-    const sql = read('supabase/migrations/20260903000012_payment_receipt_lifecycle_atomic.sql');
+    const sql = read('supabase/migrations/20260903000013_payment_receipt_lifecycle_atomic.sql');
     expect(sql).toContain('submit_payment_receipt_atomic');
     expect(sql).toContain('reject_payment_receipt_atomic');
     expect(sql).toContain("role='tenant'");

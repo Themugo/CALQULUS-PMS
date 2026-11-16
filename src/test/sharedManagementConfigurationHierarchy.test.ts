@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const migration = path.join(root, "supabase", "migrations", "20260906000011_shared_management_configuration_hierarchy.sql");
+const migration = path.join(root, "supabase", "migrations", "20260906000012_shared_management_configuration_hierarchy.sql");
 const center = path.join(root, "src", "features", "shared", "ManagementConfigurationCenter.tsx");
 
 describe("shared management configuration hierarchy", () => {

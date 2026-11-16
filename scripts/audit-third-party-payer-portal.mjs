@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 const root=process.cwd();
-const sql=fs.readFileSync(path.join(root,'supabase/migrations/20260904000007_third_party_payer_portal.sql'),'utf8');
+const sql=fs.readFileSync(path.join(root,'supabase/migrations/20260904000008_third_party_payer_portal.sql'),'utf8');
 const required=[
   "ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'payer'",
   'get_my_payer_portal','get_my_payer_obligations','get_my_payer_receipts',

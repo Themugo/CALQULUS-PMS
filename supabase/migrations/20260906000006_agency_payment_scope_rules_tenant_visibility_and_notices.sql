@@ -223,7 +223,7 @@ BEGIN
   IF COALESCE((v->>'overdue_reminder_interval_days')::int,3) NOT BETWEEN 1 AND 30 THEN RAISE EXCEPTION 'Overdue reminder interval must be 1–30 days' USING ERRCODE='22023'; END IF;
   IF late_type NOT IN ('none','fixed','percentage') THEN RAISE EXCEPTION 'Invalid late-fee type' USING ERRCODE='22023'; END IF;
   IF late_value<0 OR (late_type='percentage' AND late_value>100) THEN RAISE EXCEPTION 'Invalid late-fee value' USING ERRCODE='22023'; END IF;
-  IF split<0 OR split>100 THEN RAISE EXCEPTION 'Agency split must be 0–100%' USING ERRCODE='22023'; END IF;
+  IF split<0 OR split>100 THEN RAISE EXCEPTION 'Agency split must be 0–100%%' USING ERRCODE='22023'; END IF;
   IF NOT ((v->>'collection_destination') = ANY(allowed_destinations)) THEN RAISE EXCEPTION 'Invalid collection destination' USING ERRCODE='22023'; END IF;
   RETURN v;
 END;

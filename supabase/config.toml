@@ -273,3 +273,9 @@ verify_jwt = false
 
 [functions.announce-payment]
 verify_jwt = true
+
+# Public payer link: authenticated by the share token + access grant + per-token DB rate limit,
+# not by a user JWT. With the newer opaque publishable keys the gateway cannot verify an anonymous
+# call as a JWT, so it must not require one.
+[functions.initiate-shared-payment]
+verify_jwt = false

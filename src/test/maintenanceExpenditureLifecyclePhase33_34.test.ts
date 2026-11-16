@@ -20,7 +20,7 @@ describe("Phase 33-34 maintenance/expenditure lifecycle", () => {
     const ui = read("src/features/billing/hooks/useBillingData.ts");
     expect(ui).not.toMatch(/from\(["']expenditures["']\)[\s\S]{0,400}\.(insert|update|delete|upsert)\(/);
     expect(ui).toContain("save_expenditure_atomic");
-    const migration = read("supabase/migrations/20260903000017_expenditure_lifecycle_atomic.sql");
+    const migration = read("supabase/migrations/20260903000023_expenditure_lifecycle_atomic.sql");
     expect(migration).toContain("UNIQUE INDEX");
     expect(migration).toContain("get_effective_manager_id()");
     expect(migration).toContain("REVOKE INSERT,UPDATE,DELETE ON public.expenditures FROM authenticated");

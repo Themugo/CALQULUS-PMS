@@ -8,7 +8,7 @@ The latest Phase 84–85 package contained several source-level direct mutations
 
 Added/reinstated a single migration:
 
-- `supabase/migrations/20260903000051_phase86_administration_orchestration_convergence.sql`
+- `supabase/migrations/20260903000069_phase86_administration_orchestration_convergence.sql`
 
 It provides atomic RPCs for:
 
@@ -48,7 +48,7 @@ Converted residual direct mutations in:
 
 Added:
 
-- `supabase/migrations/20260903000056_phase87_storage_path_hardening.sql`
+- `supabase/migrations/20260903000072_phase87_storage_path_hardening.sql`
 
 The migration removes historical broad storage write/read policies and establishes scoped policies for:
 

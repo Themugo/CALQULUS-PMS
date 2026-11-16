@@ -7,7 +7,7 @@
       "version": "20260506000021",
       "files": [
         "20260506000021_payment_idempotency.sql",
-        "20260506000021_water_company_paybills.sql"
+        "20260506000022_water_company_paybills.sql"
       ],
       "proposedRepair": "DO_NOT_RENAME_UNTIL_LIVE_SCHEMA_MIGRATIONS_IS_CONFIRMED",
       "reason": "Supabase migration versions are part of deployment history; renaming an applied migration can create drift."
@@ -15,10 +15,10 @@
     {
       "version": "20260506000022",
       "files": [
-        "20260506000022_invoice_number_sequence.sql",
-        "20260506000022b_unit_first_integrity.sql",
-        "20260506000022c_mpesa_policy_fixes.sql",
-        "20260506000022d_mpesa_property_scoping.sql"
+        "20260506000023_invoice_number_sequence.sql",
+        "20260506000024_unit_first_integrity.sql",
+        "20260506000025_mpesa_policy_fixes.sql",
+        "20260506000026_mpesa_property_scoping.sql"
       ],
       "proposedRepair": "DO_NOT_RENAME_UNTIL_LIVE_SCHEMA_MIGRATIONS_IS_CONFIRMED",
       "reason": "Supabase migration versions are part of deployment history; renaming an applied migration can create drift."
@@ -26,8 +26,8 @@
     {
       "version": "20260902000004",
       "files": [
-        "20260902000004_atomic_invoice_creation_v2.sql",
-        "20260902000004_atomic_record_payment_installment.sql"
+        "20260902000005_atomic_invoice_creation_v2.sql",
+        "20260902000006_atomic_record_payment_installment.sql"
       ],
       "proposedRepair": "DO_NOT_RENAME_UNTIL_LIVE_SCHEMA_MIGRATIONS_IS_CONFIRMED",
       "reason": "Supabase migration versions are part of deployment history; renaming an applied migration can create drift."
@@ -36,7 +36,7 @@
       "version": "20260903000011",
       "files": [
         "20260903000011_commission_integrity_cleanup.sql",
-        "20260903000011_deposit_lifecycle_atomic.sql"
+        "20260903000012_deposit_lifecycle_atomic.sql"
       ],
       "proposedRepair": "DO_NOT_RENAME_UNTIL_LIVE_SCHEMA_MIGRATIONS_IS_CONFIRMED",
       "reason": "Supabase migration versions are part of deployment history; renaming an applied migration can create drift."
@@ -44,8 +44,8 @@
     {
       "version": "20260903000012",
       "files": [
-        "20260903000012_payment_receipt_lifecycle_atomic.sql",
-        "20260903000012_payout_lifecycle_atomic.sql"
+        "20260903000013_payment_receipt_lifecycle_atomic.sql",
+        "20260903000014_payout_lifecycle_atomic.sql"
       ],
       "proposedRepair": "DO_NOT_RENAME_UNTIL_LIVE_SCHEMA_MIGRATIONS_IS_CONFIRMED",
       "reason": "Supabase migration versions are part of deployment history; renaming an applied migration can create drift."
@@ -53,9 +53,9 @@
     {
       "version": "20260903000014",
       "files": [
-        "20260903000014_landlord_invoice_lifecycle_atomic.sql",
-        "20260903000014_lease_lifecycle_atomic.sql",
-        "20260903000014_unit_charge_config_atomic.sql"
+        "20260903000016_landlord_invoice_lifecycle_atomic.sql",
+        "20260903000017_lease_lifecycle_atomic.sql",
+        "20260903000018_unit_charge_config_atomic.sql"
       ],
       "proposedRepair": "DO_NOT_RENAME_UNTIL_LIVE_SCHEMA_MIGRATIONS_IS_CONFIRMED",
       "reason": "Supabase migration versions are part of deployment history; renaming an applied migration can create drift."
@@ -63,9 +63,9 @@
     {
       "version": "20260903000015",
       "files": [
-        "20260903000015_contract_lifecycle_atomic.sql",
-        "20260903000015_orphan_payment_lifecycle_atomic.sql",
-        "20260903000015_water_reading_lifecycle_atomic.sql"
+        "20260903000019_contract_lifecycle_atomic.sql",
+        "20260903000020_orphan_payment_lifecycle_atomic.sql",
+        "20260903000021_water_reading_lifecycle_atomic.sql"
       ],
       "proposedRepair": "DO_NOT_RENAME_UNTIL_LIVE_SCHEMA_MIGRATIONS_IS_CONFIRMED",
       "reason": "Supabase migration versions are part of deployment history; renaming an applied migration can create drift."
@@ -73,8 +73,8 @@
     {
       "version": "20260903000019",
       "files": [
-        "20260903000019_phase45_46_operational_mutations_atomic.sql",
-        "20260903000019_team_and_payer_atomic.sql"
+        "20260903000026_phase45_46_operational_mutations_atomic.sql",
+        "20260903000027_team_and_payer_atomic.sql"
       ],
       "proposedRepair": "DO_NOT_RENAME_UNTIL_LIVE_SCHEMA_MIGRATIONS_IS_CONFIRMED",
       "reason": "Supabase migration versions are part of deployment history; renaming an applied migration can create drift."
@@ -82,8 +82,8 @@
     {
       "version": "20260903000021",
       "files": [
-        "20260903000021_phase47_48_tenant_portal_lease_convergence.sql",
-        "20260903000021_phase49_50_payment_capture_receivables_atomic.sql"
+        "20260903000031_phase47_48_tenant_portal_lease_convergence.sql",
+        "20260903000032_phase49_50_payment_capture_receivables_atomic.sql"
       ],
       "proposedRepair": "DO_NOT_RENAME_UNTIL_LIVE_SCHEMA_MIGRATIONS_IS_CONFIRMED",
       "reason": "Supabase migration versions are part of deployment history; renaming an applied migration can create drift."
@@ -91,8 +91,8 @@
     {
       "version": "20260903000029",
       "files": [
-        "20260903000029_phase58_wallet_ledger_atomic.sql",
-        "20260903000029_phase70_71_platform_admin_tier_atomic.sql"
+        "20260903000040_phase58_wallet_ledger_atomic.sql",
+        "20260903000041_phase70_71_platform_admin_tier_atomic.sql"
       ],
       "proposedRepair": "DO_NOT_RENAME_UNTIL_LIVE_SCHEMA_MIGRATIONS_IS_CONFIRMED",
       "reason": "Supabase migration versions are part of deployment history; renaming an applied migration can create drift."

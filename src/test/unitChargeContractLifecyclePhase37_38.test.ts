@@ -17,7 +17,7 @@ describe("Phase 37–38 lifecycle convergence", () => {
     }
   });
   it("defines phase 37–38 RPCs", () => {
-    const sql=read("supabase/migrations/20260903000014_unit_charge_config_atomic.sql")+read("supabase/migrations/20260903000015_contract_lifecycle_atomic.sql");
+    const sql=read("supabase/migrations/20260903000018_unit_charge_config_atomic.sql")+read("supabase/migrations/20260903000019_contract_lifecycle_atomic.sql");
     for (const n of ["save_unit_charge_config_atomic","transition_unit_charge_config_atomic","delete_unit_charge_config_atomic","create_contract_atomic","transition_contract_atomic","soft_delete_contract_atomic","save_contract_template_atomic","delete_contract_template_atomic","create_manager_contract_atomic","transition_manager_contract_atomic"]) expect(sql).toContain(`FUNCTION public.${n}`);
   });
 });

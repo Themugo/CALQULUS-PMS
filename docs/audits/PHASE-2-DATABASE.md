@@ -42,7 +42,7 @@ Post-replay schema sanity (inside the fresh DB):
   `20260728000000` rewritten to use the actual direct columns (`manager_id`) or
   `user_roles.tenant_id` instead of phantom `invoice_id` columns.
 
-### `20260506000023_missing_platform_tables.sql`
+### `20260506000027_missing_platform_tables.sql`
 - `escalate_overdue_manager_invoices()`: this migration re-defined the function
   as `RETURNS void`, but migration `20260506000017` already defines the full
   escalation logic as `RETURNS integer` (UI reads a count). `CREATE OR REPLACE`

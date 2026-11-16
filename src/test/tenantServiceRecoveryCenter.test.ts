@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import fs from "node:fs";
-const migration = fs.readFileSync("supabase/migrations/20260904000029_tenant_service_recovery_communications.sql", "utf8");
+const migration = fs.readFileSync("supabase/migrations/20260904000030_tenant_service_recovery_communications.sql", "utf8");
 const component = fs.readFileSync("src/features/dashboard/components/TenantServiceRecoveryCenter.tsx", "utf8");
 describe("tenant service recovery and communications", () => {
   it("creates scoped recovery cases with deduplication", () => {

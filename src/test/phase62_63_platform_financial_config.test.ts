@@ -3,8 +3,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(process.cwd());
-const sql62 = readFileSync(resolve(root, 'supabase/migrations/20260903000033_phase62_platform_billing_config_atomic.sql'), 'utf8');
-const sql63 = readFileSync(resolve(root, 'supabase/migrations/20260903000034_phase63_customer_billing_block_atomic.sql'), 'utf8');
+const sql62 = readFileSync(resolve(root, 'supabase/migrations/20260903000045_phase62_platform_billing_config_atomic.sql'), 'utf8');
+const sql63 = readFileSync(resolve(root, 'supabase/migrations/20260903000046_phase63_customer_billing_block_atomic.sql'), 'utf8');
 const rules = readFileSync(resolve(root, 'src/features/webhost/components/PlatformBillingRules.tsx'), 'utf8');
 const settings = readFileSync(resolve(root, 'src/features/webhost/components/WebhostPaymentSettings.tsx'), 'utf8');
 const blocks = readFileSync(resolve(root, 'src/features/webhost/components/CustomerBillingBlocks.tsx'), 'utf8');

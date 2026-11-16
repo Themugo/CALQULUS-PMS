@@ -8,7 +8,7 @@
 
 ## Database boundary
 
-Added migration `20260903000021_phase49_50_payment_capture_receivables_atomic.sql` with:
+Added migration `20260903000032_phase49_50_payment_capture_receivables_atomic.sql` with:
 
 - `create_physical_invoice_atomic`
 - `create_physical_receipt_atomic`
