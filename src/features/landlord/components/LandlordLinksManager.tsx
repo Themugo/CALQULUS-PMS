@@ -17,6 +17,7 @@ import { UserPlus, Trash2, User, Building2, Mail, Phone } from "lucide-react";
 import { errorToast } from "@/shared/lib/errorToast";
 import IncomingManagementRequests from "@/features/landlord/components/IncomingManagementRequests";
 import ArchivedManagementPeriods from "@/features/landlord/components/ArchivedManagementPeriods";
+import { deliverLandlordInvitation } from "@/features/landlord/lib/deliverLandlordInvitation";
 
 interface PropertyLandlordLink {
   id: string;
@@ -162,18 +163,19 @@ const LandlordLinksManager = () => {
         }
       }
 
-      const { error } = await supabase.rpc('create_landlord_invitation_atomic' as never, {
+      const { data: invitation, error } = await supabase.rpc('create_landlord_invitation_atomic' as never, {
         p_property_id: linkPropertyId, p_email: inviteEmail.trim().toLowerCase()
       });
       if (error) throw error;
-      return { type: "invited" };
+      const delivered = await deliverLandlordInvitation(invitation);
+      return { type: "invited", delivered };
     },
-    onSuccess: ({ type }) => {
+    onSuccess: ({ type, delivered }: { type: string; delivered?: boolean }) => {
       queryClient.invalidateQueries({ queryKey: ["manager-landlords"] });
       queryClient.invalidateQueries({ queryKey: ["unlinked-properties"] });
       toast({
-        title: type === "linked" ? "Landlord linked" : "Invitation sent",
-        description: type === "linked" ? "The landlord has been linked to this property." : `An invitation has been sent to ${inviteEmail}`,
+        title: type === "linked" ? "Landlord linked" : delivered ? "Invitation sent" : "Invitation created, email not sent",
+        description: type === "linked" ? "The landlord has been linked to this property." : delivered ? `An invitation has been sent to ${inviteEmail}` : `We could not email ${inviteEmail}. Check email settings and try again.`,
       });
       setLinkDialogOpen(false);
       setLinkPropertyId(null);

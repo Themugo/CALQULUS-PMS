@@ -51,6 +51,7 @@ import {
   useUpdateInvoice,
 } from "@/features/billing/hooks/useBillingData";
 import type { BillingInvoice } from "@/features/billing/hooks/useBillingData";
+import { InvoiceAdjustmentDialog } from "@/features/billing/components/InvoiceAdjustmentDialog";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -68,6 +69,7 @@ const Billing = () => {
   // ── UI state (data state has moved to the hook) ──────────────────────────
 
   const [searchParams] = useSearchParams();
+  const [adjustInvoice, setAdjustInvoice] = useState<{ id: string; number: string } | null>(null);
   const [mainTab,       setMainTab]       = useState<MainTab>("invoices");
   const [activeTab,     setActiveTab]     = useState("all");
   const [searchQuery,   setSearchQuery]   = useState("");
@@ -433,6 +435,13 @@ const Billing = () => {
             </TabsList>
             <TabsContent value={activeTab}>
               <div className="rounded-xl border border-border bg-card card-shadow overflow-hidden animate-fade-in">
+                <InvoiceAdjustmentDialog
+                  invoiceId={adjustInvoice?.id ?? null}
+                  invoiceNumber={adjustInvoice?.number}
+                  open={!!adjustInvoice}
+                  onOpenChange={(o) => !o && setAdjustInvoice(null)}
+                  onDone={() => { void refetchInvoices(); }}
+                />
                 <InvoiceTable
                   invoices={filteredInvoices}
                   isLoading={isLoading}
@@ -441,8 +450,9 @@ const Billing = () => {
                   onEdit={handleEditInvoice}
                   onMpesa={inv => { setSelectedInvoiceForPayment(inv); setMpesaDialogOpen(true); }}
                   onMarkPaid={handleMarkPaid}
-                  onSendReminder={inv =>
-                    toast({ title: "Reminder Sent", description: `Reminder sent to ${inv.tenants?.name ?? "tenant"}.` })
+                  onAdjust={inv => setAdjustInvoice({ id: inv.id, number: inv.invoice_number })}
+                  onSendReminder={() =>
+                    toast({ title: "Use “Send Overdue Reminders”", description: "Reminders are sent in bulk to every overdue tenant with the button above." })
                   }
                 />
               </div>

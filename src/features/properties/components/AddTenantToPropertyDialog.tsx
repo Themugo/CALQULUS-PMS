@@ -209,9 +209,8 @@ export const AddTenantToPropertyDialog = ({
         if (finalizeError) throw finalizeError;
 
         // Sync payment details to tenant portal
-        await supabase.rpc("save_tenant_payment_details_atomic" as never, {
+        const { error: paymentDetailsError } = await supabase.rpc("save_tenant_payment_details_atomic" as never, {
           p_tenant_id:          insertedTenant.id,
-          p_manager_id:         user?.id ?? null,
           p_property_id:        propertyId || null,
           p_unit_id:            insertedTenant.unit_id || null,
           p_monthly_rent:       formData.monthly_rent ? parseFloat(formData.monthly_rent) : null,
@@ -223,7 +222,15 @@ export const AddTenantToPropertyDialog = ({
           p_paybill:            null,
           p_account_ref:        insertedTenant.unit || null,
           p_tenancy_type:       "standard",
-        }).catch(() => {}); // non-critical
+        });
+        // The tenant exists either way, but surface the failure so rent/deposit terms can be re-saved.
+        if (paymentDetailsError) {
+          toast({
+            title: "Tenant added, payment terms not saved",
+            description: "Open the tenant and re-enter the rent and deposit details.",
+            variant: "destructive",
+          });
+        }
 
         logActivity({
           action: 'Created tenant',

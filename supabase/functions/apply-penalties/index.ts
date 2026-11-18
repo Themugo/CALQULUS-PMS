@@ -50,8 +50,10 @@ serve(async (req) => {
 
     let overdueQuery = supabase
       .from("invoices")
-      .select("id, amount, tenant_id, invoice_number, manager_id, property_id, due_date")
+      .select("id, amount, balance_due, invoice_type, unit_id, tenant_id, invoice_number, manager_id, property_id, due_date")
       .eq("status", "overdue")
+      // A penalty invoice never attracts a further penalty (no penalty-on-penalty).
+      .neq("invoice_type", "penalty")
       .lt("due_date", today);
     if (scopeToManagerId) {
       overdueQuery = overdueQuery.eq("manager_id", scopeToManagerId);
@@ -60,38 +62,50 @@ serve(async (req) => {
 
     if (error) throw error;
 
+    type Policy = { enabled?: boolean; type?: string; pct?: number; amount?: number; grace_days?: number; max_amount?: number | null };
+    const policyCache = new Map<string, Policy>();
     let penaltiesApplied = 0;
 
     for (const invoice of overdueInvoices || []) {
-      const { data: propConfig } = await supabase
-        .from("property_billing_config")
-        .select("late_penalty_enabled, late_penalty_type, late_penalty_amount, late_penalty_pct, grace_period_days")
-        .eq("property_id", invoice.property_id)
-        .maybeSingle();
+      // Penalties are a business decision: resolved per property from the
+      // operator's / landlord's configured policy. Nothing configured => no penalty.
+      let policy = policyCache.get(invoice.property_id);
+      if (!policy) {
+        const { data: resolved, error: policyError } = await supabase.rpc(
+          "resolve_late_penalty_policy", { p_property_id: invoice.property_id },
+        );
+        if (policyError) throw policyError;
+        policy = resolved as Policy;
+        policyCache.set(invoice.property_id, policy);
+      }
+      const enabled     = policy?.enabled === true;
+      const penaltyType = policy?.type ?? "fixed";
+      const penaltyPct  = Number(policy?.pct ?? 0);
+      const penaltyAmt  = Number(policy?.amount ?? 0);
+      const graceDays   = Number(policy?.grace_days ?? 0);
+      const maxAmount   = policy?.max_amount == null ? null : Number(policy.max_amount);
 
-      const enabled     = propConfig?.late_penalty_enabled ?? true;
-      const penaltyType = propConfig?.late_penalty_type ?? "percentage";
-      const penaltyPct  = Number(propConfig?.late_penalty_pct ?? 5);
-      const penaltyAmt  = Number(propConfig?.late_penalty_amount ?? 0);
-      const graceDays   = Number(propConfig?.grace_period_days ?? 0);
-      
       if (!enabled) continue;
 
       const daysOverdue = Math.floor((Date.now() - new Date(invoice.due_date).getTime()) / 86_400_000);
       if (daysOverdue < graceDays) continue;
 
-      const penaltyAmount = penaltyType === "percentage"
-        ? (Number(invoice.amount) * penaltyPct) / 100
-        : penaltyAmt;
+      // Charge on what is still owed, not the original face value: a tenant who
+      // has paid most of an invoice must not be penalised on the paid part.
+      const outstanding = Number(invoice.balance_due ?? invoice.amount);
+      if (!(outstanding > 0)) continue;
+      const raw = penaltyType === "percentage"
+        ? (outstanding * penaltyPct) / 100
+        : Math.min(penaltyAmt, outstanding);
+      const penaltyAmount = Math.round((maxAmount != null ? Math.min(raw, maxAmount) : raw) * 100) / 100;
 
       if (penaltyAmount > 0) {
-        const penaltyInvNum = `PEN-${invoice.invoice_number}`;
-        const existing = await supabase.from("invoices")
-          .select("id").eq("invoice_number", penaltyInvNum).maybeSingle();
-        if (existing.data) continue;
-
+        // ONE penalty per overdue invoice, ever. The key must not contain the
+        // date: with a per-day key this sweep re-penalised every overdue invoice
+        // on every run (the old invoice_number lookup never matched because
+        // invoice numbers are assigned by a trigger).
         const { error: penaltyError } = await supabase.rpc("create_invoice_atomic_v2", {
-          p_generation_key: `penalty:${invoice.id}:${today}`, p_lease_id: null, p_tenant_id: invoice.tenant_id,
+          p_generation_key: `penalty:${invoice.id}`, p_lease_id: null, p_tenant_id: invoice.tenant_id,
           p_property_id: invoice.property_id ?? null, p_unit_id: invoice.unit_id ?? null, p_manager_id: invoice.manager_id,
           p_amount: penaltyAmount, p_description: `Late payment penalty — ${invoice.invoice_number} (${daysOverdue} days overdue)`,
           p_due_date: today, p_invoice_type: "penalty", p_line_items: [],

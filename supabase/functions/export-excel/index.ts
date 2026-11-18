@@ -76,15 +76,16 @@ serve(async (req) => {
         .from("payments")
         .select("*, invoices(invoice_number, tenants(name, unit))")
         .eq("manager_id", managerId)
-        .order("paid_at", { ascending: false });
+        .eq("status", "completed")
+        .order("created_at", { ascending: false });
       rows = (data || []).map((p: any) => [
         p.invoices?.invoice_number || "",
         p.invoices?.tenants?.name || "",
         p.invoices?.tenants?.unit || "",
         Number(p.amount),
-        p.method || "",
-        p.reference || "",
-        p.paid_at?.slice(0, 10) || "",
+        p.payment_method || p.payment_type || "",
+        p.mpesa_receipt_number || p.bank_reference || "",
+        (p.completed_at || p.processed_at || p.created_at || "").slice(0, 10),
       ]);
     } else if (type === "invoices") {
       headers = ["Invoice #", "Tenant", "Unit", "Amount", "Due Date", "Paid Date", "Status"];

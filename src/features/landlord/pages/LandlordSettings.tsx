@@ -1,3 +1,4 @@
+import { LatePenaltyPolicyCard } from "@/features/settings/components/LatePenaltyPolicyCard";
 import LandlordLayout from "@/features/landlord/components/LandlordLayout";
 import LandlordBankDetails from "@/features/landlord/components/LandlordBankDetails";
 import LandlordNotificationPreferences from "@/features/landlord/components/LandlordNotificationPreferences";
@@ -22,6 +23,7 @@ export default function LandlordSettings() {
           description="Keep ownership details, notifications and manager communication in one focused place."
         />
         <PropertyManagementHandover />
+        <LatePenaltyPolicyCard ownerRole="landlord" />
         <LandlordTeamSettings />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <LandlordBankDetails />

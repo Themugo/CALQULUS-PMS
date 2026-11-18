@@ -39,12 +39,13 @@ import { downloadInvoicePDF } from "@/features/billing/lib/invoicePdfExport";
 import { downloadReceiptPDF } from "@/features/billing/lib/receiptPdfExport";
 import { formatDate } from "@/shared/lib/dateFormat";
 import { MpesaPaymentDialog } from "@/features/billing/components/MpesaPaymentDialog";
+import { InvoiceAdjustmentDialog } from "@/features/billing/components/InvoiceAdjustmentDialog";
 import TenantInvoiceForm from "@/features/billing/components/TenantInvoiceForm";
 import { ReceiptVerification } from "@/features/payments/components/ReceiptVerification";
 import { useMarkInvoicePaid } from "@/features/billing/hooks/useBillingData";
 import UnitPaymentReconciliation from "@/features/billing/components/UnitPaymentReconciliation";
 
-type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled" | "partially_paid";
+type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled" | "partially_paid" | "forgiven";
 
 interface Invoice {
   id: string;
@@ -110,6 +111,7 @@ const statusConfig: Record<InvoiceStatus, { styles: string; icon: React.Componen
   partially_paid: { styles: "bg-warning/10 text-warning border-warning/20", icon: Clock },
   overdue: { styles: "bg-destructive/10 text-destructive border-destructive/20", icon: AlertCircle },
   cancelled: { styles: "bg-slate-500/10 text-slate-400 border-slate-500/20", icon: XCircle },
+  forgiven: { styles: "bg-info/10 text-info border-info/20", icon: CheckCircle },
 };
 
 interface PropertyBillingTabProps {
@@ -342,6 +344,7 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
   };
 
   const [voidConfirmId, setVoidConfirmId] = React.useState<string | null>(null);
+  const [adjustInvoice, setAdjustInvoice] = React.useState<{ id: string; number: string } | null>(null);
 
   const handleVoidInvoice = async (invoiceId: string) => {
     // Void = set status to 'cancelled' — preserves financial history
@@ -581,7 +584,12 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
                                     </DropdownMenuItem>
                                   </>
                                 )}
-                                {!isViewOnly && invoice.status !== "paid" && (
+                                {!isViewOnly && ["pending", "overdue", "partially_paid"].includes(invoice.status) && (
+                                  <DropdownMenuItem onClick={() => setAdjustInvoice({ id: invoice.id, number: invoice.invoice_number })}>
+                                    <Wallet className="h-4 w-4 mr-2" /> Waive / discount / write off
+                                  </DropdownMenuItem>
+                                )}
+                                {!isViewOnly && invoice.status !== "paid" && invoice.status !== "forgiven" && (
                                   <DropdownMenuItem
                                     className="text-destructive"
                                     onClick={() => setVoidConfirmId(invoice.id)}
@@ -765,6 +773,13 @@ export function PropertyBillingTab({ propertyId, propertyName }: PropertyBilling
       />
 
       {/* Void invoice confirmation */}
+      <InvoiceAdjustmentDialog
+        invoiceId={adjustInvoice?.id ?? null}
+        invoiceNumber={adjustInvoice?.number}
+        open={!!adjustInvoice}
+        onOpenChange={(o) => !o && setAdjustInvoice(null)}
+        onDone={fetchInvoices}
+      />
       <AlertDialog open={!!voidConfirmId} onOpenChange={open => !open && setVoidConfirmId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

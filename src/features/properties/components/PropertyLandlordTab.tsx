@@ -17,6 +17,7 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { UserPlus, Trash2, CheckCircle, Clock, XCircle, Banknote, Mail, User } from 'lucide-react';
 import PropertyAuthorityPanel from '@/features/properties/components/PropertyAuthorityPanel';
 import { BillingDueConfigPanel } from '@/features/billing/components/BillingDueConfigPanel';
+import { deliverLandlordInvitation } from "@/features/landlord/lib/deliverLandlordInvitation";
 
 interface PropertyLandlordTabProps {
   propertyId: string;
@@ -154,19 +155,22 @@ const PropertyLandlordTab: React.FC<PropertyLandlordTabProps> = ({ propertyId })
       }
 
       // No existing landlord user — create invitation
-      const { error } = await supabase.rpc('create_landlord_invitation_atomic' as never, {
+      const { data: invitation, error } = await supabase.rpc('create_landlord_invitation_atomic' as never, {
         p_property_id: propertyId, p_email: inviteEmail.trim().toLowerCase()
       });
       if (error) throw error;
-      return { type: 'invited' };
+      const delivered = await deliverLandlordInvitation(invitation);
+      return { type: 'invited', delivered };
     },
-    onSuccess: ({ type }) => {
+    onSuccess: ({ type, delivered }: { type: string; delivered?: boolean }) => {
       queryClient.invalidateQueries({ queryKey: ['property-landlords', propertyId] });
       toast({
-        title: type === 'linked' ? 'Landlord linked' : 'Invitation sent',
+        title: type === 'linked' ? 'Landlord linked' : delivered ? 'Invitation sent' : 'Invitation created, email not sent',
         description: type === 'linked'
           ? 'The landlord has been linked to this property.'
-          : `An invitation has been sent to ${inviteEmail}`,
+          : delivered
+            ? `An invitation has been sent to ${inviteEmail}`
+            : `We could not email ${inviteEmail}. Check email settings and try again.`,
       });
       setInviteDialogOpen(false);
       setInviteEmail('');

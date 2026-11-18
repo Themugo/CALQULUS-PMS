@@ -37,44 +37,54 @@ serve(async (req) => {
     }
 
     const start = `${month}-01`;
-    const end = new Date(new Date(start).getFullYear(), new Date(start).getMonth() + 1, 0)
-      .toISOString().slice(0, 10);
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(String(month))) {
+      return new Response(JSON.stringify({ error: "month must be YYYY-MM" }), {
+        status: 400, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      });
+    }
+    const [yy, mm] = String(month).split("-").map(Number);
+    // Exclusive upper bound (first instant of next month) so nothing on the last day is lost.
+    const nextStart = new Date(Date.UTC(yy, mm, 1)).toISOString().slice(0, 10);
+    const end = new Date(Date.UTC(yy, mm, 0)).toISOString().slice(0, 10);
 
-    // Fetch payments for landlord's properties this month
-    let paymentsQuery = supabase
-      .from("payments")
-      .select("*, invoices(invoice_number, due_date, tenants(name, unit))")
-      .gte("paid_at", start)
-      .lte("paid_at", end + "T23:59:59");
+    // Properties this landlord owns: the property_landlords link (supports
+    // co-owners, with revenue_share_pct) plus the legacy properties.landlord_id.
+    const { data: links } = await supabase
+      .from("property_landlords")
+      .select("property_id, revenue_share_pct")
+      .eq("landlord_user_id", landlordId);
+    const shareByProperty = new Map<string, number>();
+    for (const l of links || []) shareByProperty.set(l.property_id, Number(l.revenue_share_pct ?? 100));
+    const { data: legacyProps } = await supabase.from("properties").select("id").eq("landlord_id", landlordId);
+    for (const p of legacyProps || []) if (!shareByProperty.has(p.id)) shareByProperty.set(p.id, 100);
 
+    let propIds = [...shareByProperty.keys()];
     if (propertyId) {
-      // Verify the supplied propertyId actually belongs to landlordId before
-      // scoping to it — otherwise a caller authorized for their own
-      // landlordId could pass any property UUID and pull another
-      // landlord's income statement (name/unit/payment data leak).
-      const { data: ownedProp } = await supabase
-        .from("properties")
-        .select("id")
-        .eq("id", propertyId)
-        .eq("landlord_id", landlordId)
-        .maybeSingle();
-      if (!ownedProp) {
+      // The supplied property must really belong to this landlord, otherwise a
+      // caller could pull another landlord's income statement.
+      if (!shareByProperty.has(propertyId)) {
         return new Response(JSON.stringify({ error: "Forbidden" }), {
           status: 403, headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         });
       }
-      paymentsQuery = paymentsQuery.eq("property_id", propertyId);
-    } else {
-      // Get all property IDs for this landlord
-      const { data: props } = await supabase
-        .from("properties")
-        .select("id")
-        .eq("landlord_id", landlordId);
-      const propIds = (props || []).map((p: any) => p.id);
-      if (propIds.length > 0) {
-        paymentsQuery = paymentsQuery.in("property_id", propIds);
-      }
+      propIds = [propertyId];
     }
+    // No properties => empty statement. (Never fall through to an unscoped query:
+    // that would sum every payment on the platform.)
+    if (propIds.length === 0) {
+      return new Response(JSON.stringify({
+        month, landlordId, payments: [], deductions: [],
+        summary: { totalIncome: 0, totalDeductions: 0, net: 0 },
+      }), { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } });
+    }
+
+    // Completed payments only, dated by completion (falling back to creation).
+    const paymentsQuery = supabase
+      .from("payments")
+      .select("*, invoices(invoice_number, due_date, tenants(name, unit))")
+      .eq("status", "completed")
+      .in("property_id", propIds)
+      .or(`and(completed_at.gte.${start},completed_at.lt.${nextStart}),and(completed_at.is.null,created_at.gte.${start},created_at.lt.${nextStart})`);
 
     const { data: payments, error: paymentsError } = await paymentsQuery;
     if (paymentsError) throw paymentsError;
@@ -86,7 +96,10 @@ serve(async (req) => {
       .eq("landlord_id", landlordId)
       .or(`is_recurring.eq.true,and(effective_date.gte.${start},effective_date.lte.${end})`);
 
-    const totalIncome = (payments || []).reduce((s: number, p: any) => s + Number(p.amount), 0);
+    // Landlord's share of each payment (co-owners split by revenue_share_pct).
+    const round2 = (n: number) => Math.round(n * 100) / 100;
+    const totalIncome = round2((payments || []).reduce((s: number, p: any) =>
+      s + Number(p.amount) * (shareByProperty.get(p.property_id) ?? 100) / 100, 0));
 
     // Calculate deductions
     let totalDeductions = 0;
@@ -99,7 +112,8 @@ serve(async (req) => {
       deductionItems.push({ name: d.name, type: d.deduction_type, raw: d.amount, computed: amount });
     }
 
-    const net = totalIncome - totalDeductions;
+    totalDeductions = round2(totalDeductions);
+    const net = round2(totalIncome - totalDeductions);
 
     return new Response(JSON.stringify({
       month,

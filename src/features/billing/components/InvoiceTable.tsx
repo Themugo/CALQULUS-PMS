@@ -20,7 +20,7 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import {
   CheckCircle, Clock, AlertCircle, XCircle,
-  Building, Download, Receipt, Send, Pencil, Smartphone, Loader2, MoreHorizontal,
+  Building, Download, Receipt, Send, Pencil, Smartphone, Loader2, MoreHorizontal, Wallet,
 } from "lucide-react";
 import { useCurrency } from "@/shared/hooks/useCurrency";
 import { formatDate } from "@/shared/lib/dateFormat";
@@ -34,7 +34,7 @@ import { paginate, sortBy, toggleSort, type SortDir } from "@/shared/lib/clientT
 import { SortableHead, TablePager } from "@/shared/components/ui/table-pager";
 import { DataTableFrame } from "@/shared/components/ui/data-table-frame";
 
-type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled" | "partially_paid" | "failed" | "refunded";
+type InvoiceStatus = "paid" | "pending" | "overdue" | "cancelled" | "partially_paid" | "failed" | "refunded" | "forgiven";
 
 const PAGE_SIZE = 25;
 
@@ -49,6 +49,7 @@ const STATUS_CONFIG: Record<
   failed:         { tone: "danger",  icon: XCircle,     label: "Failed" },
   refunded:       { tone: "neutral", icon: XCircle,     label: "Refunded" },
   cancelled:      { tone: "neutral", icon: XCircle,     label: "Cancelled" },
+  forgiven:       { tone: "success", icon: CheckCircle, label: "Forgiven" },
 };
 
 interface Props {
@@ -60,6 +61,7 @@ interface Props {
   onMpesa: (invoice: BillingInvoice) => void;
   onMarkPaid: (invoiceId: string) => void;
   onSendReminder: (invoice: BillingInvoice) => void;
+  onAdjust?: (invoice: BillingInvoice) => void;
 }
 
 export function InvoiceTable({
@@ -71,6 +73,7 @@ export function InvoiceTable({
   onMpesa,
   onMarkPaid,
   onSendReminder,
+  onAdjust,
 }: Props) {
   const { formatCurrency } = useCurrency();
   const [page, setPage] = useState(1);
@@ -144,7 +147,7 @@ export function InvoiceTable({
             const status = invoice.status as InvoiceStatus;
             const cfg    = STATUS_CONFIG[status] ?? STATUS_CONFIG.cancelled;
             const StatusIcon = cfg.icon;
-            const canCollect = status !== "paid" && status !== "cancelled" && status !== "failed" && status !== "refunded";
+            const canCollect = status !== "paid" && status !== "cancelled" && status !== "failed" && status !== "refunded" && status !== "forgiven";
             const canCollectPayment = canCollect && (invoice.agencyCanCollect ?? true);
             const pdfPayload = {
               invoice_number: invoice.invoice_number,
@@ -287,6 +290,12 @@ export function InvoiceTable({
                           <DropdownMenuItem onClick={() => onSendReminder(invoice)}>
                             <Send className="h-4 w-4 mr-2" />
                             Send reminder
+                          </DropdownMenuItem>
+                        )}
+                        {canCollect && canEdit && onAdjust && (
+                          <DropdownMenuItem onClick={() => onAdjust(invoice)}>
+                            <Wallet className="h-4 w-4 mr-2" />
+                            Waive / discount / write off
                           </DropdownMenuItem>
                         )}
                         {canCollect && canEdit && (

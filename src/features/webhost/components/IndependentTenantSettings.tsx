@@ -1,3 +1,4 @@
+import { errorToast } from "@/shared/lib/errorToast";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Save, ShieldCheck, WalletCards } from "lucide-react";
@@ -49,7 +50,7 @@ export default function IndependentTenantSettings() {
       qc.invalidateQueries({ queryKey: ["tenant-platform-config"] });
       toast({ title: "Independent tenant settings saved" });
     },
-    onError: (e: Error) => toast({ title: "Could not save settings", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => errorToast("Could not save settings", e),
   });
 
   if (!canManage) return null;

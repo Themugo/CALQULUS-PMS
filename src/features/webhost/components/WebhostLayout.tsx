@@ -30,6 +30,7 @@ export default function WebhostLayout({ children, title, description, actions }:
   };
 
   const visibleGroups = WEBHOST_NAV_GROUPS.map((group) => ({ ...group, items: group.items.filter(canSee) })).filter((group) => group.items.length > 0);
+  const visibleMobileNav = WEBHOST_MOBILE_NAV.filter(canSee);
   const surface = webhostSurface(location.pathname);
   const surfaceIdentity = WEBHOST_SURFACE_IDENTITY[surface];
   const style = {
@@ -46,9 +47,11 @@ export default function WebhostLayout({ children, title, description, actions }:
       portalLabel={surfaceIdentity.label}
       navLabel={surfaceIdentity.navLabel}
       navGroups={visibleGroups}
-      mobileNav={WEBHOST_MOBILE_NAV}
+      mobileNav={visibleMobileNav}
+      navPrefiltered
+      showHistoryNav
       userEmail={user?.email ?? "Platform administrator"}
-      onSignOut={() => void signOut()}
+      onSignOut={() => { void signOut().catch(() => undefined); }}
       settingsHref={WEBHOST_ROUTES.settings}
       brandSubtitle={surfaceIdentity.brandSubtitle}
       forcePlatformBrand

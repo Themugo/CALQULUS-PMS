@@ -1,6 +1,6 @@
 import { useEffect, useState, type CSSProperties, type ComponentType, type ReactNode } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { ChevronRight, LogOut, Menu, Settings, User, X, Palette, MoreHorizontal } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight, LogOut, Menu, Settings, User, X, Palette, MoreHorizontal } from "lucide-react";
 import { BrandMark } from "@/shared/components/branding/BrandMark";
 import { Footer } from "@/shared/components/layout/Footer";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
@@ -37,6 +37,10 @@ interface PortalDeskShellProps {
   forcePlatformBrand?: boolean;
   isActive?: (href: string, pathname: string) => boolean;
   headerRight?: ReactNode;
+  /** Show Back / Forward browser-history buttons in the header (used by the webhost desk). */
+  showHistoryNav?: boolean;
+  /** Nav items were already filtered by the caller with its own permission model; do not re-filter with useRBAC. */
+  navPrefiltered?: boolean;
   mobileNav?: PortalDeskNavItem[];
   hideHeader?: boolean;
   className?: string;
@@ -81,6 +85,8 @@ export function PortalDeskShell({
   forcePlatformBrand = false,
   isActive = defaultIsActive,
   headerRight,
+  showHistoryNav = false,
+  navPrefiltered = false,
   mobileNav,
   hideHeader = false,
   className,
@@ -92,6 +98,11 @@ export function PortalDeskShell({
   mobileNavLabel = "More",
 }: PortalDeskShellProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  // react-router stores the history position in history.state.idx; unknown => leave enabled.
+  const historyIdx = typeof window !== "undefined" ? (window.history.state as { idx?: number } | null)?.idx : undefined;
+  const canGoBack = historyIdx === undefined ? undefined : historyIdx > 0;
+  const canGoForward = historyIdx === undefined ? undefined : historyIdx < (window.history.length - 1);
   const { identity, themeMode, setThemeMode } = usePortalIdentity();
   const { can } = useRBAC();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -115,10 +126,10 @@ export function PortalDeskShell({
   const visibleNavGroups = navGroups
     .map((group) => ({
       ...group,
-      items: group.items.filter((item) => !item.permission || can(item.permission as PermissionKey)),
+      items: navPrefiltered ? group.items : group.items.filter((item) => !item.permission || can(item.permission as PermissionKey)),
     }))
     .filter((group) => group.items.length > 0);
-  const visibleMobileNav = mobileNav?.filter((item) => !item.permission || can(item.permission as PermissionKey));
+  const visibleMobileNav = navPrefiltered ? mobileNav : mobileNav?.filter((item) => !item.permission || can(item.permission as PermissionKey));
 
   const closeSidebar = () => setSidebarOpen(false);
 
@@ -241,6 +252,30 @@ export function PortalDeskShell({
             >
               <Menu className="h-5 w-5" />
             </button>
+            {showHistoryNav ? (
+              <div className="flex items-center gap-1" role="group" aria-label="Page history">
+                <button
+                  type="button"
+                  aria-label="Go back"
+                  title="Back"
+                  disabled={canGoBack === false}
+                  onClick={() => navigate(-1)}
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 disabled:pointer-events-none disabled:opacity-40"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Go forward"
+                  title="Forward"
+                  disabled={canGoForward === false}
+                  onClick={() => navigate(1)}
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 disabled:pointer-events-none disabled:opacity-40"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            ) : null}
             <div className="hidden min-w-0 items-center gap-2 text-sm text-muted-foreground lg:flex">
               <span className="font-semibold text-foreground">{identity.name}</span>
               <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" aria-hidden />

@@ -88,7 +88,7 @@ export default function UnitUtilityMeters({ unitId, propertyId, unitLabel }: Uni
     mutationFn: async () => {
       if (!form.meter_number.trim()) throw new Error('Meter number is required');
       const { error } = await supabase.rpc('save_unit_utility_meter_atomic' as never, {
-        p_meter_id: null, p_unit_id: unitId, p_utility_type: form.utility_type,
+        p_unit_id: unitId, p_utility_type: form.utility_type,
         p_meter_number: form.meter_number.trim(), p_meter_label: form.meter_label.trim() || null,
         p_provider: form.provider.trim() || null, p_account_number: form.account_number.trim() || null,
         p_billing_method: form.billing_method, p_rate_per_unit: form.rate_per_unit ? Number(form.rate_per_unit) : null, p_is_active: true,

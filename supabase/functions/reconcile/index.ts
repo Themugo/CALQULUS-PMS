@@ -68,10 +68,9 @@ serve(async (req) => {
     }
 
     const start = `${month}-01`;
-    const end = new Date(
-      new Date(start).getFullYear(),
-      new Date(start).getMonth() + 1, 0
-    ).toISOString().slice(0, 10);
+    const [yy, mm] = String(month).split("-").map(Number);
+    const end = new Date(Date.UTC(yy, mm, 0)).toISOString().slice(0, 10);
+    const nextStart = new Date(Date.UTC(yy, mm, 1)).toISOString().slice(0, 10);
 
     const { data: invoices } = await supabase
       .from("invoices")
@@ -82,10 +81,10 @@ serve(async (req) => {
 
     const { data: payments } = await supabase
       .from("payments")
-      .select("id, invoice_id, amount, reference, paid_at, method")
+      .select("id, invoice_id, amount, mpesa_receipt_number, bank_reference, payment_method, completed_at, created_at")
       .eq("manager_id", managerId)
-      .gte("paid_at", start)
-      .lte("paid_at", end + "T23:59:59");
+      .eq("status", "completed")
+      .or(`and(completed_at.gte.${start},completed_at.lt.${nextStart}),and(completed_at.is.null,created_at.gte.${start},created_at.lt.${nextStart})`);
 
     const matched: any[] = [];
     const unmatched: any[] = [];

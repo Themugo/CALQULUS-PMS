@@ -279,3 +279,6 @@ verify_jwt = true
 # call as a JWT, so it must not require one.
 [functions.initiate-shared-payment]
 verify_jwt = false
+
+[functions.send-landlord-invitation]
+verify_jwt = true

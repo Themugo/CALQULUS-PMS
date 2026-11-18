@@ -479,7 +479,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // Network failure must never leave the user stuck signed in on this device:
+      // drop the local session even if the server could not be told.
+      try { await supabase.auth.signOut({ scope: 'local' }); } catch { /* ignore */ }
+    }
     // Clear ALL cached queries so next user never sees previous user's data
     queryClient.clear();
     // Clear useOfflineData's localStorage cache too (payment history, invoices,

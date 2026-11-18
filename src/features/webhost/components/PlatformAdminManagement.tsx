@@ -46,7 +46,6 @@ const PlatformAdminManagement = () => {
   const [suspendReason, setSuspendReason] = useState('');
   const [newAdmin, setNewAdmin] = useState({
     email: '',
-    password: '',
     displayName: '',
     adminType: 'admin' as PlatformAdminType,
   });
@@ -75,37 +74,33 @@ const PlatformAdminManagement = () => {
   };
 
   const createAdmin = useMutation({
+    // Invitation-first: the invitee sets their own password from a secure, expiring,
+    // single-use link. This also avoids a client-side account sign-up from an admin's browser,
+    // which can replace the admin's own session and cannot tell an existing account
+    // from a new one.
     mutationFn: async () => {
-      const redirectUrl = `${window.location.origin}/webhost/dashboard`;
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: newAdmin.email,
-        password: newAdmin.password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: { full_name: newAdmin.displayName },
-        },
+      const { data: result, error } = await supabase.functions.invoke('send-admin-invitation', {
+        body: { email: newAdmin.email.trim().toLowerCase(), displayName: newAdmin.displayName.trim(), adminType: newAdmin.adminType },
       });
-      if (authError) throw authError;
-      if (!authData.user) throw new Error('Failed to create user');
-      const { error: provisionError } = await supabase.rpc('provision_platform_admin_atomic', {
-        p_user_id: authData.user.id,
-        p_email: newAdmin.email,
-        p_display_name: newAdmin.displayName,
-        p_admin_type: newAdmin.adminType,
-      });
-      if (provisionError) throw provisionError;
+      if (error) throw new Error((result as { error?: string } | null)?.error ?? error.message);
       logActivity({
-        action: 'Created Platform Admin',
+        action: 'Invited Platform Admin',
         entityType: 'platform_admins',
-        entityId: authData.user.id,
+        entityId: newAdmin.email,
         metadata: { email: newAdmin.email, adminType: newAdmin.adminType, name: newAdmin.displayName },
       });
+      return result as { inviteUrl?: string; emailSent?: boolean };
     },
-    onSuccess: () => {
-      toast({ title: 'Platform admin created' });
+    onSuccess: (result) => {
+      toast({
+        title: result?.emailSent ? 'Admin invitation sent' : 'Admin invitation created',
+        description: result?.emailSent
+          ? 'The invitee will set their own password from the secure link.'
+          : result?.inviteUrl ? `Email could not be sent. Share this link manually: ${result.inviteUrl}` : undefined,
+      });
       queryClient.invalidateQueries({ queryKey: ['platform-admins'] });
       setIsDialogOpen(false);
-      setNewAdmin({ email: '', password: '', displayName: '', adminType: 'admin' });
+      setNewAdmin({ email: '', displayName: '', adminType: 'admin' });
     },
     onError: (err: Error) => {
       errorToast('Failed', err);
@@ -218,23 +213,24 @@ const PlatformAdminManagement = () => {
                     <Label className="text-xs font-semibold text-muted-foreground">Email Address</Label>
                     <Input className="bg-background border-border text-foreground" type="email" value={newAdmin.email} onChange={e => setNewAdmin(prev => ({ ...prev, email: e.target.value }))} placeholder="admin@calqulus.site" />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs font-semibold text-muted-foreground">Initial Password</Label>
-                    <Input className="bg-background border-border text-foreground" type="password" value={newAdmin.password} onChange={e => setNewAdmin(prev => ({ ...prev, password: e.target.value }))} placeholder="••••••••" />
-                  </div>
                   {newAdmin.adminType === 'owner' && (
                     <div className="bg-warning/10 border border-warning/30 rounded-xl p-3 text-xs text-warning flex items-start gap-2">
                       <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-warning" />
-                      <span>Owner accounts are immutable and cannot be suspended or deleted. Only one primary owner should exist.</span>
+                      <span>Owner accounts cannot be created by invitation: they are provisioned once by the platform runbook, are immutable, and cannot be suspended or deleted. Choose Admin or Business to invite.</span>
                     </div>
                   )}
-                  <Button
-                    className="w-full bg-gradient-to-r from-warning to-warning text-slate-950 font-bold hover:from-warning hover:to-warning"
-                    onClick={() => createAdmin.mutate()}
-                    disabled={createAdmin.isPending || !newAdmin.email || !newAdmin.password || !newAdmin.displayName}
-                  >
-                    {createAdmin.isPending ? 'Creating Admin...' : 'Create Admin Account'}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button type="button" variant="outline" className="flex-1" onClick={() => setIsDialogOpen(false)} disabled={createAdmin.isPending}>
+                      Cancel
+                    </Button>
+                    <Button
+                      className="flex-1 bg-gradient-to-r from-warning to-warning text-slate-950 font-bold hover:from-warning hover:to-warning"
+                      onClick={() => createAdmin.mutate()}
+                      disabled={createAdmin.isPending || !newAdmin.email || !newAdmin.displayName || newAdmin.adminType === 'owner'}
+                    >
+                      {createAdmin.isPending ? 'Sending invitation...' : 'Send invitation'}
+                    </Button>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>

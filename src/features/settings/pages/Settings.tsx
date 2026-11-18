@@ -15,6 +15,7 @@ import { Loader2, Upload, X } from "lucide-react";
 import { UserRoleManagement } from "@/features/settings/components/UserRoleManagement";
 import { PasswordChange } from "@/features/settings/components/PasswordChange";
 import { CompanySettings } from "@/features/settings/components/CompanySettings";
+import { LatePenaltyPolicyCard } from "@/features/settings/components/LatePenaltyPolicyCard";
 import OrgBrandStudio from "@/features/settings/components/OrgBrandStudio";
 import { ReceiptSettings } from "@/features/settings/components/ReceiptSettings";
 import { CreditApplicationSettings } from "@/features/settings/components/CreditApplicationSettings";
@@ -44,7 +45,8 @@ const Settings = () => {
   // One-device portal control with explicit second-device authorization.
 
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
+  const isAgencyUser = userRole?.role === "agency";
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -295,7 +297,12 @@ const Settings = () => {
       case "receipts":
         return <ReceiptSettings />;
       case "reminders":
-        return <PaymentReminderSettings />;
+        return (
+          <div className="space-y-6">
+            <PaymentReminderSettings />
+            <LatePenaltyPolicyCard ownerRole={isAgencyUser ? "agency" : "manager"} />
+          </div>
+        );
       case "date-time":
         return <DateSettings />;
       case "submanagers":
